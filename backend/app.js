@@ -1,15 +1,17 @@
-const express = require('express');
-const app = express();
+(async () => {
+   require('dotenv').config();
+   const express = require('express');
+   const app = express();
+   app.use(express.json());
 
-app.use(express.json());
+   // Connect to database
+   const { Database } = require('./db/database');
+   const databaseConnection = await new Database().connect();
 
-app.get('/status', (req, res) => {
-   console.log(req);
-   res.json({
-      status: 'Running',
-      timestamp: new Date().toUTCString()
-   });
-});
+   // Register rota
+   const rotaRoutes = require('./endpoints/rota/routes')(databaseConnection);
+   app.use('/', rotaRoutes);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+   const PORT = process.env.PORT || 3000;
+   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+})()
