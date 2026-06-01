@@ -1,14 +1,18 @@
+require('dotenv').config();
+const express = require('express');
+const { Database } = require('./db/db');
+
 (async () => {
-   require('dotenv').config();
-   const express = require('express');
    const app = express();
    app.use(express.json());
 
    // Connect to database
-   const { Database } = require('./db/database');
-   const databaseConnection = await new Database().connect();
+   const databaseConnection = await new Database(
+      process.env.MONGO_URI,
+      process.env.MONGO_DATABASE
+   ).connect();
 
-   // Register rota
+   // Register rota routes
    const rotaRoutes = require('./endpoints/rota/routes')(databaseConnection);
    app.use('/', rotaRoutes);
 

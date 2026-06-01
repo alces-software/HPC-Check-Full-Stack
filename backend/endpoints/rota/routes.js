@@ -3,10 +3,10 @@
  */
 module.exports = (db) => {
    const router = require('express').Router();
-   const RotaController = require('./controller')(db);
+   const { getRota, updateRota } = require('./controller')(db);
 
-   router.get('/rota', RotaController.getRota);
-   router.put('/rota', RotaController.updateRota);
+   router.get('/rota', getRota);
+   router.put('/rota', updateRota);
 
    return router;
 }
