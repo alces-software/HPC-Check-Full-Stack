@@ -1,4 +1,4 @@
-const { dayFromIndex, indexFromDay } = require('../../enums/days');
+const { dayFromIndex, indexFromDay, isValidDay } = require('../../enums/days');
 
 /**
  * @param {import('mongodb').Db} db
@@ -51,6 +51,11 @@ module.exports = (db) => {
    async function getRotaByDay(req, res) {
       try {
          if (req.params.day) {
+
+            if (!isValidDay(req.params.day)) {
+               return res.status(400).json({ status: false, error: 'Invalid day provided' });
+            }
+
             const results = await db.collection('schedule').find({
                dayIndex: indexFromDay(req.params.day)
             }).toArray();
@@ -67,7 +72,7 @@ module.exports = (db) => {
                   person: personName,
                   cluster: clusterName,
                   dayIndex: i.dayIndex
-               })
+               });
             });
             res.status(200).json({ success: true, body: response });
          }
