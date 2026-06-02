@@ -29,6 +29,11 @@ const { Database } = require('./db/db');
    const hpcRoutes = require('./endpoints/hpc/routes')(databaseConnection);
    app.use('/', hpcRoutes);
 
+   // Register report routes
+   const reportRoutes = require('./endpoints/report/routes')(databaseConnection);
+   app.use('/', reportRoutes);
+
+
    // Start new weekly schedule cron job
    startWeeklySchedule(databaseConnection);
 
