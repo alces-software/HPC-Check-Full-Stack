@@ -4,17 +4,18 @@
 module.exports = (db) => {
    const router = require('express').Router();
    const {
-      // postPeople,
-      getPeople,
-      // updatePeople,
-      // deletePeople
+      postPeople,
+      getAllPeople,
+      getPeopleById,
+      getPeopleByName,
+      deletePeople
    } = require('./controller')(db);
 
-   // router.post(postPeople);
-   router.get('/people', getPeople);
-   router.get('/people/:id', getPeople)
-   // router.put(updatePeople);
-   // router.delete(deletePeople);
+   router.post('/people/add', postPeople);
+   router.get('/people', getAllPeople);
+   router.get('/people/id/:id', getPeopleById);
+   router.get('/people/name/:name', getPeopleByName);
+   router.delete('/people/delete', deletePeople);
 
    return router;
 }

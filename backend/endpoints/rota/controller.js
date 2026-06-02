@@ -1,16 +1,17 @@
+const { dayFromIndex, indexFromDay } = require('../../enums/days');
+
 /**
  * @param {import('mongodb').Db} db
  */
 module.exports = (db) => {
    /**
-    * Handles the get request for the rota endpoint
     * @param {import('express').Request} req
     * @param {import('express').Response} res
     * @returns {Promise<void>}
     */
-   async function getRota(req, res) {
+   async function getAllRota(req, res) {
       try {
-         const days = await db.collection('schedule').find({}).toArray();
+         const results = await db.collection('schedule').find({}).toArray();
          const people = await db.collection('person').find({}).toArray();
          const clusters = await db.collection('cluster').find({}).toArray();
 
@@ -22,12 +23,10 @@ module.exports = (db) => {
             fri: {}
          }
 
-         const dayNames = Object.keys(response);
-
-         days.forEach((day) => {
-            const dayName = dayNames[day.dayIndex];
-            const personName = people.find(data => data._id.toString() == day.personId).name;
-            const clusterName = clusters.find(data => data._id.toString() == day.clusterId).name;
+         results.forEach(d => {
+            const dayName = dayFromIndex(d.dayIndex);
+            const personName = people.find(i => i._id.toString() == d.personId).name;
+            const clusterName = clusters.find(i => i._id.toString() == d.clusterId).name;
 
             if (Object.hasOwn(response[dayName], personName)) {
                response[dayName][personName].push(clusterName)
@@ -44,7 +43,117 @@ module.exports = (db) => {
       }
    };
 
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
+   async function getRotaByDay(req, res) {
+      try {
+         if (req.params.day) {
+            const results = await db.collection('schedule').find({
+               dayIndex: indexFromDay(req.params.day)
+            }).toArray();
+            const people = await db.collection('person').find({}).toArray();
+            const clusters = await db.collection('cluster').find({}).toArray();
+
+            let response = [];
+
+            results.forEach(d => {
+               const personName = people.find(i => i._id.toString() == d.personId).name;
+               const clusterName = clusters.find(i => i._id.toString() == d.clusterId).name;
+
+               response.push({
+                  person: personName,
+                  cluster: clusterName,
+                  dayIndex: i.dayIndex
+               })
+            });
+            res.status(200).json({ success: true, body: response });
+         }
+
+         res.status(400).json({ success: false, error: 'Missing day' });
+      } catch (error) {
+         res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
+   async function getRotaByCluster(req, res) {
+      try {
+         if (req.params.clusterId) {
+            const results = await db.collection('schedule').find({
+               clusterId: req.params.clusterId
+            }).toArray();
+            const people = await db.collection('person').find({}).toArray();
+            const clusters = await db.collection('cluster').find({}).toArray();
+
+            let response = [];
+
+            results.forEach(d => {
+               const personName = people.find(i => i._id.toString() == d.personId).name;
+               const clusterName = clusters.find(i => i._id.toString() == d.clusterId).name;
+
+               response.push({
+                  person: personName,
+                  cluster: clusterName,
+                  dayIndex: i.dayIndex
+               })
+            });
+
+            res.status(200).json({ success: true, body: response });
+         }
+
+         res.status(400).json({ success: false, error: 'Missing cluster id' });
+      } catch (error) {
+         res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
+   async function getRotaByPerson(req, res) {
+      try {
+         if (req.params.personId) {
+            const results = await db.collection('schedule').find({
+               personId: req.params.personId
+            }).toArray();
+            const people = await db.collection('person').find({}).toArray();
+            const clusters = await db.collection('cluster').find({}).toArray();
+
+            let response = [];
+
+            results.forEach(i => {
+               const personName = people.find(data => data._id.toString() == i.personId).name;
+               const clusterName = clusters.find(data => data._id.toString() == i.clusterId).name;
+
+               response.push({
+                  person: personName,
+                  cluster: clusterName,
+                  dayIndex: i.dayIndex
+               })
+            });
+
+            res.status(200).json({ success: true, body: response });
+         }
+
+         res.status(400).json({ success: false, error: 'Missing person id' });
+      } catch (error) {
+         res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
    return {
-      getRota
+      getAllRota,
+      getRotaByDay,
+      getRotaByCluster,
+      getRotaByPerson
    };
 }

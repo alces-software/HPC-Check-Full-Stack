@@ -3,9 +3,17 @@
  */
 module.exports = (db) => {
    const router = require('express').Router();
-   const { getRota } = require('./controller')(db);
+   const {
+      getAllRota,
+      getRotaByDay,
+      getRotaByCluster,
+      getRotaByPerson
+   } = require('./controller')(db);
 
-   router.get('/rota', getRota);
+   router.get('/rota', getAllRota);
+   router.get('/rota/day/:day', getRotaByDay);
+   router.get('/rota/cluster/:clusterId', getRotaByCluster);
+   router.get('/rota/person/:personId', getRotaByPerson);
 
    return router;
 }
