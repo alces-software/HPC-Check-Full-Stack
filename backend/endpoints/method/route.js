@@ -4,10 +4,12 @@
 module.exports = (db) => {
    const router = require('express').Router();
    const {
-      addResult
+      getMethods,
+      getMethodById
    } = require('./controller')(db);
 
-   router.post('/result/submit', addResult);
+   router.get('/method/:instructionId', getMethods)
+   router.get('/method/id/:methodId', getMethodById);
 
    return router;
 }

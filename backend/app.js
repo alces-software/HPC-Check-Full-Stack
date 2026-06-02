@@ -37,6 +37,10 @@ const { Database } = require('./db/db');
    const reportRoutes = require('./endpoints/report/routes')(databaseConnection);
    app.use('/', reportRoutes);
 
+   // Register method routes
+   const methodRoutes = require('./endpoints/method/route')(databaseConnection);
+   app.use('/', methodRoutes);
+
 
    // Start new weekly schedule cron job
    startWeeklySchedule(databaseConnection);
