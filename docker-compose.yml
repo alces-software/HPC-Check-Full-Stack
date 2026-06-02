@@ -1,0 +1,22 @@
+services:
+  frontend:
+    image: node:20
+    container_name: frontend
+    ports:
+      - 80:3000
+    working_dir: /srv/app
+    command: "./setup.sh"
+    volumes:
+      - ./frontend:/srv/app
+      - /srv/app/.next/
+    tty: true
+  backend:
+    image: node:20
+    container_name: backend
+    ports:
+      - 81:3000
+    working_dir: /srv/app
+    command: "./setup.sh"
+    volumes:
+      - ./backend:/srv/app
+    tty: true
