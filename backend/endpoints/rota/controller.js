@@ -51,7 +51,6 @@ module.exports = (db) => {
    async function getRotaByDay(req, res) {
       try {
          if (req.params.day) {
-
             if (!isValidDay(req.params.day)) {
                return res.status(400).json({ status: false, error: 'Invalid day provided' });
             }
