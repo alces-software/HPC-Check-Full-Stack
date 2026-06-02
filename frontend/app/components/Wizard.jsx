@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 
 const steps = [
   {
@@ -60,6 +61,7 @@ export default function Wizard() {
   const [selectedName, setSelectedName] = useState("");
   const [selectedCluster, setSelectedCluster] = useState("");
   const [allClusters, setAllClusters] = useState([])
+  const [steps, setSteps] = useState([])
 
 
 
@@ -67,6 +69,7 @@ export default function Wizard() {
 
 
 useEffect(() => {
+
     async function getAllClusters() {
       try {
         const res = await fetch(
@@ -93,13 +96,46 @@ useEffect(() => {
   }, [allClusters]);
 
 
+
+
+
+  useEffect(() => {
+    console.log("Clusters state updated:", allClusters);
+  }, [allClusters]);
+
+
 const clusters = allClusters.map((cluster) => cluster.name);
 
 const clusterId = allClusters.find(
-  (cluster) => cluster.name === 'Cognition'
+  (cluster) => cluster.name === selectedCluster
 )?.id;
 
-console.log(clusterId)
+
+
+useEffect(() => {
+    if (!clusterId) return;
+    async function getSteps() {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/instructions/all/${clusterId}`
+        );
+
+        const data = await res.json();
+
+        console.log("Fetched methods:", data.body);
+
+        setSteps(data.body);
+
+        
+      } catch (error) {
+        console.error("Failed to load methods:", error);
+      }
+    }
+
+    getSteps();
+  }, [clusterId]);
+
+
 
 
   function toggleStep(stepId) {
@@ -143,9 +179,9 @@ console.log(clusterId)
               name="userName"
               value={selectedName}
               onChange={(e) => setSelectedName(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">-- Select Name --</option>
+              <option className="text-slate-700" value="">-- Select Name --</option>
               {/* <option value="Oscar">Oscar</option>
               <option value="Calum">Calum</option>
               <option value="Alex">Alex</option> */}
@@ -167,13 +203,17 @@ console.log(clusterId)
               onChange={(e) => setSelectedCluster(e.target.value)}
 
               name="cluster"
-              className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-slate-300 px-4 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">-- Select Cluster --</option>
+              <option className="text-slate-700" value="">-- Select Cluster --</option>
 
               {clusters.map((cluster) => {
-                return <option key={cluster} value={cluster}>{cluster}</option>
+                return <option className="text-slate-700" key={cluster} value={cluster}>{cluster}</option>
               })}
+
+              {console.log(clusterId)}
+
+              {console.log(steps)}
        
             </select>
           </div>
@@ -201,14 +241,26 @@ console.log(clusterId)
                     <ul className="mt-4 list-disc space-y-2 pl-6 text-slate-700">
                       {step.methods.map((method, index) => (
                         <li key={index}>
-                          {method.type === "code" ? (
-                            <pre className="mt-2 overflow-auto rounded bg-slate-900 p-3 text-sm text-green-400">
-                              <code>{method.content}</code>
-                            </pre>
-                          ) : (
-                            method.content
-                          )}
-                        </li>
+      {method.content.includes(":") ? (
+        <>
+          <p>{method.content.split(":")[0]}:</p>
+          <pre className="mt-2 overflow-auto rounded bg-slate-900 p-3 text-sm text-green-400">
+            <code>{method.content.split(":").slice(1).join(":").trim()}</code>
+          </pre>
+        </>
+      ) : (
+        method.content
+      )}
+    </li>
+                        // <li key={index}>
+                        //   {method.type === "code" ? (
+                        //     <pre className="mt-2 overflow-auto rounded bg-slate-900 p-3 text-sm text-green-400">
+                        //       <code>{method.content}</code>
+                        //     </pre>
+                        //   ) : (
+                        //     method.content
+                        //   )}
+                        // </li>
                       ))}
                     </ul>
                   </details>
