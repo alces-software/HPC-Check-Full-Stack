@@ -12,15 +12,6 @@ module.exports.generateSchedule = async (db) => {
     const per_person = Number(process.env.CLUSTERS_PER_PERSON) || 1
     const per_day = Number(process.env.PEOPLE_PER_DAY) || 1
 
-    const people = {}
-    peopleIDs.forEach(id => {
-       people[id] = false
-    });
-    const clusters = {}
-    clusterIDs.forEach(id => {
-        clusters[id] = false
-    })
-
     const shuffle = (array) => {
         const shuffled = [...array]
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -31,17 +22,27 @@ module.exports.generateSchedule = async (db) => {
     }
 
     const scheduleEntries = []
+    const peoplePool = shuffle(peopleIDs)
+    const clusterPool = shuffle(clusterIDs)
+
+    const getNextFromPool = (pool, source) => {
+        if (pool.length === 0) {
+            pool.push(...shuffle(source))
+        }
+        return pool.pop()
+    }
 
     for (let day = 0; day < 5; day++) {
-        const shuffledPeople = shuffle(peopleIDs)
-        const shuffledClusters = shuffle(clusterIDs)
-        const selectedPeople = shuffledPeople.slice(0, per_day)
+        const selectedPeople = []
+
+        for (let j = 0; j < per_day; j++) {
+            const personId = getNextFromPool(peoplePool, peopleIDs)
+            selectedPeople.push(personId)
+        }
 
         for (const personId of selectedPeople) {
             for (let j = 0; j < per_person; j++) {
-                const clusterId = shuffledClusters[j % shuffledClusters.length]
-                people[personId] = true
-                clusters[clusterId] = true
+                const clusterId = getNextFromPool(clusterPool, clusterIDs)
                 scheduleEntries.push({
                     clusterId: clusterId,
                     personId: personId,
