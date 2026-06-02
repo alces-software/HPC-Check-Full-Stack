@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+
 export default function Schedule() {
   const today = new Date();
   const weekBeginning = new Date(today);
@@ -10,11 +11,18 @@ export default function Schedule() {
   const diff = day === 0 ? -6 : 1 - day;
   weekBeginning.setDate(weekBeginning.getDate() + diff);
 
-const formattedWeekBeginning = weekBeginning.toLocaleDateString("en-GB", {
-  weekday: "long",
-  day: "numeric",
-  month: "long",
-});
+  const dayOfWeek = today.toLocaleDateString("en-GB", {
+
+     weekday: "long"
+
+  });
+  
+  const formattedWeekBeginning = weekBeginning.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  
+  });
   
 
 //   const schedule = {
@@ -45,8 +53,7 @@ const [schedule, setSchedule] = useState(null);
 useEffect(() => {
   async function getRota() {
     try {
-      console.log(process.env.API_URL)
-      const res = await fetch(`${process.env.API_URL}/rota`);
+      const res = await fetch("http://localhost:3001/rota");
       const data = await res.json();
 
       setSchedule(data.body);
@@ -79,15 +86,15 @@ const days = [
   return (
    <main className="min-h-screen bg-slate-100 p-8">
       <div className="mx-auto max-w-4xl rounded-xl bg-white p-6 shadow">
-        <h1 className="mb-6 text-2xl font-bold">{`Weekly Schedule for ${formattedWeekBeginning}`}</h1>
+        <h1 className="mb-6 text-2xl font-bold">{`Weekly Schedule for ${formattedWeekBeginning}.`}</h1>
 
-        <div className="overflow-hidden rounded-lg border border-slate-300">
+        <div className="overflow-hidden rounded-lg border bg-gray-300 border-slate-500">
           {days.map(([dayKey, dayLabel]) => (
             <div
               key={dayKey}
-              className="grid grid-cols-[150px_1fr] border-b border-slate-300 last:border-b-0"
+              className="grid grid-cols-[150px_1fr] border-b border-slate-400 last:border-b-0"
             >
-              <div className="flex items-center bg-[blue] px-4 py-4 font-semibold text-white">
+              <div className={`flex items-center bg-[grey] px-4 py-0 font-semibold text-white ${dayLabel === dayOfWeek ? "bg-green-600" : "bg-[gray]"}`}>
                 {dayLabel}
               </div>
 
@@ -97,12 +104,12 @@ const days = [
                   ([name, clusters], index) => (
                     <div
                       key={name}
-                      className={`grid grid-cols-[180px_1fr] px-4 py-3 text-black ${
+                      className={`grid grid-cols-[180px_1fr]  px-4 py-3 text-black ${
                         index !==
                         Object.entries(schedule[dayKey]).length - 1
-                          ? "border-b border-slate-200"
+                          ? "border-b border-slate-400"
                           : ""
-                      }`}
+                      } ${dayLabel === dayOfWeek ? "bg-green-100" : ""} `}
                     >
                       <div className="font-medium">{name}</div>
 
@@ -110,7 +117,7 @@ const days = [
                         {clusters.map((cluster) => (
                           <span
                             key={cluster}
-                            className="rounded bg-blue-100 px-2 py-1 text-sm text-blue-800"
+                            className={`rounded ${dayLabel === dayOfWeek ? "bg-green-300 text-green-900 font-semibold" : "bg-blue-100 text-blue-800"} px-2 py-1 text-sm `}
                           >
                             {cluster}
                           </span>
