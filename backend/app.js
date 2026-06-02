@@ -1,10 +1,13 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const { startWeeklySchedule } = require('./services/cron/weekly-schedule');
 const { Database } = require('./db/db');
 
 (async () => {
    const app = express();
+
+   app.use(cors());
    app.use(express.json());
 
    // Connect to database
