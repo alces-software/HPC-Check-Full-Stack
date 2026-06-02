@@ -33,6 +33,11 @@ const { Database } = require('./db/db');
    const instructionRoutes = require('./endpoints/instruction/route')(databaseConnection);
    app.use('/', instructionRoutes);
 
+   // Register report routes
+   const reportRoutes = require('./endpoints/report/routes')(databaseConnection);
+   app.use('/', reportRoutes);
+
+
    // Start new weekly schedule cron job
    startWeeklySchedule(databaseConnection);
 
