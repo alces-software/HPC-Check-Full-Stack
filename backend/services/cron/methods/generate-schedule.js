@@ -21,30 +21,33 @@ module.exports.generateSchedule = async (db) => {
         clusters[id] = false
     })
 
+    // Shuffle function
+    const shuffle = (array) => {
+        const shuffled = [...array]
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+        }
+        return shuffled
+    }
+
     const scheduleEntries = []
-    let personIndex = 0
-    let clusterIndex = 0
 
     for (let day = 0; day < 5; day++) {
-        const selectedPeople = []
-
-        for (let j = 0; j < per_day; j++) {
-            const personId = peopleIDs[personIndex % peopleIDs.length]
-            people[personId] = true
-            selectedPeople.push(personId)
-            personIndex++
-        }
+        const shuffledPeople = shuffle(peopleIDs)
+        const shuffledClusters = shuffle(clusterIDs)
+        const selectedPeople = shuffledPeople.slice(0, per_day)
 
         for (const personId of selectedPeople) {
             for (let j = 0; j < per_person; j++) {
-                const clusterId = clusterIDs[clusterIndex % clusterIDs.length]
+                const clusterId = shuffledClusters[j % shuffledClusters.length]
+                people[personId] = true
                 clusters[clusterId] = true
                 scheduleEntries.push({
                     clusterId: clusterId,
                     personId: personId,
                     dayIndex: day
                 })
-                clusterIndex++
             }
         }
     }
@@ -53,6 +56,4 @@ module.exports.generateSchedule = async (db) => {
         await db.collection('schedule').deleteMany({})
         await db.collection('schedule').insertMany(scheduleEntries)
     }
-
-    return scheduleEntries
 }
