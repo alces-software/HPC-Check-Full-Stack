@@ -3,7 +3,19 @@
 import { useEffect, useState } from "react";
 
 export default function Schedule() {
-  const weekBeginning = "01/06/2026";
+  const today = new Date();
+  const weekBeginning = new Date(today);
+  const day = weekBeginning.getDay(); 
+  
+  const diff = day === 0 ? -6 : 1 - day;
+  weekBeginning.setDate(weekBeginning.getDate() + diff);
+
+const formattedWeekBeginning = weekBeginning.toLocaleDateString("en-GB", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+});
+  
 
 //   const schedule = {
 //     "mon":{
@@ -66,7 +78,7 @@ const days = [
   return (
    <main className="min-h-screen bg-slate-100 p-8">
       <div className="mx-auto max-w-4xl rounded-xl bg-white p-6 shadow">
-        <h1 className="mb-6 text-2xl font-bold">Weekly Schedule</h1>
+        <h1 className="mb-6 text-2xl font-bold">{`Weekly Schedule for ${formattedWeekBeginning}`}</h1>
 
         <div className="overflow-hidden rounded-lg border border-slate-300">
           {days.map(([dayKey, dayLabel]) => (
@@ -84,7 +96,7 @@ const days = [
                   ([name, clusters], index) => (
                     <div
                       key={name}
-                      className={`grid grid-cols-[180px_1fr] px-4 py-3 ${
+                      className={`grid grid-cols-[180px_1fr] px-4 py-3 text-black ${
                         index !==
                         Object.entries(schedule[dayKey]).length - 1
                           ? "border-b border-slate-200"
