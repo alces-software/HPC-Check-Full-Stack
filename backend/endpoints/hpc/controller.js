@@ -40,10 +40,12 @@ module.exports = (db) => {
     */
    async function getAllHpc(req, res) {
       try {
-         const response = (await db.collection('cluster').find({}).toArray()).map(data => ({
-            id: data._id.toString(),
-            name: data.name
-         }));
+         const response = await db.collection('cluster').find({}).toArray().then(results => {
+            return results.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
 
          res.status(200).json({ success: true, body: response });
       } catch (error) {

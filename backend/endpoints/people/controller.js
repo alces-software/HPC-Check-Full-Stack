@@ -40,10 +40,12 @@ module.exports = (db) => {
     */
    async function getAllPeople(req, res) {
       try {
-         const response = (await db.collection('person').find({}).toArray()).map(data => ({
-            id: data._id.toString(),
-            name: data.name
-         }));
+         const response = await db.collection('person').find({}).toArray().then(results => {
+            return results.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
 
          res.status(200).json({ success: true, body: response });
       } catch (error) {
@@ -104,7 +106,7 @@ module.exports = (db) => {
                }
             });
          }
-         
+
          res.status(400).json({ success: false, error: 'Missing persons name' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
