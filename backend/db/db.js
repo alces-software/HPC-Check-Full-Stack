@@ -5,9 +5,7 @@ module.exports.Database = class {
       /**
        * @type {MongoClient}
        */
-      this.client = new MongoClient(uri, {
-         maxPoolSize: 10,
-      });
+      this.client = new MongoClient(uri);
 
       /**
        * @type {String}
@@ -31,7 +29,6 @@ module.exports.Database = class {
     */
    async connect() {
       if (this.db) return this.db;
-
       if (!this.connectPromise) {
          this.connectPromise = (async () => {
             await this.client.connect();

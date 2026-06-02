@@ -10,7 +10,10 @@ module.exports = (db) => {
     */
    async function getRota(req, res) {
       try {
-         res.status(200).json({ success: true, error: 'Rota get request' });
+         const collection = await db.collection('schedule');
+         const results = await collection.find({})
+            .toArray();
+         console.log(results);
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
       }
