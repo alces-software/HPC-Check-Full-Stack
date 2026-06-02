@@ -4,17 +4,18 @@
 module.exports = (db) => {
    const router = require('express').Router();
    const {
-      // postHpc, 
-      getHpc,
-      // updateHpc,
-      // deleteHpc
+      postHpc,
+      getAllHpc,
+      getHpcById,
+      getHpcByName,
+      deleteHpc
    } = require('./controller')(db);
 
-   // router.post(postHpc);
-   router.get('/hpc', getHpc);
-   router.get('/hpc/:id', getHpc)
-   // router.put(updateHpc);
-   // router.delete(deleteHpc);
+   router.post('/hpc/add', postHpc);
+   router.get('/hpc', getAllHpc);
+   router.get('/hpc/id/:id', getHpcById);
+   router.get('/hpc/name/:name', getHpcByName);
+   router.delete('/hpc/delete', deleteHpc);
 
    return router;
 }
