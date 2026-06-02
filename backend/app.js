@@ -19,13 +19,13 @@ const { Database } = require('./db/db');
    const rotaRoutes = require('./endpoints/rota/routes')(databaseConnection);
    app.use('/', rotaRoutes);
 
-   // // Register people routes
-   // const peopleRoutes = require('./endpoints/people/routes')(databaseConnection);
-   // app.use('/', peopleRoutes);
+   // Register people routes
+   const peopleRoutes = require('./endpoints/people/routes')(databaseConnection);
+   app.use('/', peopleRoutes);
 
-   // // Register hpc routes
-   // const hpcRoutes = require('./endpoints/hpc/routes')(databaseConnection);
-   // app.use('/', hpcRoutes);
+   // Register hpc routes
+   const hpcRoutes = require('./endpoints/hpc/routes')(databaseConnection);
+   app.use('/', hpcRoutes);
 
    // Start new weekly schedule cron job
    await startWeeklySchedule(databaseConnection);

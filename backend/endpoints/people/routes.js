@@ -3,12 +3,17 @@
  */
 module.exports = (db) => {
    const router = require('express').Router();
-   const { postPeople, getPeople, updatePeople, deletePeople } = require('./controller')(db);
+   const {
+      // postPeople,
+      getPeople,
+      // updatePeople,
+      // deletePeople
+   } = require('./controller')(db);
 
-   router.post(postPeople);
-   router.get(getPeople);
-   router.put(updatePeople);
-   router.delete(deletePeople);
+   // router.post(postPeople);
+   router.get('/people', getPeople);
+   // router.put(updatePeople);
+   // router.delete(deletePeople);
 
    return router;
 }
