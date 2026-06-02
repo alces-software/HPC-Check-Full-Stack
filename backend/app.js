@@ -12,8 +12,7 @@ const { Database } = require('./db/db');
       process.env.MONGO_URI,
       process.env.MONGO_DATABASE
    ).connect();
-
-   console.log("Connected to database")
+   console.log("Connected to database");
 
    // Register rota routes
    const rotaRoutes = require('./endpoints/rota/routes')(databaseConnection);
@@ -28,7 +27,7 @@ const { Database } = require('./db/db');
    app.use('/', hpcRoutes);
 
    // Start new weekly schedule cron job
-   await startWeeklySchedule(databaseConnection);
+   startWeeklySchedule(databaseConnection);
 
    // Makes the app listen to the port
    const PORT = process.env.PORT || 3000;

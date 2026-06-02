@@ -12,6 +12,7 @@ module.exports = (db) => {
 
    // router.post(postHpc);
    router.get('/hpc', getHpc);
+   router.get('/hpc/:id', getHpc)
    // router.put(updateHpc);
    // router.delete(deleteHpc);
 

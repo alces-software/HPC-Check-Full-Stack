@@ -1,3 +1,5 @@
+const { ObjectId } = require('mongodb');
+
 /**
  * @param {import('mongodb').Db} db
  */
@@ -20,10 +22,23 @@ module.exports = (db) => {
     */
    async function getPeople(req, res) {
       try {
-         const response = (await db.collection('person').find({}).toArray()).map(data => ({
-            id: data._id.toString(),
-            name: data.name
-         }));
+         let response;
+
+         if (req.params.id) {
+            const results = await db.collection('person').findOne({
+               _id: new ObjectId(req.params.id)
+            });
+
+            response = {
+               id: req.params.id,
+               name: results.name
+            }
+         } else {
+            response = (await db.collection('person').find({}).toArray()).map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         }
 
          res.status(200).json({ success: true, body: response });
       } catch (error) {

@@ -12,6 +12,7 @@ module.exports = (db) => {
 
    // router.post(postPeople);
    router.get('/people', getPeople);
+   router.get('/people/:id', getPeople)
    // router.put(updatePeople);
    // router.delete(deletePeople);
 
