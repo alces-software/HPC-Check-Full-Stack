@@ -12,8 +12,8 @@ module.exports = (db) => {
 
    router.get('/rota', getAllRota);
    router.get('/rota/day/:day', getRotaByDay);
-   router.get('/rota/cluster/:clusterId', getRotaByCluster);
-   router.get('/rota/person/:personId', getRotaByPerson);
+   router.get('/rota/cluster/:id', getRotaByCluster);
+   router.get('/rota/person/:id', getRotaByPerson);
 
    return router;
 }

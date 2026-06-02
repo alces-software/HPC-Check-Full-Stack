@@ -91,9 +91,9 @@ module.exports = (db) => {
     */
    async function getRotaByCluster(req, res) {
       try {
-         if (req.params.clusterId) {
+         if (req.params.id) {
             const results = await db.collection('schedule').find({
-               clusterId: req.params.clusterId
+               clusterId: req.params.id
             }).toArray();
             const people = await db.collection('person').find({}).toArray();
             const clusters = await db.collection('cluster').find({}).toArray();
@@ -127,9 +127,9 @@ module.exports = (db) => {
     */
    async function getRotaByPerson(req, res) {
       try {
-         if (req.params.personId) {
+         if (req.params.id) {
             const results = await db.collection('schedule').find({
-               personId: req.params.personId
+               personId: req.params.id
             }).toArray();
             const people = await db.collection('person').find({}).toArray();
             const clusters = await db.collection('cluster').find({}).toArray();

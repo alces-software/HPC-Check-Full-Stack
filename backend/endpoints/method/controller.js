@@ -11,9 +11,9 @@ module.exports = (db) => {
     */
    async function getMethods(req, res) {
       try {
-         if (req.params.instructionId) {
+         if (req.params.id) {
             const instructionExists = await db.collection('instruction').find({
-               _id: new ObjectId(req.params.instructionId)
+               _id: new ObjectId(req.params.id)
             });
 
             if (!instructionExists) {
@@ -21,7 +21,7 @@ module.exports = (db) => {
             }
 
             const response = await db.collection('method').find({
-               instructionId: req.params.instructionId
+               instructionId: req.params.id
             }).toArray().then(result => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
@@ -45,9 +45,9 @@ module.exports = (db) => {
     */
    async function getMethodById(req, res) {
       try {
-         if (req.params.methodId) {
-            const response = await db.collection('method').find({
-               _id: new ObjectId(req.params.instructionId)
+         if (req.params.id) {
+            const response = await db.collection('method').findOne({
+               _id: new ObjectId(req.params.id)
             });
 
             if (!response) {

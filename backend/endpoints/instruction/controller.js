@@ -11,7 +11,7 @@ module.exports = (db) => {
     */
    async function getAllInstructionsData(req, res) {
       try {
-         if (req.params.clusterId) {
+         if (req.params.id) {
             const response = [];
 
             const instructions = await db.collection('instruction').find({
@@ -49,7 +49,7 @@ module.exports = (db) => {
             return res.status(200).json({ success: true, body: response });
          }
 
-         res.status(400).json({ success: false, error: 'Missing id' });
+         res.status(400).json({ success: false, error: 'Missing cluster id' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
       }
@@ -62,9 +62,9 @@ module.exports = (db) => {
     */
    async function getAllInstructionsOnly(req, res) {
       try {
-         if (req.params.clusterId) {
+         if (req.params.id) {
             const response = await db.collection('instruction').find({
-               clusterId: req.params.clusterId
+               clusterId: req.params.id
             }).toArray().then(result => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
@@ -75,7 +75,7 @@ module.exports = (db) => {
             return res.status(200).json({ success: true, body: response });
          }
 
-         res.status(400).json({ success: false, error: 'Missing id' });
+         res.status(400).json({ success: false, error: 'Missing cluster id' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
       }
@@ -88,9 +88,9 @@ module.exports = (db) => {
     */
    async function getInstructionsAllById(req, res) {
       try {
-         if (req.params.instructionId) {
+         if (req.params.id) {
             const response = await db.collection('instruction').findOne({
-               _id: new ObjectId(req.params.instructionId)
+               _id: new ObjectId(req.params.id)
             });
 
             if (!response) {
@@ -121,7 +121,7 @@ module.exports = (db) => {
             return res.status(200).json({ success: true, body: response });
          }
 
-         res.status(400).json({ success: false, error: 'Missing id' });
+         res.status(400).json({ success: false, error: 'Missing instruction id' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
       }
@@ -134,9 +134,9 @@ module.exports = (db) => {
     */
    async function getInstructionsOnlyById(req, res) {
       try {
-         if (req.params.instructionId) {
+         if (req.params.id) {
             const response = await db.collection('instruction').findOne({
-               _id: new ObjectId(req.params.instructionId)
+               _id: new ObjectId(req.params.id)
             });
 
             if (!response) {
@@ -149,7 +149,7 @@ module.exports = (db) => {
             return res.status(200).json({ success: true, body: response });
          }
 
-         res.status(400).json({ success: false, error: 'Missing id' });
+         res.status(400).json({ success: false, error: 'Missing instruction id' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
       }

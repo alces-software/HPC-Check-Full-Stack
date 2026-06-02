@@ -8,8 +8,8 @@ module.exports = (db) => {
       getMethodById
    } = require('./controller')(db);
 
-   router.get('/method/:instructionId', getMethods)
-   router.get('/method/id/:methodId', getMethodById);
+   router.get('/method/:id', getMethods)
+   router.get('/method/id/:id', getMethodById);
 
    return router;
 }

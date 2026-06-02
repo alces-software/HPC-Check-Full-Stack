@@ -24,7 +24,7 @@ module.exports = (db) => {
                name: req.body.name
             });
          } else {
-            return res.status(400).json({ success: false, error: 'Missing name' });
+            return res.status(400).json({ success: false, error: 'Missing persons name' });
          }
 
          res.status(200).json({ success: true });
@@ -75,7 +75,7 @@ module.exports = (db) => {
             });
          }
 
-         res.status(400).json({ success: false, error: 'Missing id' });
+         res.status(400).json({ success: false, error: 'Missing persons id' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
       }
@@ -105,7 +105,7 @@ module.exports = (db) => {
             });
          }
          
-         res.status(400).json({ success: false, error: 'Missing name' });
+         res.status(400).json({ success: false, error: 'Missing persons name' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
       }
@@ -133,7 +133,7 @@ module.exports = (db) => {
                _id: new ObjectId(req.body.id)
             });
          } else {
-            return res.status(400).json({ success: false, error: 'Missing id' });
+            return res.status(400).json({ success: false, error: 'Missing persons id' });
          }
 
          res.status(200).json({ success: true });
