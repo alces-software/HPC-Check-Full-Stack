@@ -1,33 +1,15 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState, useEffect } from "react";
 
-type Method = {
-  type: "text" | "code";
-  content: string;
-};
-
-type Step = {
-  id: number;
-  title: string;
-  description: string;
-  methods: Method[];
-};
-
-const steps: Step[] = [
+const steps = [
   {
     id: 1,
     title: "Step 1",
     description: "Verify quota system works AND test real user filesystem experience.",
     methods: [
-      {
-        type: "text",
-        content: "Run: quota -s",
-      },
-      {
-        type: "text",
-        content: "Run: df -h ~",
-      },
+      { type: "text", content: "Run: quota -s" },
+      { type: "text", content: "Run: df -h ~" },
       {
         type: "code",
         content:
@@ -69,17 +51,65 @@ const steps: Step[] = [
   },
 ];
 
-export default function Wizard() {
-  const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>({});
+const names = ["Oscar", "Calum", "Alex"]
 
-  function toggleStep(stepId: number) {
+
+
+export default function Wizard() {
+  const [completedSteps, setCompletedSteps] = useState({});
+  const [selectedName, setSelectedName] = useState("");
+  const [selectedCluster, setSelectedCluster] = useState("");
+  const [allClusters, setAllClusters] = useState([])
+
+
+
+
+
+
+useEffect(() => {
+    async function getAllClusters() {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/hpc`
+        );
+
+        const data = await res.json();
+
+        console.log("Fetched clusters:", data.body);
+
+        setAllClusters(data.body);
+
+        
+      } catch (error) {
+        console.error("Failed to fetch clusters:", error);
+      }
+    }
+
+    getAllClusters();
+  }, []);
+
+  useEffect(() => {
+    console.log("Clusters state updated:", allClusters);
+  }, [allClusters]);
+
+
+const clusters = allClusters.map((cluster) => cluster.name);
+
+const clusterId = allClusters.find(
+  (cluster) => cluster.name === 'Cognition'
+)?.id;
+
+console.log(clusterId)
+
+
+  function toggleStep(stepId) {
     setCompletedSteps((previous) => ({
       ...previous,
       [stepId]: !previous[stepId],
     }));
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event) {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
@@ -91,6 +121,10 @@ export default function Wizard() {
     });
   }
 
+
+
+
+
   return (
     <section className="min-h-screen bg-slate-100 px-6 py-8">
       <div className="mx-auto max-w-5xl">
@@ -100,54 +134,59 @@ export default function Wizard() {
           </h1>
 
           <div className="mb-6">
-            <label
-              htmlFor="userName"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="userName" className="mb-2 block text-sm font-medium text-slate-700">
               Select Name
             </label>
 
             <select
               id="userName"
               name="userName"
+              value={selectedName}
+              onChange={(e) => setSelectedName(e.target.value)}
               className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">-- Select Name --</option>
-              <option value="Oscar">Oscar</option>
+              {/* <option value="Oscar">Oscar</option>
               <option value="Calum">Calum</option>
-              <option value="Alex">Alex</option>
+              <option value="Alex">Alex</option> */}
+              {names.map((name) => {
+                return <option key={name} value={name}>{name}</option>
+
+              })};
             </select>
           </div>
 
           <div className="mb-8">
-            <label
-              htmlFor="cluster"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="cluster" className="mb-2 block text-sm font-medium text-slate-700">
               Select Cluster
             </label>
 
             <select
               id="cluster"
+              value={selectedCluster}
+              onChange={(e) => setSelectedCluster(e.target.value)}
+
               name="cluster"
               className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">-- Select Cluster --</option>
-              <option value="Cluster 1">Cluster 1</option>
-              <option value="Cluster 2">Cluster 2</option>
-              <option value="Cluster 3">Cluster 3</option>
+
+              {clusters.map((cluster) => {
+                return <option key={cluster} value={cluster}>{cluster}</option>
+              })}
+       
             </select>
           </div>
+
+
+          {selectedName && selectedCluster && (
 
           <div className="space-y-6">
             {steps.map((step) => {
               const isCompleted = Boolean(completedSteps[step.id]);
 
               return (
-                <section
-                  key={step.id}
-                  className="rounded-xl border border-slate-200 bg-white p-6"
-                >
+                <section key={step.id} className="rounded-xl border border-slate-200 bg-white p-6">
                   <h2 className="mb-4 text-xl font-semibold text-slate-900">
                     {step.title}
                   </h2>
@@ -174,10 +213,7 @@ export default function Wizard() {
                     </ul>
                   </details>
 
-                  <label
-                    htmlFor={`step${step.id}Notes`}
-                    className="mb-2 block text-sm font-medium text-slate-700"
-                  >
+                  <label htmlFor={`step${step.id}Notes`} className="mb-2 block text-sm font-medium text-slate-700">
                     Notes
                   </label>
 
@@ -188,10 +224,7 @@ export default function Wizard() {
                     className="mb-4 w-full rounded-lg border border-slate-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
 
-                  <label
-                    htmlFor={`step${step.id}AdditionalMethod`}
-                    className="mb-2 block text-sm font-medium text-slate-700"
-                  >
+                  <label htmlFor={`step${step.id}AdditionalMethod`} className="mb-2 block text-sm font-medium text-slate-700">
                     Add Additional Method
                   </label>
 
@@ -222,10 +255,7 @@ export default function Wizard() {
 
                   {!isCompleted && (
                     <div className="mt-4">
-                      <label
-                        htmlFor={`step${step.id}FailureReason`}
-                        className="mb-2 block text-sm font-medium text-red-700"
-                      >
+                      <label htmlFor={`step${step.id}FailureReason`} className="mb-2 block text-sm font-medium text-red-700">
                         What went wrong?
                       </label>
 
@@ -241,7 +271,7 @@ export default function Wizard() {
                 </section>
               );
             })}
-          </div>
+          </div> )}
 
           <button
             type="submit"

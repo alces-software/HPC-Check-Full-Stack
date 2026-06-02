@@ -53,8 +53,10 @@ const [schedule, setSchedule] = useState(null);
 useEffect(() => {
   async function getRota() {
     try {
-      const res = await fetch(`${process.env.API_URL}/rota`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/rota`);
       const data = await res.json();
+
+      console.log(process.env.API_URL);
 
       setSchedule(data.body);
     } catch (error) {
@@ -86,7 +88,7 @@ const days = [
   return (
    <main className="min-h-screen bg-slate-100 p-8">
       <div className="mx-auto max-w-4xl rounded-xl bg-white p-6 shadow">
-        <h1 className="mb-6 text-2xl font-bold">{`Weekly Schedule for ${formattedWeekBeginning}.`}</h1>
+        <h1 className="mb-6 text-2xl font-bold text-black">{`Weekly Schedule for ${formattedWeekBeginning}.`}</h1>
 
         <div className="overflow-hidden rounded-lg border bg-gray-300 border-slate-500">
           {days.map(([dayKey, dayLabel]) => (
