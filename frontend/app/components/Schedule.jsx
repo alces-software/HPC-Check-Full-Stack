@@ -53,7 +53,11 @@ const [schedule, setSchedule] = useState(null);
 useEffect(() => {
   async function getRota() {
     try {
+<<<<<<< HEAD
       const res = await fetch("http://localhost:3001/rota");
+=======
+      const res = await fetch(`${process.env.API_URL}/rota`);
+>>>>>>> working
       const data = await res.json();
 
       setSchedule(data.body);
