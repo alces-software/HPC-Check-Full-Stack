@@ -29,7 +29,7 @@ module.exports = (db) => {
             const clusterName = clusters.find(i => i._id.toString() == d.clusterId).name;
 
             if (Object.hasOwn(response[dayName], personName)) {
-               response[dayName][personName].push(clusterName)
+               response[dayName][personName].push(clusterName);
             } else {
                response[dayName] = {
                   [personName]: [clusterName]
@@ -74,6 +74,7 @@ module.exports = (db) => {
                   dayIndex: i.dayIndex
                });
             });
+            
             res.status(200).json({ success: true, body: response });
          }
 
@@ -107,7 +108,7 @@ module.exports = (db) => {
                   person: personName,
                   cluster: clusterName,
                   dayIndex: i.dayIndex
-               })
+               });
             });
 
             res.status(200).json({ success: true, body: response });
@@ -143,7 +144,7 @@ module.exports = (db) => {
                   person: personName,
                   cluster: clusterName,
                   dayIndex: i.dayIndex
-               })
+               });
             });
 
             res.status(200).json({ success: true, body: response });

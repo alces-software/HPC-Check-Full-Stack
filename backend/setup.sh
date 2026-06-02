@@ -1,3 +1,3 @@
 #!/bin/sh
 
-node app.js
+npm run start

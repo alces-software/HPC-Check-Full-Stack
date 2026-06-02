@@ -4,14 +4,14 @@
 module.exports = (db) => {
    const router = require('express').Router();
    const {
-      postPeople,
+      addPeople,
       getAllPeople,
       getPeopleById,
       getPeopleByName,
       deletePeople
    } = require('./controller')(db);
 
-   router.post('/people/add', postPeople);
+   router.post('/people/add', addPeople);
    router.get('/people', getAllPeople);
    router.get('/people/id/:id', getPeopleById);
    router.get('/people/name/:name', getPeopleByName);

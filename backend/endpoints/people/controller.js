@@ -9,7 +9,7 @@ module.exports = (db) => {
     * @param {import('express').Response} res
     * @returns {Promise<void>}
     */
-   async function postPeople(req, res) {
+   async function addPeople(req, res) {
       try {
          if (req.body.name) {
             const existingPerson = await db.collection('person').findOne({
@@ -22,7 +22,7 @@ module.exports = (db) => {
 
             db.collection('person').insertOne({
                name: req.body.name
-            })
+            });
          } else {
             return res.status(400).json({ success: false, error: 'Missing name' });
          }
@@ -64,7 +64,7 @@ module.exports = (db) => {
             });
 
             if (!results) {
-               return res.status(404).json({ success: false, error: "Person doesn't exist" })
+               return res.status(404).json({ success: false, error: "Person doesn't exist" });
             }
 
             return res.status(200).json({
@@ -74,6 +74,7 @@ module.exports = (db) => {
                }
             });
          }
+
          res.status(400).json({ success: false, error: 'Missing id' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
@@ -93,7 +94,7 @@ module.exports = (db) => {
             });
 
             if (!results) {
-               return res.status(404).json({ success: false, error: "Person doesn't exist" })
+               return res.status(404).json({ success: false, error: "Person doesn't exist" });
             }
 
             return res.status(200).json({
@@ -103,6 +104,7 @@ module.exports = (db) => {
                }
             });
          }
+         
          res.status(400).json({ success: false, error: 'Missing name' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
@@ -129,7 +131,7 @@ module.exports = (db) => {
 
             db.collection('person').deleteOne({
                _id: new ObjectId(req.body.id)
-            })
+            });
          } else {
             return res.status(400).json({ success: false, error: 'Missing id' });
          }
@@ -141,7 +143,7 @@ module.exports = (db) => {
    };
 
    return {
-      postPeople,
+      addPeople,
       getAllPeople,
       getPeopleById,
       getPeopleByName,

@@ -4,14 +4,14 @@
 module.exports = (db) => {
    const router = require('express').Router();
    const {
-      postHpc,
+      addHpc,
       getAllHpc,
       getHpcById,
       getHpcByName,
       deleteHpc
    } = require('./controller')(db);
 
-   router.post('/hpc/add', postHpc);
+   router.post('/hpc/add', addHpc);
    router.get('/hpc', getAllHpc);
    router.get('/hpc/id/:id', getHpcById);
    router.get('/hpc/name/:name', getHpcByName);

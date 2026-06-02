@@ -9,7 +9,7 @@ module.exports = (db) => {
     * @param {import('express').Response} res
     * @returns {Promise<void>}
     */
-   async function postHpc(req, res) {
+   async function addHpc(req, res) {
       try {
          if (req.body.name) {
             const existingPerson = await db.collection('cluster').findOne({
@@ -22,7 +22,7 @@ module.exports = (db) => {
 
             db.collection('cluster').insertOne({
                name: req.body.name
-            })
+            });
          } else {
             return res.status(400).json({ success: false, error: 'Missing name' });
          }
@@ -64,7 +64,7 @@ module.exports = (db) => {
             });
 
             if (!results) {
-               return res.status(404).json({ success: false, error: "HPC doesn't exist" })
+               return res.status(404).json({ success: false, error: "HPC doesn't exist" });
             }
 
             return res.status(200).json({
@@ -94,7 +94,7 @@ module.exports = (db) => {
             });
 
             if (!results) {
-               return res.status(404).json({ success: false, error: "HPC doesn't exist" })
+               return res.status(404).json({ success: false, error: "HPC doesn't exist" });
             }
 
             return res.status(200).json({
@@ -131,7 +131,7 @@ module.exports = (db) => {
 
             db.collection('cluster').deleteOne({
                _id: new ObjectId(req.body.id)
-            })
+            });
          } else {
             return res.status(400).json({ success: false, error: 'Missing id' });
          }
@@ -143,7 +143,7 @@ module.exports = (db) => {
    };
 
    return {
-      postHpc,
+      addHpc,
       getAllHpc,
       getHpcById,
       getHpcByName,
