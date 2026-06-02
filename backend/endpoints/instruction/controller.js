@@ -15,7 +15,7 @@ module.exports = (db) => {
             const response = [];
 
             const instructions = await db.collection('instruction').find({
-               clusterId: req.params.clusterId
+               clusterId: req.params.id
             }).toArray().then(result => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
