@@ -28,7 +28,7 @@ const { Database } = require('./db/db');
    // app.use('/', hpcRoutes);
 
    // Start new weekly schedule cron job
-   startWeeklySchedule(databaseConnection);
+   await startWeeklySchedule(databaseConnection);
 
    // Makes the app listen to the port
    const PORT = process.env.PORT || 3000;
