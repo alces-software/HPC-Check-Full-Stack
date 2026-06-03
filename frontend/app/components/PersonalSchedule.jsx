@@ -15,7 +15,11 @@ export default function PersonalSchedule() {
             try {
                 const userId = Cookies.get("selectedPersonId");
 
-                if (!userId) return;
+                if (!userId) {
+                    setClusters([]);
+                    setLoading(false);
+                    return;
+                }
 
                 const nameRes = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL}/people/id/${userId}`
@@ -23,7 +27,7 @@ export default function PersonalSchedule() {
 
                 const nameData = await nameRes.json();
 
-                if (nameData) {
+                if (nameData?.body?.name) {
                     setName(nameData.body.name);
                 }
 
@@ -33,13 +37,18 @@ export default function PersonalSchedule() {
 
                 const rotaData = await rotaRes.json();
 
-                if (!rotaData.success) return;
+                if (!rotaData?.success) {
+                    setClusters([]);
+                    setLoading(false);
+                    return;
+                }
 
                 const today = new Date().getDay();
                 const dayIndex = today - 1;
 
                 if (dayIndex < 0 || dayIndex > 4) {
                     setClusters([]);
+                    setLoading(false);
                     return;
                 }
 
@@ -48,6 +57,9 @@ export default function PersonalSchedule() {
                 );
 
                 setClusters(todaysClusters);
+            } catch (err) {
+                console.error(err);
+                setClusters([]);
             } finally {
                 setLoading(false);
             }
@@ -56,16 +68,23 @@ export default function PersonalSchedule() {
         getName();
     }, []);
 
+    if (loading) {
+        return (
+            <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900">
+                <div className="rounded-2xl border border-white/10 bg-white/10 px-8 py-6 text-white shadow-2xl backdrop-blur-xl">
+                    Loading clusters...
+                </div>
+            </main>
+        );
+    }
+
     const handleClusterClick = (cluster) => {
         Cookies.set("currentCluster", cluster)
         router.push("/form")
     };
 
     return (
-        <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
-            {/* Background glow */}
-            <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
-            <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl" />
+        <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
 
             <div className="relative z-10 mx-auto max-w-5xl">
                 <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
@@ -94,20 +113,20 @@ export default function PersonalSchedule() {
                                     key={`${item.cluster}-${index}`}
                                     onClick={() => handleClusterClick(item.cluster)}
                                     className="
-                  group
-                  rounded-2xl
-                  border
-                  border-blue-400/20
-                  bg-blue-500/10
-                  p-6
-                  text-left
-                  transition-all
-                  duration-300
-                  hover:-translate-y-2
-                  hover:border-blue-400/50
-                  hover:bg-blue-500/20
-                  hover:shadow-2xl
-                "
+                                        group
+                                        rounded-2xl
+                                        border
+                                        border-blue-400/20
+                                        bg-blue-500/10
+                                        p-6
+                                        text-left
+                                        transition-all
+                                        duration-300
+                                        hover:-translate-y-2
+                                        hover:border-blue-400/50
+                                        hover:bg-blue-500/20
+                                        hover:shadow-2xl
+                                        "
                                 >
                                     <div className="mb-4 text-4xl">
                                         📂

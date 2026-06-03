@@ -137,19 +137,15 @@ module.exports = (db) => {
                return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
             }
 
-            const existingPerson = await db.collection('cluster').findOne({
+            const existingCluster = await db.collection('cluster').findOneAndDelete({
                _id: new ObjectId(id)
             });
 
-            if (!existingPerson) {
+            if (!existingCluster) {
                return res.status(409).json({
                   success: false, error: 'HPC doesn\'t exists'
                });
             }
-
-            await db.collection('cluster').deleteOne({
-               _id: new ObjectId(id)
-            });
 
             const reports = await db.collection('report').find({
                clusterId: id

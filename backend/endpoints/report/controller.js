@@ -40,6 +40,61 @@ module.exports = (db) => {
     * @param {import('express').Response} res
     * @returns {Promise<void>}
     */
+   async function getTodaysReportByCluster(req, res) {
+      try {
+         const { id } = req.params || {};
+
+         if (id) {
+            const startOfDay = new Date();
+            startOfDay.setHours(0, 0, 0, 0);
+
+            const endOfDay = new Date();
+            endOfDay.setHours(23, 59, 59, 999);
+
+            const report = await db.collection('report').findOne({
+               clusterId: id,
+               startDate: {
+                  $gte: startOfDay.getTime(),
+                  $lte: endOfDay.getTime()
+               }
+            });
+
+            if (!report) {
+               return res.status(404).json({ success: false, error: "There is not report available from today for that cluster" });
+            }
+
+            const results = await db.collection('result').find({
+               reportId: id
+            }).toArray();
+
+            return res.status(200).json({
+               success: true,
+               body: {
+                  id,
+                  clusterId: report.clusterId,
+                  personId: report.personId,
+                  startTime: report.startDate,
+                  endTime: report.endDate,
+                  results: results.map((result) => ({
+                     instructionId: result.instructionId,
+                     passed: result.passed,
+                     note: result.note
+                  }))
+               }
+            });
+         }
+
+         return res.status(400).json({ success: false, error: "Cluster id missing" });
+      } catch (error) {
+         return res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
    async function getReportByPerson(req, res) {
       try {
          const { id } = req.params || {};
@@ -162,8 +217,18 @@ module.exports = (db) => {
                return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
             }
 
+            const startOfDay = new Date();
+            startOfDay.setHours(0, 0, 0, 0);
+
+            const endOfDay = new Date();
+            endOfDay.setHours(23, 59, 59, 999);
+
             const reportExists = await db.collection('report').findOne({
-               clusterId: clusterId
+               clusterId: clusterId,
+               startDate: {
+                  $gte: startOfDay.getTime(),
+                  $lte: endOfDay.getTime()
+               }
             });
 
             if (reportExists) {
@@ -209,7 +274,6 @@ module.exports = (db) => {
 
             const insertData = [];
             results.forEach(r => {
-               console.log(r);
                insertData.push({
                   instructionId: r.instructionId,
                   reportId: reportId,
@@ -243,17 +307,13 @@ module.exports = (db) => {
                return res.status(400).json({ success: false, error: "Invalid report id provided" });
             }
 
-            const reportExists = await db.collection('report').findOne({
+            const reportExists = await db.collection('report').findOneAndDelete({
                _id: new ObjectId(id)
             });
 
             if (!reportExists) {
                return res.status(404).json({ success: false, error: "No report exists with that id" });
             }
-
-            await db.collection('report').deleteOne({
-               _id: new ObjectId(id)
-            });
 
             await db.collection('result').deleteMany({
                reportId: id
@@ -270,6 +330,7 @@ module.exports = (db) => {
 
    return {
       getTodaysReports,
+      getTodaysReportByCluster,
       getReportByPerson,
       getReportByCluster,
       getReportById,

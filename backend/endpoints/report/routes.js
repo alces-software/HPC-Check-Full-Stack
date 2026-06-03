@@ -5,6 +5,7 @@ module.exports = (db) => {
    const router = require('express').Router();
    const {
       getTodaysReports,
+      getTodaysReportByCluster,
       getReportByPerson,
       getReportByCluster,
       getReportById,
@@ -13,6 +14,7 @@ module.exports = (db) => {
    } = require('./controller')(db);
 
    router.get('/report/today', getTodaysReports);
+   router.get('/report/today/cluster/:id', getReportByCluster);
    router.get('/report/person/:id', getReportByPerson);
    router.get('/report/cluster/:id', getReportByCluster);
    router.get('/report/id/:id', getReportById);
