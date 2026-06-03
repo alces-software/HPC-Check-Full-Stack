@@ -11,14 +11,14 @@ const { Database } = require('./db/db');
    app.use(express.json());
 
    // Connect to database
-   const databaseObject = await new Database(
+   const databaseObject = new Database(
       process.env.MONGO_URI,
       process.env.MONGO_DATABASE
    );
 
    let databaseConnection = await databaseObject.connect();
-   if (!await databaseObject.validate()){
-      databaseObject.generateDb();
+   if (!await databaseObject.validate()) {
+      await databaseObject.generateDb();
    }
 
    console.log("Connected to database");
@@ -46,7 +46,6 @@ const { Database } = require('./db/db');
    // Register method routes
    const methodRoutes = require('./endpoints/method/route')(databaseConnection);
    app.use('/', methodRoutes);
-
 
    // Start new weekly schedule cron job
    startWeeklySchedule(databaseConnection);
