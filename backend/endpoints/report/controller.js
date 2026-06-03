@@ -284,7 +284,7 @@ module.exports = (db) => {
 
             await db.collection('result').insertMany(insertData);
 
-            return res.status(200).json({ success: true });
+            return res.status(200).json({ success: true, body: { reportId: reportId } });
          }
 
          return res.status(400).json({ success: false, error: "Invalid data is being passed in" });
