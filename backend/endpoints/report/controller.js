@@ -65,7 +65,9 @@ module.exports = (db) => {
             body: {
                id,
                cluster: cluster.name,
+               clusterId: cluster._id,
                person: person.name,
+               personId: person._id,
                startTime: report.startDate,
                endTime: report.endDate,
                results: resultObjects
