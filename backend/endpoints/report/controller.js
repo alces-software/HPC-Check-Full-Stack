@@ -108,7 +108,7 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
-         if (!id) {
+         if (id) {
             if (!ObjectId.isValid(id)) {
                return res.status(400).json({ success: false, error: 'Invalid report id' });
             }
