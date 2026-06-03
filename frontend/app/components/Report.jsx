@@ -114,7 +114,7 @@ export default function Report() {
                <div className="mb-8">
                   <h1 className="text-4xl font-bold text-white">HPC Test Results</h1>
                   <p className="mt-2 text-slate-300">
-                     Results for {formatDate(new Date(report.startTime))} on {report.clusterId}
+                     Results for {formatDate(new Date(report.startTime))} on {report.cluster}
                   </p>
                </div>
 
@@ -171,16 +171,16 @@ export default function Report() {
 
                <div className="mt-4 flex flex-col items-end text-md">
                   <div className="text-slate-400">
-                     Tester: <span className="text-slate-200">{report.personId}</span>
+                     Tester: <span className="text-slate-200">{report.person}</span>
                   </div>
 
                   <div className="text-slate-400">
-                     Cluster: <span className="text-slate-200">{report.clusterId}</span>
+                     Cluster: <span className="text-slate-200">{report.cluster}</span>
                   </div>
 
-                  {/* <div className="text-slate-400">
-                     Duration: <span className="text-slate-200">{duration}</span>
-                  </div> */}
+                  <div className="text-slate-400">
+                     Duration: <span className="text-slate-200">{report.duration}</span>
+                  </div>
                </div>
             </div>
          </div>
