@@ -162,8 +162,18 @@ module.exports = (db) => {
                return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
             }
 
+            const startOfDay = new Date();
+            startOfDay.setHours(0, 0, 0, 0);
+
+            const endOfDay = new Date();
+            endOfDay.setHours(23, 59, 59, 999);
+
             const reportExists = await db.collection('report').findOne({
-               clusterId: clusterId
+               clusterId: clusterId,
+               startDate: {
+                  $gte: startOfDay.getTime(),
+                  $lte: endOfDay.getTime()
+               }
             });
 
             if (reportExists) {
