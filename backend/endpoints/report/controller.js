@@ -17,7 +17,7 @@ module.exports = (db) => {
          const endOfDay = new Date();
          endOfDay.setHours(23, 59, 59, 999);
 
-         const response = await collection.find({
+         const response = await db.collection('report').find({
             startDate: {
                $gte: startOfDay.getTime(),
                $lte: endOfDay.getTime()
@@ -30,6 +30,54 @@ module.exports = (db) => {
          });
 
          return res.status(200).json({ success: true, body: response });
+      } catch (error) {
+         return res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
+   async function getReportByPerson(req, res) {
+      try {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid person id provided" });
+            }
+
+            await db.collection('report').find({
+               personId: id
+            }).toArray();
+         }
+
+         return res.status(400).json({ success: false, error: "Missing person id" });
+      } catch (error) {
+         return res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
+   async function getReportByCluster(req, res) {
+      try {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            }
+
+
+         }
+
+         return res.status(400).json({ success: false, error: "Missing cluster id" });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
@@ -200,6 +248,8 @@ module.exports = (db) => {
 
    return {
       getTodaysReports,
+      getReportByPerson,
+      getReportByCluster,
       getReportById,
       addReport,
       deleteReport
