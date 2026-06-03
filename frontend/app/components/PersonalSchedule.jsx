@@ -155,7 +155,7 @@ export default function PersonalSchedule() {
                             </h2>
 
                             <p className="mt-2 text-slate-300">
-                                You don't have any clusters assigned for today.
+                                You don&apos;t have any clusters assigned for today.
                             </p>
                         </div>
                     )}

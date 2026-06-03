@@ -7,13 +7,15 @@ module.exports = (db) => {
       getAllRota,
       getRotaByDay,
       getRotaByCluster,
-      getRotaByPerson
+      getRotaByPerson,
+      generateNewRota
    } = require('./controller')(db);
 
    router.get('/rota', getAllRota);
    router.get('/rota/day/:day', getRotaByDay);
    router.get('/rota/cluster/:id', getRotaByCluster);
    router.get('/rota/person/:id', getRotaByPerson);
+   router.get('/rota/new', generateNewRota);
 
    return router;
 }

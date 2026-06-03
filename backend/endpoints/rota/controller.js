@@ -1,5 +1,6 @@
 const { ObjectId } = require('mongodb');
 const { dayFromIndex, indexFromDay, isValidDay } = require('../../enums/days');
+const { generateSchedule } = require('../../services/cron/methods/schedule')
 
 /**
  * @param {import('mongodb').Db} db
@@ -170,10 +171,16 @@ module.exports = (db) => {
       }
    }
 
+   async function generateNewRota(req, res) {
+      generateSchedule(db)
+      return res.status(200).json({ success: true})
+   }
+
    return {
       getAllRota,
       getRotaByDay,
       getRotaByCluster,
-      getRotaByPerson
+      getRotaByPerson,
+      generateNewRota
    };
 }

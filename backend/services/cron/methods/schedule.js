@@ -55,3 +55,7 @@ module.exports.generateSchedule = async (db) => {
         await db.collection('schedule').insertMany(scheduleEntries)
     }
 }
+
+module.exports.scheduleExists = async (db) => {
+    return await db.collection('schedule').count() > 0
+}
