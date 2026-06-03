@@ -57,7 +57,6 @@ module.exports.Database = class {
    }
 
    async exportDb() {
-
       const collections = await this.db.listCollections().toArray();
 
       const exportData = collections.map(collection => ({
@@ -75,7 +74,7 @@ module.exports.Database = class {
 
    async generateDb() {
       const schema = JSON.parse(
-         fs.readFileSync('mongodb-schema.json', 'utf8')
+         fs.readFileSync('db/mongodb-schema.json', 'utf8')
       );
 
       const db = await this.connect();
