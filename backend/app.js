@@ -11,10 +11,16 @@ const { Database } = require('./db/db');
    app.use(express.json());
 
    // Connect to database
-   const databaseConnection = await new Database(
+   const databaseObject = await new Database(
       process.env.MONGO_URI,
       process.env.MONGO_DATABASE
-   ).connect();
+   );
+
+   let databaseConnection = await databaseObject.connect();
+   if (!await databaseObject.validate()){
+      databaseObject.generateDb();
+   }
+
    console.log("Connected to database");
 
    // Register rota routes
