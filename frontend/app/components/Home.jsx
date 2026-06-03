@@ -1,9 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Home() {
-  const router = useRouter();
 
   return (
     <main className="min-h-screen bg-slate-100 p-8">
@@ -13,8 +12,7 @@ export default function Home() {
         </h1>
 
         <div className="flex flex-col gap-4 sm:flex-row">
-          <button
-            onClick={() => router.push("/schedule")}
+          <Link href='/schedule'
             className="
               flex-1
               rounded-xl
@@ -26,6 +24,7 @@ export default function Home() {
               text-lg
               font-semibold
               text-white
+              text-center
               shadow-md
               transition-all
               duration-200
@@ -34,10 +33,9 @@ export default function Home() {
             "
           >
             View Schedule
-          </button>
+          </Link>
 
-          <button
-            onClick={() => router.push("/name")}
+          <Link href='/name'
             className="
               flex-1
               rounded-xl
@@ -49,6 +47,7 @@ export default function Home() {
               text-lg
               font-semibold
               text-white
+              text-center
               shadow-md
               transition-all
               duration-200
@@ -57,7 +56,7 @@ export default function Home() {
             "
           >
             Fill Out Report
-          </button>
+          </Link>
         </div>
       </div>
     </main>

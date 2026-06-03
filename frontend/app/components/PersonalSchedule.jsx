@@ -31,6 +31,13 @@ export default function PersonalSchedule() {
 
             if (!rotaData.success) return;
 
+            const reportRes = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/report/today`
+            );
+
+            const reportData = await reportRes.json();
+            console.log(reportData)
+
             const today = new Date().getDay();
 
             const dayIndex = today - 1;
@@ -40,9 +47,14 @@ export default function PersonalSchedule() {
                 return;
             }
 
+            // Get cluster ids for the clusters
+
+            // log if a report exists with both the cluster id and person ID
+
             const todaysClusters = rotaData.body.filter(
                 (item) => item.dayIndex === dayIndex
             );
+
 
             setClusters(todaysClusters);
         }

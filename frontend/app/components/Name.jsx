@@ -19,12 +19,12 @@ export default function Name() {
 
     useEffect(() => {
         async function getName() {
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/people`
-        );
-        const data = await res.json();
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/people`
+            );
+            const data = await res.json();
 
-        setPeople(data.body);
+            setPeople(data.body);
         }
 
         getName();
