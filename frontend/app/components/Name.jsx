@@ -19,12 +19,12 @@ export default function Name() {
 
     useEffect(() => {
         async function getName() {
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/people`
-        );
-        const data = await res.json();
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/people`
+            );
+            const data = await res.json();
 
-        setPeople(data.body);
+            setPeople(data.body);
         }
 
         getName();
@@ -45,49 +45,59 @@ export default function Name() {
     };
 
     return (
-        <main className="min-h-screen bg-slate-100 p-8">
-        <div className="mx-auto max-w-4xl rounded-xl bg-white p-6 shadow">
-            <h1 className="mb-6 text-2xl font-bold text-black">
-                Who are you?
-            </h1>
+        <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
+            <div className="w-full max-w-md">
+                <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
+                    <div className="mb-8 text-center">
+                        <h1 className="text-4xl font-bold text-white">
+                            Welcome 👋
+                        </h1>
+                        <p className="mt-2 text-slate-300">
+                            Select your name to continue
+                        </p>
+                    </div>
 
-            <form
-            onSubmit={handleSubmit}
-            className="rounded-lg border border-slate-500 bg-gray-300 p-6"
-            >
-            <div className="mb-6">
-                <label
-                htmlFor="person"
-                className="mb-2 block font-semibold text-black"
-                >
-                Person
-                </label>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div>
+                            <label
+                                htmlFor="person"
+                                className="mb-2 block text-sm font-medium text-slate-200"
+                            >
+                                Person
+                            </label>
 
-                <select
-                id="person"
-                value={selectedId}
-                onChange={(e) => setSelectedId(e.target.value)}
-                className="w-full rounded border border-slate-400 bg-white px-3 py-2 text-black"
-                >
-                <option value="">Select a person...</option>
+                            <select
+                                id="person"
+                                value={selectedId}
+                                onChange={(e) => setSelectedId(e.target.value)}
+                                className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                            >
+                                <option value="" className="text-slate-500">
+                                    Select a person...
+                                </option>
 
-                {people.map((person) => (
-                    <option key={person.id} value={person.id}>
-                    {person.name}
-                    </option>
-                ))}
-                </select>
+                                {people.map((person) => (
+                                    <option
+                                        key={person.id}
+                                        value={person.id}
+                                        className="bg-slate-800"
+                                    >
+                                        {person.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={!selectedId}
+                            className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02] hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Continue →
+                        </button>
+                    </form>
+                </div>
             </div>
-
-            <button
-                type="submit"
-                disabled={!selectedId}
-                className="rounded bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-400"
-            >
-                Submit
-            </button>
-            </form>
-        </div>
         </main>
     );
 }
