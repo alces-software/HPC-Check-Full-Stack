@@ -219,7 +219,6 @@ module.exports = (db) => {
 
             const insertData = [];
             results.forEach(r => {
-               console.log(r);
                insertData.push({
                   instructionId: r.instructionId,
                   reportId: reportId,
