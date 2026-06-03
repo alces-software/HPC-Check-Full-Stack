@@ -1,11 +1,11 @@
-import Wizard from "./components/Wizard"
-import Name from "./components/Name"
+
+import HomePage from "./components/Home"
 
 export default function Home() {
 
   return (
     <main>
-      <Name />
+      <HomePage />
     </main>
   )
 

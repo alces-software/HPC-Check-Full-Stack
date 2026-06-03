@@ -244,6 +244,7 @@ useEffect(() => {
 }
 
 
+
   return (
     <section className="min-h-screen bg-slate-100 px-6 py-8">
       <div className="mx-auto max-w-5xl">
@@ -252,7 +253,7 @@ useEffect(() => {
             Process Documentation Form
           </h1>
           
-          {mounted && (<h2> {name}'s Check for {cookieCluster}</h2>)}
+          {mounted && (<h2 className="mb-8 text-3xl font-bold text-slate-900"> {name}'s Check for {cookieCluster}</h2>)}
 
           {nameID && clusterId && (
 
