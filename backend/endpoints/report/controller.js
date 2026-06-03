@@ -49,9 +49,16 @@ module.exports = (db) => {
                return res.status(400).json({ success: false, error: "Invalid person id provided" });
             }
 
-            await db.collection('report').find({
+            const response = await db.collection('report').find({
                personId: id
-            }).toArray();
+            }).toArray().then(result => {
+               return result.map(({ _id, ...rest }) => ({
+                  ...rest,
+                  id: _id.toString()
+               }));
+            });
+
+            return res.status(200).json({ success: true, body: response });
          }
 
          return res.status(400).json({ success: false, error: "Missing person id" });
@@ -74,7 +81,16 @@ module.exports = (db) => {
                return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
             }
 
+            const response = await db.collection('report').find({
+               clusterId: id
+            }).toArray().then(result => {
+               return result.map(({ _id, ...rest }) => ({
+                  ...rest,
+                  id: _id.toString()
+               }));
+            });
 
+            return res.status(200).json({ success: true, body: response });
          }
 
          return res.status(400).json({ success: false, error: "Missing cluster id" });
