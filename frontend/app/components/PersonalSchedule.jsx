@@ -6,36 +6,45 @@ import Cookies from "js-cookie";
 
 export default function PersonalSchedule() {
     const [clusters, setClusters] = useState([]);
+    const [name, setName] = useState("User");
     const router = useRouter();
 
     useEffect(() => {
         async function getName() {
-        const userId = Cookies.get("selectedPersonId");
+            const userId = Cookies.get("selectedPersonId");
 
-        if (!userId) return;
+            if (!userId) return;
+            const nameRes = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/people/id/${userId}`
+            );
 
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/rota/person/${userId}`
-        );
+            const nameData = await nameRes.json();
+            if (nameData) {
+                setName(nameData.body.name);
+            }
 
-        const data = await res.json();
+            const rotaRes = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/rota/person/${userId}`
+            );
 
-        if (!data.success) return;
+            const rotaData = await rotaRes.json();
 
-        const today = new Date().getDay();
+            if (!rotaData.success) return;
 
-        const dayIndex = today - 1;
+            const today = new Date().getDay();
 
-        if (dayIndex < 0 || dayIndex > 4) {
-            setClusters([]);
-            return;
-        }
+            const dayIndex = today - 1;
 
-        const todaysClusters = data.body.filter(
-            (item) => item.dayIndex === dayIndex
-        );
+            if (dayIndex < 0 || dayIndex > 4) {
+                setClusters([]);
+                return;
+            }
 
-        setClusters(todaysClusters);
+            const todaysClusters = rotaData.body.filter(
+                (item) => item.dayIndex === dayIndex
+            );
+
+            setClusters(todaysClusters);
         }
 
         getName();
@@ -50,7 +59,7 @@ export default function PersonalSchedule() {
     <main className="min-h-screen bg-slate-100 p-8">
         <div className="mx-auto max-w-4xl rounded-xl bg-white p-6 shadow">
         <h1 className="mb-6 text-2xl font-bold text-black">
-            Today&apos;s Clusters
+            {name}&apos;s Clusters
         </h1>
 
         <div className="flex flex-wrap gap-4">
