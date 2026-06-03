@@ -1,8 +1,5 @@
-This is an API built using express.js in node.js. It serves as the backend for a web application, providing endpoints for various functionalities.
-
 # Table of Contents
 - [Table of Contents](#table-of-contents)
-- [Getting Started](#getting-started)
 - [API Endpoints](#api-endpoints)
   - [HPC endpoints:](#hpc-endpoints)
     - [`GET /hpc`:](#get-hpc)
@@ -26,6 +23,7 @@ This is an API built using express.js in node.js. It serves as the backend for a
     - [`DELETE /people/delete`:](#delete-peopledelete)
   - [Report endpoints:](#report-endpoints)
     - [`GET /report/today`:](#get-reporttoday)
+    - [`GET /report/today/cluster/:id`:](#get-reporttodayclusterid)
     - [`GET /report/person/:id`:](#get-reportpersonid)
     - [`GET /report/cluster/:id`:](#get-reportclusterid)
     - [`GET /report/id/:id`:](#get-reportidid)
@@ -36,16 +34,6 @@ This is an API built using express.js in node.js. It serves as the backend for a
     - [`GET /rota/day/:day`:](#get-rotadayday)
     - [`GET /rota/cluster/:id`:](#get-rotaclusterid)
     - [`GET /rota/person/:id`:](#get-rotapersonid)
-
-# Getting Started
-To get started with this API, follow these steps:
-```sh
-   # Install dependencies
-   npm i 
-
-   # Start the server
-   npm run start
-```
 
 # API Endpoints
 These are all the endpoints available in the API broken down by category. Each endpoint includes a brief description of its functionality and the expected input/output.
@@ -121,6 +109,9 @@ This endpoint allows users to delete a person from the database along with their
 ## Report endpoints:
 ### `GET /report/today`:
 This endpoint retrieves all of the reports from the current day.
+
+### `GET /report/today/cluster/:id`:
+This endpoint retrieves all of the reports from the current day for a specific cluster.
 
 ### `GET /report/person/:id`:
 This endpoint retrieves all of the reports associated with a specific person based on their ID.
