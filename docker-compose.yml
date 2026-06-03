@@ -10,6 +10,7 @@ services:
       - ./frontend:/srv/app
       - /srv/app/.next/
     tty: true
+
   backend:
     image: node:20
     container_name: backend
@@ -20,3 +21,14 @@ services:
     volumes:
       - ./backend:/srv/app
     tty: true
+
+  database:
+    image: mongo:6-jammy
+    container_name: database
+    ports:
+      - 27017:27017
+    volumes:
+      - dbdata6:/data/db
+
+volumes:
+  dbdata6:
