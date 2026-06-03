@@ -10,10 +10,10 @@ module.exports = (db) => {
       getInstructionsOnlyById
    } = require('./controller')(db);
 
-   router.get('/instructions/all/:id', getAllInstructionsData);
-   router.get('/instructions/:id', getAllInstructionsOnly);
-   router.get('/instructions/specific/all/:id', getInstructionsAllById);
-   router.get('/instructions/specific/:id', getInstructionsOnlyById);
+   router.get('/instruction/all/:id', getAllInstructionsData);
+   router.get('/instruction/:id', getAllInstructionsOnly);
+   router.get('/instruction/specific/all/:id', getInstructionsAllById);
+   router.get('/instruction/specific/:id', getInstructionsOnlyById);
 
    return router;
 }
