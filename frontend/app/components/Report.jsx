@@ -51,6 +51,28 @@ export default function Report() {
                })
             );
 
+            await fetch(`http://localhost:3001/people/id/${data.personId}`)
+               .then(res => res.json())
+               .then(res => data.person = res.body.name);
+
+            await fetch(`http://localhost:3001/hpc/id/${data.clusterId}`)
+               .then(res => res.json())
+               .then(res => {
+                  data.cluster = res.body.name
+               });
+
+            const start = new Date(data.startTime);
+            const end = new Date(data.endTime);
+
+            const diffMs = end.getTime() - start.getTime();
+
+            const diffDate = new Date(diffMs);
+
+            const hours = diffDate.getUTCHours();
+            const minutes = diffDate.getUTCMinutes();
+
+            data.duration = `${hours}h ${minutes}m`;
+
             setReport({
                ...data,
                results: resultsWithTitles,

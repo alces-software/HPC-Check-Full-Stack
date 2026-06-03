@@ -136,7 +136,7 @@ export default function Wizard() {
       Cookies.remove("currentCluster");
 
       alert("Report submitted successfully.");
-      router.push("/");
+      router.push(`/report?id=${data.body.reportId}`);
     } catch (err) {
       console.error(err);
     } finally {
