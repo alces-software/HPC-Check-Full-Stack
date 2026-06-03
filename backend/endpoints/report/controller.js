@@ -121,22 +121,6 @@ module.exports = (db) => {
                return res.status(404).json({ success: false, error: "Report doesn't exist" });
             }
 
-            const cluster = await db.collection('cluster').findOne({
-               _id: new ObjectId(report.clusterId)
-            });
-
-            if (!cluster) {
-               return res.status(404).json({ success: false, error: 'Cluster referenced by report not found' });
-            }
-
-            const person = await db.collection('person').findOne({
-               _id: new ObjectId(report.personId)
-            });
-
-            if (!person) {
-               return res.status(404).json({ success: false, error: 'Person referenced by report not found' });
-            }
-
             const results = await db.collection('result').find({
                reportId: id
             }).toArray();
@@ -145,10 +129,8 @@ module.exports = (db) => {
                success: true,
                body: {
                   id,
-                  cluster: cluster.name,
-                  clusterId: cluster._id,
-                  person: person.name,
-                  personId: person._id,
+                  clusterId: report.clusterId,
+                  personId: report.personId,
                   startTime: report.startDate,
                   endTime: report.endDate,
                   results: results.map((result) => ({
@@ -173,15 +155,31 @@ module.exports = (db) => {
     */
    async function addReport(req, res) {
       try {
-         const { cluster, clusterId, person, personId, startTime, endTime, results } = req.body || {};
+         const { clusterId, personId, startTime, endTime, results } = req.body || {};
 
-         if (cluster && clusterId && person && personId && startTime && endTime && results) {
+         if (clusterId && personId && startTime && endTime && results) {
             if (!ObjectId.isValid(clusterId)) {
                return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
             }
 
+            const clusterExists = await db.collection('cluster').findOne({
+               _id: new ObjectId(clusterId)
+            });
+
+            if (!clusterExists) {
+               return res.status(404).json({ success: false, error: "The cluster specified does not exits" });
+            }
+
             if (!ObjectId.isValid(personId)) {
                return res.status(400).json({ success: false, error: "Invalid person id provided" });
+            }
+
+            const personExists = await db.collection('person').findOne({
+               _id: new ObjectId(personId)
+            });
+
+            if (!personExists) {
+               return res.status(404).json({ success: false, error: "The person specified does not exits" });
             }
 
             if (!Array.isArray(results)) {

@@ -22,7 +22,7 @@ module.exports = (db) => {
                return res.status(409).json({ success: false, error: 'Person already exits' });
             }
 
-            db.collection('person').insertOne({
+            await db.collection('person').insertOne({
                name: name
             });
 
@@ -147,7 +147,15 @@ module.exports = (db) => {
                });
             }
 
-            db.collection('person').deleteOne({
+            const hasReports = await db.collection('report').find({
+               personId: id
+            }).toArray();
+
+            if (hasReports.length > 0) {
+               return res.status(409).json({ success: false, error: "This person has reports" });
+            }
+
+            await db.collection('person').deleteOne({
                _id: new ObjectId(id)
             });
 

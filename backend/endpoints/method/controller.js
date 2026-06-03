@@ -18,7 +18,7 @@ module.exports = (db) => {
                return res.status(400).json({ success: false, error: "Invalid instruction id provided" });
             }
 
-            const instructionExists = await db.collection('instruction').find({
+            const instructionExists = await db.collection('instruction').findOne({
                _id: new ObjectId(id)
             });
 

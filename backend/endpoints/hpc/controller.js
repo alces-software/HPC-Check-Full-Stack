@@ -22,7 +22,7 @@ module.exports = (db) => {
                return res.status(409).json({ success: false, error: 'HPC already exits' });
             }
 
-            db.collection('cluster').insertOne({
+            await db.collection('cluster').insertOne({
                name: name
             });
 
@@ -147,9 +147,30 @@ module.exports = (db) => {
                });
             }
 
-            db.collection('cluster').deleteOne({
+            await db.collection('cluster').deleteOne({
                _id: new ObjectId(id)
             });
+
+            const reports = await db.collection('report').find({
+               clusterId: id
+            }).toArray().then(result => {
+               return result.map(({ _id, ...rest }) => ({
+                  ...rest,
+                  id: _id.toString()
+               }));
+            });
+
+            const reportIds = reports.map(report => {
+               id: report.id
+            });
+
+            reports.forEach(async report => {
+               await db.collection('result').deleteMany({
+                  reportId: report.id
+               });
+            });
+
+            await db.collection('report').deleteMany(reportIds);
 
             return res.status(200).json({ success: true });
          }
