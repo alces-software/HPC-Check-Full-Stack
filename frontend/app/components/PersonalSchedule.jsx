@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 export default function PersonalSchedule() {
     const [clusters, setClusters] = useState([]);
+    const router = useRouter();
 
     useEffect(() => {
         async function getName() {
@@ -40,7 +42,8 @@ export default function PersonalSchedule() {
     }, []);
 
     const handleClusterClick = (cluster) => {
-    console.log(cluster);
+        Cookies.set("currentCluster", cluster)
+        router.push("/")
     };
 
     return (
