@@ -143,7 +143,7 @@ module.exports = (db) => {
             }
 
             const results = await db.collection('schedule').find({
-               personId: new ObjectId(id)
+               personId: id
             }).toArray();
             const people = await db.collection('person').find({}).toArray();
             const clusters = await db.collection('cluster').find({}).toArray();
