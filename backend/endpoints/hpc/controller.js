@@ -25,11 +25,11 @@ module.exports = (db) => {
             db.collection('cluster').insertOne({
                name: name
             });
-         } else {
-            return res.status(400).json({ success: false, error: 'Missing hpc name' });
+
+            return res.status(200).json({ success: true });
          }
 
-         res.status(200).json({ success: true });
+         return res.status(400).json({ success: false, error: 'Missing hpc name' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
       }
@@ -150,11 +150,11 @@ module.exports = (db) => {
             db.collection('cluster').deleteOne({
                _id: new ObjectId(id)
             });
-         } else {
-            return res.status(400).json({ success: false, error: 'Missing hpc id' });
+
+            return res.status(200).json({ success: true });
          }
 
-         res.status(200).json({ success: true });
+         return res.status(400).json({ success: false, error: 'Missing hpc id' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
       }

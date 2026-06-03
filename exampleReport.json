@@ -1,0 +1,25 @@
+{
+   "cluster": "cognition",
+   "clusterId": "6a1e96577c71f73d2ee08280",
+   "person": "Alex",
+   "personId": "6a1ea2367c71f73d2ee082a6",
+   "startTime": 1780390064000,
+   "endTime": 1780390310000,
+   "results": [
+      {
+         "instructionId": "6a1e96767c71f73d2ee08282",
+         "passed": true,
+         "note": "I am here"
+      },
+      {
+         "instructionId": "6a1ed9227c71f73d2ee082cb",
+         "passed": true,
+         "note": "Everything worked as expected"
+      },
+      {
+         "instructionId": "6a1eda4f7c71f73d2ee082da",
+         "passed": false,
+         "note": "Some nodes not visible"
+      }
+   ]
+}
