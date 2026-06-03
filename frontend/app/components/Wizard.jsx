@@ -2,57 +2,10 @@
 
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
-// const steps = [
-//   {
-//     id: 1,
-//     title: "Step 1",
-//     description: "Verify quota system works AND test real user filesystem experience.",
-//     methods: [
-//       { type: "text", content: "Run: quota -s" },
-//       { type: "text", content: "Run: df -h ~" },
-//       {
-//         type: "code",
-//         content:
-//           "time dd if=/dev/zero of=~/fs-test-file bs=1M count=5000 conv=fdatasync && rm -f ~/fs-test-file\n\n" +
-//           "time (mkdir -p ~/fs-test-meta && for i in {1..1000}; do touch ~/fs-test-meta/file$i; done && rm -rf ~/fs-test-meta)",
-//       },
-//       {
-//         type: "text",
-//         content: "Check filesystem performance is acceptable and quota updates correctly.",
-//       },
-//     ],
-//   },
-//   {
-//     id: 2,
-//     title: "Step 2",
-//     description: "Description of Step 2 of the process.",
-//     methods: [
-//       { type: "text", content: "Alternative Method A" },
-//       { type: "text", content: "Alternative Method B" },
-//     ],
-//   },
-//   {
-//     id: 3,
-//     title: "Step 3",
-//     description: "Description of Step 3 of the process.",
-//     methods: [
-//       { type: "text", content: "Alternative Method A" },
-//       { type: "text", content: "Alternative Method B" },
-//     ],
-//   },
-//   {
-//     id: 4,
-//     title: "Step 4",
-//     description: "Description of Step 4 of the process.",
-//     methods: [
-//       { type: "text", content: "Alternative Method A" },
-//       { type: "text", content: "Alternative Method B" },
-//     ],
-//   },
-// ];
 
-// const names = ["Oscar", "Calum", "Alex"]
 
 
 
@@ -64,19 +17,22 @@ export default function Wizard() {
   const [steps, setSteps] = useState([])
   const [allNames, setAllNames] = useState([])
   const [startTime, setStartTime] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [nameID, setNameID] = useState("");
+const [cookieCluster, setCookieCluster] = useState("");
+const [mounted, setMounted] = useState(false);
 
-  
-  
-  useEffect(() => {
-    if (selectedName && selectedCluster && !startTime) {
-      setStartTime(Date.now());
-    }
-  }, [selectedName, selectedCluster, startTime]);
+useEffect(() => {
+  setMounted(true);
+  setNameID(Cookies.get("selectedPersonId") || "");
+  setCookieCluster(Cookies.get("currentCluster") || "");
+}, []);
 
 
+  const router = useRouter();
 
 
-
+// GETS ALL NAMES
  useEffect(() => {
 
     async function getNames() {
@@ -102,17 +58,21 @@ export default function Wizard() {
 
 
 
- const names = allNames.map((person) => person.name);
-
- const nameID = allNames.find(
-  (person) => person.name === selectedName
-)?.id;
+//  const names = allNames.map((person) => person.name);
 
 
 
+// const nameID = Cookies.get("selectedPersonId")
+
+ const name = allNames.find(
+  (person) => person.id === nameID
+)?.name;
 
 
 
+
+
+// GETS ALL HPC CLUSTER DATA
 useEffect(() => {
 
     async function getAllClusters() {
@@ -149,14 +109,22 @@ useEffect(() => {
   }, [allClusters]);
 
 
-const clusters = allClusters.map((cluster) => cluster.name);
+// const clusters = allClusters.map((cluster) => cluster.name);
 
 const clusterId = allClusters.find(
-  (cluster) => cluster.name === selectedCluster
+  (cluster) => cluster.name === cookieCluster
 )?.id;
 
+useEffect(() => {
+  setStartTime(Date.now());
+}, []);
 
 
+
+
+
+
+// GETS STEPS AND METTHODS BASED ON CLUSTER ID
 useEffect(() => {
     if (!clusterId) return;
     async function getSteps() {
@@ -193,24 +161,12 @@ useEffect(() => {
 
 
 
-  // function handleSubmit(event) {
-  //   event.preventDefault();
 
-  //   const formData = new FormData(event.currentTarget);
-  //   const data = Object.fromEntries(formData.entries());
-
-  //   console.log({
-  //     ...data,
-  //     completedSteps,
-  //   });
-  // }
-
-
-
-
-
+// AUBMITS FORM TO BACKEND
   async function handleSubmit(event) {
   event.preventDefault();
+
+  setSubmitting(true);
 
   const formData = new FormData(event.currentTarget);
 
@@ -231,9 +187,9 @@ useEffect(() => {
 }
 
   const payload = {
-    cluster: selectedCluster,
+    // cluster: selectedCluster,
     clusterId: clusterId,
-    person: selectedName,
+    // person: selectedName,
     personId: nameID,
     startTime: startTime,
     endTime: Date.now(),
@@ -268,18 +224,24 @@ useEffect(() => {
     if (!res.ok) {
       throw new Error(responseData.message || "Failed to submit results");
     }
+    else {
+      setSubmitting(false)
+      Cookies.remove("selectedPersonId");
+      Cookies.remove("currentCluster");
+      alert("Report submitted successfully.")
+      router.push('/')
+    }
 
     console.log("Submitted successfully:", responseData);
   } catch (error) {
     console.error("Submit error:", error);
   }
+
+  finally {
+    
+    setSubmitting(false)
+  }
 }
-
-
-
-
-
-
 
 
   return (
@@ -289,58 +251,10 @@ useEffect(() => {
           <h1 className="mb-8 text-3xl font-bold text-slate-900">
             Process Documentation Form
           </h1>
+          
+          {mounted && (<h2> {name}'s Check for {cookieCluster}</h2>)}
 
-          <div className="mb-6">
-            <label htmlFor="userName" className="mb-2 block text-sm font-medium text-slate-700">
-              Select Name
-            </label>
-
-            <select
-              id="userName"
-              name="userName"
-              value={selectedName}
-              onChange={(e) => setSelectedName(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-4 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option className="text-slate-700" value="">-- Select Name --</option>
-              {/* <option value="Oscar">Oscar</option>
-              <option value="Calum">Calum</option>
-              <option value="Alex">Alex</option> */}
-              {names.map((name) => {
-                return <option key={name} value={name}>{name}</option>
-
-              })};
-            </select>
-          </div>
-
-          <div className="mb-8">
-            <label htmlFor="cluster" className="mb-2 block text-sm font-medium text-slate-700">
-              Select Cluster
-            </label>
-
-            <select
-              id="cluster"
-              value={selectedCluster}
-              onChange={(e) => setSelectedCluster(e.target.value)}
-
-              name="cluster"
-              className="w-full rounded-lg border border-slate-300 px-4 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option className="text-slate-700" value="">-- Select Cluster --</option>
-
-              {clusters.map((cluster) => {
-                return <option className="text-slate-700" key={cluster} value={cluster}>{cluster}</option>
-              })}
-
-              {console.log(clusterId)}
-
-              {console.log(steps)}
-       
-            </select>
-          </div>
-
-
-          {selectedName && selectedCluster && (
+          {nameID && clusterId && (
 
           <div className="space-y-6">
             {steps.map((step) => {
@@ -456,12 +370,29 @@ useEffect(() => {
             })}
           </div> )}
 
-          <button
+          {/* <button
             type="submit"
             className="mt-8 rounded-lg cursor-pointer bg-blue-600 px-8 py-3 font-medium text-white transition hover:bg-blue-700"
           >
             Submit
-          </button>
+          </button> */}
+
+           <button
+          type="submit"
+          disabled={submitting}
+          className={`mt-8 min-w-[140px] h-12 rounded-lg px-8 text-white font-medium transition flex items-center justify-center gap-2 ${nameID && cookieCluster ? "bg-blue-600 hover:bg-blue-700 cursor-pointer" : "bg-gray-400 cursor-not-allowed"}`}>
+            
+            {submitting ? (
+              <>
+              <span>Submitting</span>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              </>
+              ) : (
+                "Submit"
+                )}
+                </button>
+
+        
         </form>
       </div>
     </section>

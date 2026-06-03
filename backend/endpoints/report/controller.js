@@ -162,6 +162,14 @@ module.exports = (db) => {
                return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
             }
 
+            const reportExists = await db.collection('report').findOne({
+               clusterId: clusterId
+            });
+
+            if (reportExists) {
+               return res.status(409).json({ success: false, error: "A report already exists for this cluster" });
+            }
+
             const clusterExists = await db.collection('cluster').findOne({
                _id: new ObjectId(clusterId)
             });

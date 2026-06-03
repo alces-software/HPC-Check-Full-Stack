@@ -64,7 +64,7 @@ export default function PersonalSchedule() {
 
     const handleClusterClick = (cluster) => {
         Cookies.set("currentCluster", cluster)
-        router.push("/")
+        router.push("/form")
     };
 
     return (

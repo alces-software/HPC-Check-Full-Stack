@@ -3,12 +3,10 @@ module.exports.generateSchedule = async (db) => {
     console.log("Generating schedule");
 
     // Get all people from the database
-    let peopleIDs = await db.collection('person').find({}).project({_id: 1}).toArray()
-    peopleIDs = peopleIDs.map((id) => id._id.toString())
+    let peopleIDs = await db.collection('person').find({}).project({ _id: 1 }).toArray().then(results => results.map((id) => id._id.toString()));
     // Get all clusters from the database
-    let clusterIDs = await db.collection('cluster').find({}).project({_id: 1}).toArray()
-    clusterIDs = clusterIDs.map((id) => id._id.toString())
-    
+    let clusterIDs = await db.collection('cluster').find({}).project({ _id: 1 }).toArray().then(results => results.map((id) => id._id.toString()));
+
     const per_person = Number(process.env.CLUSTERS_PER_PERSON) || 1
     const per_day = Number(process.env.PEOPLE_PER_DAY) || 1
 

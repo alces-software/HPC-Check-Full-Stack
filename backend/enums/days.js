@@ -13,4 +13,4 @@ const indexFromDay = (s) => {
 
 const isValidDay = (s) => DAYS.includes(normalizeDay(s));
 
-module.exports = { DAYS, dayFromIndex, indexFromDay, isValidDay };
+module.exports = { dayFromIndex, indexFromDay, isValidDay };
