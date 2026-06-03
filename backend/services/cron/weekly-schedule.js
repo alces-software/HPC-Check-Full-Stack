@@ -7,7 +7,7 @@ const { generateSchedule } = require("./methods/generate-schedule")
  */
 module.exports.startWeeklySchedule = async (db) => {
    return cron.schedule('* 1 * * 1', async () => {
-      await generateSchedule(db)
-      console.log("Generated new schedule")
+      await generateSchedule(db);
+      console.log("Generated new schedule");
    });
 }
