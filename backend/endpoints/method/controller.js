@@ -11,9 +11,15 @@ module.exports = (db) => {
     */
    async function getMethods(req, res) {
       try {
-         if (req.params.id) {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid instruction id provided" });
+            }
+
             const instructionExists = await db.collection('instruction').find({
-               _id: new ObjectId(req.params.id)
+               _id: new ObjectId(id)
             });
 
             if (!instructionExists) {
@@ -21,7 +27,7 @@ module.exports = (db) => {
             }
 
             const response = await db.collection('method').find({
-               instructionId: req.params.id
+               instructionId: new ObjectId(id)
             }).toArray().then(result => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
@@ -45,16 +51,22 @@ module.exports = (db) => {
     */
    async function getMethodById(req, res) {
       try {
-         if (req.params.id) {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid method id provided" });
+            }
+
             const response = await db.collection('method').findOne({
-               _id: new ObjectId(req.params.id)
+               _id: new ObjectId(id)
             });
 
             if (!response) {
                return res.status(409).json({ success: false, error: 'Method does\'t exist' });
             }
 
-            response.id = req.params.id;
+            response.id = id;
             delete response._id;
 
             return res.status(200).json({ success: true, body: response });

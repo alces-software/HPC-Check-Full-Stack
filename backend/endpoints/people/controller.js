@@ -11,9 +11,11 @@ module.exports = (db) => {
     */
    async function addPeople(req, res) {
       try {
-         if (req.body.name) {
+         const { name } = req.params || {};
+
+         if (name) {
             const existingPerson = await db.collection('person').findOne({
-               name: req.body.name
+               name: name
             });
 
             if (existingPerson) {
@@ -21,13 +23,13 @@ module.exports = (db) => {
             }
 
             db.collection('person').insertOne({
-               name: req.body.name
+               name: name
             });
-         } else {
-            return res.status(400).json({ success: false, error: 'Missing persons name' });
+
+            return res.status(200).json({ success: true });
          }
 
-         res.status(200).json({ success: true });
+         res.status(400).json({ success: false, error: 'Missing persons name' });
       } catch (error) {
          res.status(500).json({ success: false, error: error.message });
       }
@@ -60,9 +62,15 @@ module.exports = (db) => {
     */
    async function getPeopleById(req, res) {
       try {
-         if (req.params.id) {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid person id provided" });
+            }
+
             const results = await db.collection('person').findOne({
-               _id: new ObjectId(req.params.id)
+               _id: new ObjectId(id)
             });
 
             if (!results) {
@@ -71,7 +79,7 @@ module.exports = (db) => {
 
             return res.status(200).json({
                success: true, body: {
-                  id: req.params.id,
+                  id: id,
                   name: results.name
                }
             });
@@ -90,9 +98,11 @@ module.exports = (db) => {
     */
    async function getPeopleByName(req, res) {
       try {
-         if (req.params.name) {
+         const { name } = req.params || {};
+
+         if (name) {
             const results = await db.collection('person').findOne({
-               name: { $regex: `^${req.params.name}$`, $options: "i" }
+               name: { $regex: `^${name}$`, $options: "i" }
             });
 
             if (!results) {
@@ -120,9 +130,15 @@ module.exports = (db) => {
     */
    async function deletePeople(req, res) {
       try {
-         if (req.body.id) {
+         const { id } = req.body || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid person id provided" });
+            }
+
             const existingPerson = await db.collection('person').findOne({
-               _id: new ObjectId(req.body.id)
+               _id: new ObjectId(id)
             });
 
             if (!existingPerson) {
@@ -132,7 +148,7 @@ module.exports = (db) => {
             }
 
             db.collection('person').deleteOne({
-               _id: new ObjectId(req.body.id)
+               _id: new ObjectId(id)
             });
          } else {
             return res.status(400).json({ success: false, error: 'Missing persons id' });

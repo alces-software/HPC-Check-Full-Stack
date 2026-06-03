@@ -11,11 +11,16 @@ module.exports = (db) => {
     */
    async function getAllInstructionsData(req, res) {
       try {
-         if (req.params.id) {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            }
             const response = [];
 
             const instructions = await db.collection('instruction').find({
-               clusterId: req.params.id
+               clusterId: new ObjectId(id)
             }).toArray().then(result => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
@@ -62,9 +67,15 @@ module.exports = (db) => {
     */
    async function getAllInstructionsOnly(req, res) {
       try {
-         if (req.params.id) {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            }
+
             const response = await db.collection('instruction').find({
-               clusterId: req.params.id
+               clusterId: new ObjectId(id)
             }).toArray().then(result => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
@@ -88,9 +99,15 @@ module.exports = (db) => {
     */
    async function getInstructionsAllById(req, res) {
       try {
-         if (req.params.id) {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid instruction id provided" });
+            }
+
             const response = await db.collection('instruction').findOne({
-               _id: new ObjectId(req.params.id)
+               _id: new ObjectId(id)
             });
 
             if (!response) {
@@ -134,9 +151,15 @@ module.exports = (db) => {
     */
    async function getInstructionsOnlyById(req, res) {
       try {
-         if (req.params.id) {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid instruction id provided" });
+            }
+
             const response = await db.collection('instruction').findOne({
-               _id: new ObjectId(req.params.id)
+               _id: new ObjectId(id)
             });
 
             if (!response) {

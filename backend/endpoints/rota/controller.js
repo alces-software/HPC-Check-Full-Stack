@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const { dayFromIndex, indexFromDay, isValidDay } = require('../../enums/days');
 
 /**
@@ -50,13 +51,15 @@ module.exports = (db) => {
     */
    async function getRotaByDay(req, res) {
       try {
-         if (req.params.day) {
-            if (!isValidDay(req.params.day)) {
+         const { day } = req.params || {};
+
+         if (day) {
+            if (!isValidDay(rday)) {
                return res.status(400).json({ status: false, error: 'Invalid day provided' });
             }
 
             const results = await db.collection('schedule').find({
-               dayIndex: indexFromDay(req.params.day)
+               dayIndex: indexFromDay(day)
             }).toArray();
             const people = await db.collection('person').find({}).toArray();
             const clusters = await db.collection('cluster').find({}).toArray();
@@ -73,7 +76,7 @@ module.exports = (db) => {
                   dayIndex: i.dayIndex
                });
             });
-            
+
             res.status(200).json({ success: true, body: response });
          }
 
@@ -90,9 +93,15 @@ module.exports = (db) => {
     */
    async function getRotaByCluster(req, res) {
       try {
-         if (req.params.id) {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid cluster id provided" })
+            }
+
             const results = await db.collection('schedule').find({
-               clusterId: req.params.id
+               clusterId: new ObjectId(id)
             }).toArray();
             const people = await db.collection('person').find({}).toArray();
             const clusters = await db.collection('cluster').find({}).toArray();
@@ -126,9 +135,15 @@ module.exports = (db) => {
     */
    async function getRotaByPerson(req, res) {
       try {
-         if (req.params.id) {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid Person id provided" });
+            }
+
             const results = await db.collection('schedule').find({
-               personId: req.params.id
+               personId: new ObjectId(id)
             }).toArray();
             const people = await db.collection('person').find({}).toArray();
             const clusters = await db.collection('cluster').find({}).toArray();

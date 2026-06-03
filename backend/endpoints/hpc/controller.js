@@ -11,9 +11,11 @@ module.exports = (db) => {
     */
    async function addHpc(req, res) {
       try {
-         if (req.body.name) {
+         const { name } = req.body || {};
+
+         if (name) {
             const existingPerson = await db.collection('cluster').findOne({
-               name: req.body.name
+               name: name
             });
 
             if (existingPerson) {
@@ -21,7 +23,7 @@ module.exports = (db) => {
             }
 
             db.collection('cluster').insertOne({
-               name: req.body.name
+               name: name
             });
          } else {
             return res.status(400).json({ success: false, error: 'Missing hpc name' });
@@ -60,18 +62,24 @@ module.exports = (db) => {
     */
    async function getHpcById(req, res) {
       try {
-         if (req.params.id) {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            }
+
             const results = await db.collection('cluster').findOne({
-               _id: new ObjectId(req.params.id)
+               _id: new ObjectId(id)
             });
 
             if (!results) {
-               return res.status(404).json({ success: false, error: "HPC doesn't exist" });
+               return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
             }
 
             return res.status(200).json({
                success: true, body: {
-                  id: req.params.id,
+                  id: id,
                   name: results.name
                }
             });
@@ -90,9 +98,11 @@ module.exports = (db) => {
     */
    async function getHpcByName(req, res) {
       try {
-         if (req.params.name) {
+         const { name } = req.params || {};
+
+         if (name) {
             const results = await db.collection('cluster').findOne({
-               name: { $regex: `^${req.params.name}$`, $options: "i" }
+               name: { $regex: `^${name}$`, $options: "i" }
             });
 
             if (!results) {
@@ -120,9 +130,15 @@ module.exports = (db) => {
     */
    async function deleteHpc(req, res) {
       try {
-         if (req.body.id) {
+         const { id } = req.body || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            }
+
             const existingPerson = await db.collection('cluster').findOne({
-               _id: new ObjectId(req.body.id)
+               _id: new ObjectId(id)
             });
 
             if (!existingPerson) {
@@ -132,7 +148,7 @@ module.exports = (db) => {
             }
 
             db.collection('cluster').deleteOne({
-               _id: new ObjectId(req.body.id)
+               _id: new ObjectId(id)
             });
          } else {
             return res.status(400).json({ success: false, error: 'Missing hpc id' });

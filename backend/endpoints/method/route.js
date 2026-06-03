@@ -8,7 +8,7 @@ module.exports = (db) => {
       getMethodById
    } = require('./controller')(db);
 
-   router.get('/method/:id', getMethods)
+   router.get('/method/:id', getMethods);
    router.get('/method/id/:id', getMethodById);
 
    return router;
