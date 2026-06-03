@@ -38,9 +38,9 @@ module.exports = (db) => {
             }
          });
 
-         res.status(200).json({ success: true, body: response });
+         return res.status(200).json({ success: true, body: response });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    };
 
@@ -77,12 +77,12 @@ module.exports = (db) => {
                });
             });
 
-            res.status(200).json({ success: true, body: response });
+            return res.status(200).json({ success: true, body: response });
          }
 
-         res.status(400).json({ success: false, error: 'Missing day' });
+         return res.status(400).json({ success: false, error: 'Missing day' });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    }
 
@@ -119,12 +119,12 @@ module.exports = (db) => {
                });
             });
 
-            res.status(200).json({ success: true, body: response });
+            return res.status(200).json({ success: true, body: response });
          }
 
-         res.status(400).json({ success: false, error: 'Missing cluster id' });
+         return res.status(400).json({ success: false, error: 'Missing cluster id' });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    }
 
@@ -161,12 +161,12 @@ module.exports = (db) => {
                });
             });
 
-            res.status(200).json({ success: true, body: response });
+            return res.status(200).json({ success: true, body: response });
          }
 
-         res.status(400).json({ success: false, error: 'Missing person id' });
+         return res.status(400).json({ success: false, error: 'Missing person id' });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    }
 

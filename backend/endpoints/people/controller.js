@@ -29,9 +29,9 @@ module.exports = (db) => {
             return res.status(200).json({ success: true });
          }
 
-         res.status(400).json({ success: false, error: 'Missing persons name' });
+         return res.status(400).json({ success: false, error: 'Missing persons name' });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    };
 
@@ -49,9 +49,9 @@ module.exports = (db) => {
             }));
          });
 
-         res.status(200).json({ success: true, body: response });
+         return res.status(200).json({ success: true, body: response });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    };
 
@@ -85,9 +85,9 @@ module.exports = (db) => {
             });
          }
 
-         res.status(400).json({ success: false, error: 'Missing persons id' });
+         return res.status(400).json({ success: false, error: 'Missing persons id' });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    }
 
@@ -117,9 +117,9 @@ module.exports = (db) => {
             });
          }
 
-         res.status(400).json({ success: false, error: 'Missing persons name' });
+         return res.status(400).json({ success: false, error: 'Missing persons name' });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    }
 
@@ -150,13 +150,13 @@ module.exports = (db) => {
             db.collection('person').deleteOne({
                _id: new ObjectId(id)
             });
-         } else {
-            return res.status(400).json({ success: false, error: 'Missing persons id' });
+
+            return res.status(200).json({ success: true });
          }
 
-         res.status(200).json({ success: true });
+         return res.status(400).json({ success: false, error: 'Missing persons id' });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    };
 

@@ -25,7 +25,7 @@ module.exports = (db) => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
                   id: _id.toString()
-               }))
+               }));
             });
 
             for (const i of instructions) {
@@ -35,7 +35,7 @@ module.exports = (db) => {
                   return result.map(({ _id, ...rest }) => ({
                      ...rest,
                      id: _id.toString()
-                  }))
+                  }));
                });
 
                i.methods = [];
@@ -54,9 +54,9 @@ module.exports = (db) => {
             return res.status(200).json({ success: true, body: response });
          }
 
-         res.status(400).json({ success: false, error: 'Missing cluster id' });
+         return res.status(400).json({ success: false, error: 'Missing cluster id' });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    }
 
@@ -80,15 +80,15 @@ module.exports = (db) => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
                   id: _id.toString()
-               }))
+               }));
             });
 
             return res.status(200).json({ success: true, body: response });
          }
 
-         res.status(400).json({ success: false, error: 'Missing cluster id' });
+         return res.status(400).json({ success: false, error: 'Missing cluster id' });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    }
 
@@ -138,9 +138,9 @@ module.exports = (db) => {
             return res.status(200).json({ success: true, body: response });
          }
 
-         res.status(400).json({ success: false, error: 'Missing instruction id' });
+         return res.status(400).json({ success: false, error: 'Missing instruction id' });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    }
 
@@ -172,9 +172,9 @@ module.exports = (db) => {
             return res.status(200).json({ success: true, body: response });
          }
 
-         res.status(400).json({ success: false, error: 'Missing instruction id' });
+         return res.status(400).json({ success: false, error: 'Missing instruction id' });
       } catch (error) {
-         res.status(500).json({ success: false, error: error.message });
+         return res.status(500).json({ success: false, error: error.message });
       }
    }
 
