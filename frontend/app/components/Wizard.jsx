@@ -3,56 +3,56 @@
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 
-const steps = [
-  {
-    id: 1,
-    title: "Step 1",
-    description: "Verify quota system works AND test real user filesystem experience.",
-    methods: [
-      { type: "text", content: "Run: quota -s" },
-      { type: "text", content: "Run: df -h ~" },
-      {
-        type: "code",
-        content:
-          "time dd if=/dev/zero of=~/fs-test-file bs=1M count=5000 conv=fdatasync && rm -f ~/fs-test-file\n\n" +
-          "time (mkdir -p ~/fs-test-meta && for i in {1..1000}; do touch ~/fs-test-meta/file$i; done && rm -rf ~/fs-test-meta)",
-      },
-      {
-        type: "text",
-        content: "Check filesystem performance is acceptable and quota updates correctly.",
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "Step 2",
-    description: "Description of Step 2 of the process.",
-    methods: [
-      { type: "text", content: "Alternative Method A" },
-      { type: "text", content: "Alternative Method B" },
-    ],
-  },
-  {
-    id: 3,
-    title: "Step 3",
-    description: "Description of Step 3 of the process.",
-    methods: [
-      { type: "text", content: "Alternative Method A" },
-      { type: "text", content: "Alternative Method B" },
-    ],
-  },
-  {
-    id: 4,
-    title: "Step 4",
-    description: "Description of Step 4 of the process.",
-    methods: [
-      { type: "text", content: "Alternative Method A" },
-      { type: "text", content: "Alternative Method B" },
-    ],
-  },
-];
+// const steps = [
+//   {
+//     id: 1,
+//     title: "Step 1",
+//     description: "Verify quota system works AND test real user filesystem experience.",
+//     methods: [
+//       { type: "text", content: "Run: quota -s" },
+//       { type: "text", content: "Run: df -h ~" },
+//       {
+//         type: "code",
+//         content:
+//           "time dd if=/dev/zero of=~/fs-test-file bs=1M count=5000 conv=fdatasync && rm -f ~/fs-test-file\n\n" +
+//           "time (mkdir -p ~/fs-test-meta && for i in {1..1000}; do touch ~/fs-test-meta/file$i; done && rm -rf ~/fs-test-meta)",
+//       },
+//       {
+//         type: "text",
+//         content: "Check filesystem performance is acceptable and quota updates correctly.",
+//       },
+//     ],
+//   },
+//   {
+//     id: 2,
+//     title: "Step 2",
+//     description: "Description of Step 2 of the process.",
+//     methods: [
+//       { type: "text", content: "Alternative Method A" },
+//       { type: "text", content: "Alternative Method B" },
+//     ],
+//   },
+//   {
+//     id: 3,
+//     title: "Step 3",
+//     description: "Description of Step 3 of the process.",
+//     methods: [
+//       { type: "text", content: "Alternative Method A" },
+//       { type: "text", content: "Alternative Method B" },
+//     ],
+//   },
+//   {
+//     id: 4,
+//     title: "Step 4",
+//     description: "Description of Step 4 of the process.",
+//     methods: [
+//       { type: "text", content: "Alternative Method A" },
+//       { type: "text", content: "Alternative Method B" },
+//     ],
+//   },
+// ];
 
-const names = ["Oscar", "Calum", "Alex"]
+// const names = ["Oscar", "Calum", "Alex"]
 
 
 
@@ -62,6 +62,51 @@ export default function Wizard() {
   const [selectedCluster, setSelectedCluster] = useState("");
   const [allClusters, setAllClusters] = useState([])
   const [steps, setSteps] = useState([])
+  const [allNames, setAllNames] = useState([])
+  const [startTime, setStartTime] = useState(null);
+
+  
+  
+  useEffect(() => {
+    if (selectedName && selectedCluster && !startTime) {
+      setStartTime(Date.now());
+    }
+  }, [selectedName, selectedCluster, startTime]);
+
+
+
+
+
+ useEffect(() => {
+
+    async function getNames() {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/people`
+        );
+
+        const data = await res.json();
+
+        console.log("Fetched names:", data.body);
+
+        setAllNames(data.body);
+
+        
+      } catch (error) {
+        console.error("Failed to fetch names:", error);
+      }
+    }
+
+    getNames();
+  }, []);
+
+
+
+ const names = allNames.map((person) => person.name);
+
+ const nameID = allNames.find(
+  (person) => person.name === selectedName
+)?.id;
 
 
 
@@ -145,17 +190,93 @@ useEffect(() => {
     }));
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
-    const data = Object.fromEntries(formData.entries());
 
-    console.log({
-      ...data,
-      completedSteps,
-    });
+
+  // function handleSubmit(event) {
+  //   event.preventDefault();
+
+  //   const formData = new FormData(event.currentTarget);
+  //   const data = Object.fromEntries(formData.entries());
+
+  //   console.log({
+  //     ...data,
+  //     completedSteps,
+  //   });
+  // }
+
+
+
+
+
+  async function handleSubmit(event) {
+  event.preventDefault();
+
+  const formData = new FormData(event.currentTarget);
+
+  for (const step of steps) {
+  const passed = Boolean(completedSteps[step.id]);
+
+  if (!passed) {
+    const failureReason = formData
+      .get(`step${step.id}FailureReason`)
+      ?.toString()
+      .trim();
+
+    if (!failureReason) {
+      alert(`Please provide a failure reason for ${step.title}`);
+      return;
+    }
   }
+}
+
+  const payload = {
+    cluster: selectedCluster,
+    clusterId: clusterId,
+    person: selectedName,
+    personId: nameID,
+    startTime: startTime,
+    endTime: Date.now(),
+    results: steps.map((step) => {
+      const passed = Boolean(completedSteps[step.id]);
+
+      const note = passed
+        ? formData.get(`step${step.id}Notes`)
+        : formData.get(`step${step.id}FailureReason`);
+
+      return {
+        instructionId: step.id,
+        passed: passed,
+        note: String(note || ""),
+      };
+    }),
+  };
+
+  console.log("Payload:", payload);
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/report/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const responseData = await res.json();
+
+    if (!res.ok) {
+      throw new Error(responseData.message || "Failed to submit results");
+    }
+
+    console.log("Submitted successfully:", responseData);
+  } catch (error) {
+    console.error("Submit error:", error);
+  }
+}
+
+
+
 
 
 
@@ -265,27 +386,18 @@ useEffect(() => {
                     </ul>
                   </details>
 
-                  <label htmlFor={`step${step.id}Notes`} className="mb-2 block text-sm font-medium text-slate-700">
-                    Notes
-                  </label>
+               
 
-                  <textarea
-                    id={`step${step.id}Notes`}
-                    name={`step${step.id}Notes`}
-                    rows={4}
-                    className="mb-4 w-full rounded-lg border border-slate-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-
-                  <label htmlFor={`step${step.id}AdditionalMethod`} className="mb-2 block text-sm font-medium text-slate-700">
+                  {/* <label htmlFor={`step${step.id}AdditionalMethod`} className="mb-2 block text-sm font-medium text-slate-700">
                     Add Additional Method
-                  </label>
+                  </label> */}
 
-                  <input
+                  {/* <input
                     id={`step${step.id}AdditionalMethod`}
                     type="text"
                     name={`step${step.id}AdditionalMethod`}
                     className="mb-4 w-full rounded-lg border border-slate-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  /> */}
 
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-slate-900">
@@ -305,19 +417,38 @@ useEffect(() => {
                     </label>
                   </div>
 
+                     {isCompleted && (
+                    <>
+
+                  <label htmlFor={`step${step.id}Notes`} className="mb-2 block mt-4 text-sm font-medium text-slate-700">
+                    Notes (Optional)
+                  </label>
+                  
+
+                  <textarea
+                    id={`step${step.id}Notes`}
+                    name={`step${step.id}Notes`}
+                    rows={4}
+                    className="mb-4 w-full rounded-lg border border-slate-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  </>
+
+                  )}
+
                   {!isCompleted && (
                     <div className="mt-4">
                       <label htmlFor={`step${step.id}FailureReason`} className="mb-2 block text-sm font-medium text-red-700">
                         What went wrong?
                       </label>
 
-                      <input
+                      <textarea
                         id={`step${step.id}FailureReason`}
-                        type="text"
+                        rows={4}
                         name={`step${step.id}FailureReason`}
                         placeholder="Describe the issue"
                         className="w-full rounded-lg border border-red-300 bg-red-50 p-3 focus:outline-none focus:ring-2 focus:ring-red-400"
                       />
+                  
                     </div>
                   )}
                 </section>
@@ -327,7 +458,7 @@ useEffect(() => {
 
           <button
             type="submit"
-            className="mt-8 rounded-lg bg-blue-600 px-8 py-3 font-medium text-white transition hover:bg-blue-700"
+            className="mt-8 rounded-lg cursor-pointer bg-blue-600 px-8 py-3 font-medium text-white transition hover:bg-blue-700"
           >
             Submit
           </button>

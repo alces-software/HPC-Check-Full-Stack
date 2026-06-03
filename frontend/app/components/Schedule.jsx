@@ -69,6 +69,7 @@ useEffect(() => {
   getRota();
 }, []);
 
+
 useEffect(() => {
   console.log(schedule);
 }, [schedule]);
