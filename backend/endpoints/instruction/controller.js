@@ -20,7 +20,7 @@ module.exports = (db) => {
             const response = [];
 
             const instructions = await db.collection('instruction').find({
-               clusterId: new ObjectId(id)
+               clusterId: id
             }).toArray().then(result => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
@@ -75,7 +75,7 @@ module.exports = (db) => {
             }
 
             const response = await db.collection('instruction').find({
-               clusterId: new ObjectId(id)
+               clusterId: id
             }).toArray().then(result => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,

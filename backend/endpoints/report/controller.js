@@ -181,7 +181,15 @@ module.exports = (db) => {
                return res.status(404).json({ success: false, error: "No report exists with that id" });
             }
 
-            
+            await db.collection('report').deleteOne({
+               _id: new ObjectId(id)
+            });
+
+            await db.collection('result').deleteMany({
+               reportId: id
+            });
+
+            return res.status(200).json({ success: true });
          }
 
          return res.status(400).json({ success: false, error: "Missing report id" });

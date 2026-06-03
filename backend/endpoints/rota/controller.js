@@ -54,7 +54,7 @@ module.exports = (db) => {
          const { day } = req.params || {};
 
          if (day) {
-            if (!isValidDay(rday)) {
+            if (!isValidDay(day)) {
                return res.status(400).json({ status: false, error: 'Invalid day provided' });
             }
 
@@ -101,7 +101,7 @@ module.exports = (db) => {
             }
 
             const results = await db.collection('schedule').find({
-               clusterId: new ObjectId(id)
+               clusterId: id
             }).toArray();
             const people = await db.collection('person').find({}).toArray();
             const clusters = await db.collection('cluster').find({}).toArray();

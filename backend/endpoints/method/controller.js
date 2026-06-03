@@ -27,7 +27,7 @@ module.exports = (db) => {
             }
 
             const response = await db.collection('method').find({
-               instructionId: new ObjectId(id)
+               instructionId: id
             }).toArray().then(result => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
