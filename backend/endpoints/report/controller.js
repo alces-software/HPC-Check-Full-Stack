@@ -17,7 +17,7 @@ module.exports = (db) => {
          const endOfDay = new Date();
          endOfDay.setHours(23, 59, 59, 999);
 
-         const response = await collection.find({
+         const response = await db.collection('report').find({
             startDate: {
                $gte: startOfDay.getTime(),
                $lte: endOfDay.getTime()
@@ -40,11 +40,75 @@ module.exports = (db) => {
     * @param {import('express').Response} res
     * @returns {Promise<void>}
     */
+   async function getReportByPerson(req, res) {
+      try {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid person id provided" });
+            }
+
+            const response = await db.collection('report').find({
+               personId: id
+            }).toArray().then(result => {
+               return result.map(({ _id, ...rest }) => ({
+                  ...rest,
+                  id: _id.toString()
+               }));
+            });
+
+            return res.status(200).json({ success: true, body: response });
+         }
+
+         return res.status(400).json({ success: false, error: "Missing person id" });
+      } catch (error) {
+         return res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
+   async function getReportByCluster(req, res) {
+      try {
+         const { id } = req.params || {};
+
+         if (id) {
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            }
+
+            const response = await db.collection('report').find({
+               clusterId: id
+            }).toArray().then(result => {
+               return result.map(({ _id, ...rest }) => ({
+                  ...rest,
+                  id: _id.toString()
+               }));
+            });
+
+            return res.status(200).json({ success: true, body: response });
+         }
+
+         return res.status(400).json({ success: false, error: "Missing cluster id" });
+      } catch (error) {
+         return res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
    async function getReportById(req, res) {
       try {
          const { id } = req.params || {};
 
-         if (!id) {
+         if (id) {
             if (!ObjectId.isValid(id)) {
                return res.status(400).json({ success: false, error: 'Invalid report id' });
             }
@@ -200,6 +264,8 @@ module.exports = (db) => {
 
    return {
       getTodaysReports,
+      getReportByPerson,
+      getReportByCluster,
       getReportById,
       addReport,
       deleteReport
