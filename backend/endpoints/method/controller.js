@@ -87,7 +87,7 @@ module.exports = (db) => {
       try {
          const { id, content } = req.body | {};
 
-         if (id, content) {
+         if (id && content) {
             if (!ObjectId.isValid(id)) {
                return res.status(400).json({ success: false, error: "Invalid instruction id provided" });
             }
