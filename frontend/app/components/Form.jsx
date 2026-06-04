@@ -13,6 +13,8 @@ export default function Form() {
   const [submitting, setSubmitting] = useState(false);
   const [nameID] = useState(() => Cookies.get("selectedPersonId") || "");
   const [cookieCluster] = useState(() => Cookies.get("currentCluster") || "");
+  const [editing, setEditing] = useState(false)
+  const [addMethod, setAddMethod] = useState(false)
   const router = useRouter();
 
   if (!nameID || !cookieCluster) {
@@ -136,6 +138,8 @@ export default function Form() {
     }
   }
 
+  console.log(steps);
+
   if (!clusterId || !nameID) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900">
@@ -201,7 +205,7 @@ export default function Form() {
 
                     <ul className="mt-4 space-y-2 text-slate-300">
                       {step.methods.map((method, i) => (
-                        <li key={i}>
+                        <li key={method.id}>
                           {method.content.includes(":") ? (
                             <>
                               <p>
@@ -218,10 +222,105 @@ export default function Form() {
                               </pre>
                             </>
                           ) : (
-                            method.content
+                            <div className="mt-7 overflow-auto p-4 text-md">
+                            {method.content}
+                            </div>
+                          )}
+
+                          {editing && (
+
+                          <div className="flex justify-end">
+
+                          <button
+                          type="button"
+                          className="rounded-lg bg-red-700 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-red-600">
+                            Delete Method
+                            </button>
+                            </div>
+
                           )}
                         </li>
+                        
                       ))}
+
+                       {!editing ? (
+                      <div className="flex flex-col justify-end">
+                      <button
+                          type="button"
+                          onClick={() => setEditing(true)}
+                          className="rounded-lg bg-blue-500 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-blue-600">
+                            Edit Methods
+                            </button>
+                            </div>
+                       ) : (
+                        <>
+
+                        
+                        <div className="flex flex-col justify-end">
+
+
+                          {!addMethod? (
+                      <button
+                          type="button"
+                          onClick={() => setAddMethod(true)}
+                          className="rounded-lg bg-green-600 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-green-700">
+                            Add Method ＋
+                            </button>
+                            ) : (
+
+                              <div className="mt-4">
+    <textarea
+      
+      rows={6}
+      placeholder="Enter method..."
+      className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
+    />
+
+    <div className="mt-3 flex justify-end">
+      <button
+        type="button"
+        onClick={()=>setAddMethod(false)}
+        className="rounded-lg cursor-pointer bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+      >
+        Save Method
+      </button>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+                            )} 
+
+                           
+  
+
+
+                            <button
+                        type="button"
+                        onClick={() => {
+                          setEditing(false)
+                          setAddMethod(false)
+                        }}
+                        
+                        className="rounded-lg bg-blue-500 px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-blue-600"
+                        >
+                          Close Editor Ｘ
+                          </button>
+                            </div>
+                       
+                        
+                          
+                          </>
+                        )
+                        }
                     </ul>
                   </details>
 
