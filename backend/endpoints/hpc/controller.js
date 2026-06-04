@@ -14,8 +14,14 @@ module.exports = (db) => {
          const { name } = req.body || {};
 
          if (name) {
+            const sanitizedName = String(name).trim();
+
+            if (sanitizedName.length == 0) {
+               return res.status(400).json({ success: false, error: "The name provided is empty" });
+            }
+
             const existingPerson = await db.collection('cluster').findOne({
-               name: name
+               name: sanitizedName
             });
 
             if (existingPerson) {
@@ -23,7 +29,7 @@ module.exports = (db) => {
             }
 
             await db.collection('cluster').insertOne({
-               name: name
+               name: sanitizedName
             });
 
             return res.status(200).json({ success: true });
@@ -101,8 +107,14 @@ module.exports = (db) => {
          const { name } = req.params || {};
 
          if (name) {
+            const sanitizedName = String(name).trim();
+
+            if (sanitizedName.length == 0) {
+               return res.status(400).json({ success: false, error: "The name provided is empty" });
+            }
+
             const results = await db.collection('cluster').findOne({
-               name: { $regex: `^${name}$`, $options: "i" }
+               name: { $regex: `^${sanitizedName}$`, $options: "i" }
             });
 
             if (!results) {
@@ -150,8 +162,7 @@ module.exports = (db) => {
             const reports = await db.collection('report').find({
                clusterId: id
             }).toArray().then(result => {
-               return result.map(({ _id, ...rest }) => ({
-                  ...rest,
+               return result.map(({ _id }) => ({
                   id: _id.toString()
                }));
             });
@@ -160,17 +171,13 @@ module.exports = (db) => {
                return res.status(200).json({ success: true });
             }
 
-            const reportIds = reports.map(report => {
-               id: report.id
-            });
-
             reports.forEach(async report => {
                await db.collection('result').deleteMany({
                   reportId: report.id
                });
             });
 
-            await db.collection('report').deleteMany(reportIds);
+            await db.collection('report').deleteMany(reports);
 
             return res.status(200).json({ success: true });
          }
