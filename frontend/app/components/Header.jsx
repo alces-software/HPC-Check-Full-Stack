@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -17,8 +18,15 @@ export default function Header() {
   return (
 <>
 <header className="fixed top-5 left-0 z-50 w-full bg-transparent">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-8xl items-center justify-between px-25 py-4">
           <Link href="/" className="text-xl font-semibold text-white">
+          <Image
+            src="/images/alces_logo.png"
+            alt="Logo"
+            width={100}
+            height={100}
+            className="rounded-full"
+          />
             
           </Link>
 
@@ -38,7 +46,7 @@ export default function Header() {
         <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-slate-950">
           <button
             onClick={() => setMenuOpen(false)}
-            className="absolute right-8 cursor-pointer top-6 text-5xl text-white hover:text-blue-400"
+            className="absolute right-25 cursor-pointer top-12 text-5xl text-white hover:text-blue-400"
             aria-label="Close menu"
           >
             ×
@@ -48,26 +56,36 @@ export default function Header() {
             <Link
               href="/schedule"
               onClick={() => setMenuOpen(false)}
-              className="text-4xl font-semibold text-white hover:text-blue-400 transition"
+              className="text-4xl text-white hover:text-blue-400 transition"
             >
               View Schedule
+            </Link>
+
+             <Link
+              href="/name"
+              onClick={() => setMenuOpen(false)}
+              className="text-4xl text-white hover:text-blue-400 transition"
+            >
+              Fill Out Report
             </Link>
 
             <Link
               href="/results"
               onClick={() => setMenuOpen(false)}
-              className="text-4xl font-semibold text-white hover:text-blue-400 transition"
+              className="text-4xl text-white hover:text-blue-400 transition"
             >
               Results
             </Link>
 
             <Link
-              href="/personalSchedule"
+              href="/options"
               onClick={() => setMenuOpen(false)}
-              className="text-4xl font-semibold text-white hover:text-blue-400 transition"
+              className="text-4xl text-white hover:text-blue-400 transition"
             >
-              Fill Out Form
+              Administration
             </Link>
+
+           
           </nav>
         </div>
       )}
