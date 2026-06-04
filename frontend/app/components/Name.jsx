@@ -86,18 +86,17 @@ export default function Name() {
                                     </ListboxButton>
 
                                     <ListboxOptions className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl">
+
                                         {people.map((person) => (
                                             <ListboxOption
                                                 key={person.id}
                                                 value={person.id}
-                                                className={({ active, selected }) =>
-                                                    `cursor-pointer px-4 py-3 text-white transition ${active ? "bg-blue-500/20" : ""
-                                                    } ${selected ? "font-semibold" : ""}`
-                                                }
+                                                className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
                                             >
                                                 {person.name}
                                             </ListboxOption>
                                         ))}
+
                                     </ListboxOptions>
 
                                 </div>

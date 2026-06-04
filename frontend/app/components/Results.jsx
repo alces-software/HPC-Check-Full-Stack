@@ -227,18 +227,17 @@ export default function Results() {
                         </ListboxButton>
 
                         <ListboxOptions className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl">
+
                           {names.map((name) => (
                             <ListboxOption
                               key={name}
                               value={name}
-                              className={({ active, selected }) =>
-                                `cursor-pointer px-4 py-3 text-white transition ${active ? "bg-blue-500/20" : ""
-                                } ${selected ? "font-semibold" : ""}`
-                              }
+                              className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
                             >
                               {name}
                             </ListboxOption>
                           ))}
+
                         </ListboxOptions>
 
                       </div>
@@ -263,18 +262,17 @@ export default function Results() {
                         </ListboxButton>
 
                         <ListboxOptions className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl">
-                          {clusters.map((c) => (
+
+                          {clusters.map((name) => (
                             <ListboxOption
-                              key={c}
-                              value={c}
-                              className={({ active, selected }) =>
-                                `cursor-pointer px-4 py-3 text-white transition ${active ? "bg-blue-500/20" : ""
-                                } ${selected ? "font-semibold" : ""}`
-                              }
+                              key={name}
+                              value={name}
+                              className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
                             >
-                              {c}
+                              {name}
                             </ListboxOption>
                           ))}
+
                         </ListboxOptions>
 
                       </div>
