@@ -1,6 +1,6 @@
 import Form from "../components/Form"
 
-export default function FormPage() {
+export default function HpcFormPage() {
   return (
     <main>
       <Form />

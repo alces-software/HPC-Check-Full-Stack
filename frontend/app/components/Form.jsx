@@ -16,7 +16,7 @@ export default function Form() {
   const router = useRouter();
 
   if (!nameID || !cookieCluster) {
-    return router.push('/name');
+    router.push('/name');
   }
 
   // GET NAMES

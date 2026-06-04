@@ -16,7 +16,7 @@ export default function PersonalSchedule() {
                 const userId = Cookies.get("selectedPersonId");
 
                 if (!userId) {
-                    return router.push("/name");
+                    router.push("/name");
                 }
 
                 const nameRes = await fetch(
