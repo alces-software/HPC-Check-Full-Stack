@@ -156,6 +156,10 @@ module.exports = (db) => {
                }));
             });
 
+            if (reports.length == 0) {
+               return res.status(200).json({ success: true });
+            }
+
             const reportIds = reports.map(report => {
                id: report.id
             });

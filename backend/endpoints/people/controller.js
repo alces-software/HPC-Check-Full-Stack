@@ -11,7 +11,7 @@ module.exports = (db) => {
     */
    async function addPeople(req, res) {
       try {
-         const { name } = req.params || {};
+         const { name } = req.body || {};
 
          if (name) {
             const existingPerson = await db.collection('person').findOne({
