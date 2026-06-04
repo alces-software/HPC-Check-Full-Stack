@@ -21,7 +21,7 @@ export default function Results() {
   const [report, setReport] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
 
-  const canSearch = tester !== "" && cluster !== "" && date !== null;
+  const canSearch = cluster !== "" && date !== null;
 
   const names = Array.isArray(allNames)
     ? allNames.map((person) => person.name)
@@ -112,13 +112,14 @@ export default function Results() {
       setLoadingReport(true);
       setReport(null);
 
-      const selectedPerson = allNames.find((person) => person.name === tester);
+      // const selectedPerson = allNames.find((person) => person.name === tester);
       const selectedCluster = allClusters.find((hpc) => hpc.name === cluster);
 
-      if (!selectedPerson || !selectedCluster || !date) return;
+      // if (!selectedPerson || !selectedCluster || !date) return;
+      if (!selectedCluster || !date) return;
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/report/person/${selectedPerson.id}`
+        `${process.env.NEXT_PUBLIC_API_URL}/report/cluster/${selectedCluster.id}`
       );
 
       const data = await res.json();
@@ -193,7 +194,7 @@ export default function Results() {
                 ? `Results for ${report.person}'s test on ${report.cluster} ${formatDate(
                   new Date(Number(report.startTime))
                 )}`
-                : "Select tester, cluster and date to display results"}
+                : "Select cluster and date to display results"}
             </p>
           </div>
 
@@ -207,10 +208,10 @@ export default function Results() {
             return (
               <>
                 {/* FILTERS */}
-                <div className="mb-4 grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 md:grid-cols-3">
+                <div className="mb-4 grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 md:grid-cols-2">
 
                   {/* TESTER */}
-                  <div>
+                  {/* <div>
                     <label className="mb-2 block text-sm font-semibold text-slate-300">
                       Tester
                     </label>
@@ -242,7 +243,7 @@ export default function Results() {
 
                       </div>
                     </Listbox>
-                  </div>
+                  </div> */}
 
                   {/* CLUSTER */}
                   <div>
@@ -388,12 +389,9 @@ export default function Results() {
                     <p className="text-lg font-semibold text-white">
                       {loadingReport
                         ? "Loading report..."
-                        : "Select tester, cluster and date, then click View Results"}
+                        : "Select a cluster and date, then click View Results"}
                     </p>
 
-                    <p className="mt-2 text-slate-400">
-                      The button is disabled until all required fields are selected.
-                    </p>
                   </div>
                 )}
               </>
