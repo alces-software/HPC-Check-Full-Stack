@@ -293,7 +293,7 @@ export default function Options() {
                 <button
                   type="button"
                   onClick={confirmPendingAction}
-                  className="rounded-xl bg-yellow-500 px-4 py-2 font-semibold text-slate-950 transition hover:bg-yellow-400"
+                  className="rounded-xl bg-yellow-500 px-4 py-2 font-semibold text-slate-950 transition hover:bg-yellow-400 cursor-pointer"
                 >
                   Confirm
                 </button>
@@ -301,7 +301,7 @@ export default function Options() {
                 <button
                   type="button"
                   onClick={cancelConfirmation}
-                  className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 text-white transition hover:bg-slate-800"
+                  className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 text-white transition hover:bg-slate-800 cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -311,11 +311,10 @@ export default function Options() {
 
           {statusMessage && (
             <div
-              className={`mb-6 rounded-2xl border px-4 py-4 text-sm ${
-                statusType === "error"
-                  ? "border-red-500/30 bg-red-500/10 text-red-100"
-                  : "border-green-500/30 bg-green-500/10 text-emerald-100"
-              }`}
+              className={`mb-6 rounded-2xl border px-4 py-4 text-sm ${statusType === "error"
+                ? "border-red-500/30 bg-red-500/10 text-red-100"
+                : "border-green-500/30 bg-green-500/10 text-emerald-100"
+                }`}
             >
               {statusMessage}
             </div>
@@ -338,12 +337,12 @@ export default function Options() {
                     setUserName(e.target.value)
                   }
                   placeholder="Username"
-                  className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-slate-400 outline-none transition focus:border-blue-400"
+                  className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-left text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                 />
 
                 <button
                   onClick={handleAddUser}
-                  className="w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-500"
+                  className="w-full rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-500 cursor-pointer"
                 >
                   Add User
                 </button>
@@ -369,7 +368,7 @@ export default function Options() {
                     people.map((person) => (
                       <div
                         key={person.id}
-                        className="flex items-start justify-between rounded-lg border border-white/10 bg-black/20 px-3 py-2"
+                        className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                       >
                         <div>
                           <p className="font-medium text-white">
@@ -383,7 +382,7 @@ export default function Options() {
 
                         <button
                           onClick={() => handleDeleteUser(person.id, person.name)}
-                          className="ml-3 flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
+                          className="ml-3 cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
                           title="Delete user"
                         >
                           ✕
@@ -397,7 +396,7 @@ export default function Options() {
 
             {/* Clusters */}
             <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-6">
-              <div className="mb-3 text-4xl">🖧</div>
+              <div className="mb-3 text-4xl">🗄️</div>
 
               <h2 className="mb-2 text-2xl font-bold text-white">
                 Add Cluster
@@ -411,12 +410,12 @@ export default function Options() {
                     setClusterName(e.target.value)
                   }
                   placeholder="Cluster name"
-                  className="w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-white placeholder-slate-400 outline-none transition focus:border-emerald-400"
+                  className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-left text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                 />
 
                 <button
                   onClick={handleAddCluster}
-                  className="w-full rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white transition hover:bg-emerald-500"
+                  className="w-full rounded-xl bg-emerald-600 px-4 py-3 font-semibold text-white transition hover:bg-emerald-500 cursor-pointer"
                 >
                   Add Cluster
                 </button>
@@ -442,7 +441,7 @@ export default function Options() {
                     clusters.map((cluster) => (
                       <div
                         key={cluster.id}
-                        className="flex items-start justify-between rounded-lg border border-white/10 bg-black/20 px-3 py-2"
+                        className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                       >
                         <div>
                           <p className="font-medium text-white">
@@ -456,7 +455,7 @@ export default function Options() {
 
                         <button
                           onClick={() => handleDeleteCluster(cluster.id, cluster.name)}
-                          className="ml-3 flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
+                          className="ml-3 cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
                           title="Delete cluster"
                         >
                           ✕
@@ -481,7 +480,7 @@ export default function Options() {
 
             <button
               onClick={handleRegenerateSchedule}
-              className="rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+              className="rounded-xl bg-gradient-to-r cursor-pointer from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:scale-105 hover:shadow-xl"
             >
               🔄 Regenerate Schedule
             </button>
