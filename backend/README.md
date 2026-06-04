@@ -15,6 +15,8 @@
   - [Method endpoints:](#method-endpoints)
     - [`GET /method/:id`:](#get-methodid)
     - [`GET /method/id/:id`:](#get-methodidid)
+    - [`POST /method/add`:](#post-methodadd)
+    - [`DELETE /method/delete`:](#delete-methoddelete)
   - [People endpoints:](#people-endpoints)
     - [`GET /people`:](#get-people)
     - [`POST /people/add`:](#post-peopleadd)
@@ -78,6 +80,21 @@ This endpoint retrieves the details of a specific instruction based on its ID in
 This endpoint retrieves all the details about methods associated with a specific instruction based on its ID.
 ### `GET /method/id/:id`:
 This endpoint retrieves the details of a specific method based on its ID.
+### `POST /method/add`:
+This endpoint allows users to add a new method to the database. It expects a JSON body with the following structure:
+```json
+{
+  "id": "Instruction ID",
+  "content": "Method Description"
+}
+```
+### `DELETE /method/delete`:
+This endpoint allows users to delete a method from the database. It expects a JSON body with the following structure:
+```json
+{
+  "id": "Method ID"
+}
+```
 
 ## People endpoints:
 ### `GET /people`:
