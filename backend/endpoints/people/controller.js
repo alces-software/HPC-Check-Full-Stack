@@ -14,8 +14,14 @@ module.exports = (db) => {
          const { name } = req.body || {};
 
          if (name) {
+            const sanitizedName = String(name).trim();
+
+            if (sanitizedName.length == 0) {
+               return res.status(400).json({ success: false, error: "The name provided is empty" });
+            }
+
             const existingPerson = await db.collection('person').findOne({
-               name: name
+               name: sanitizedName
             });
 
             if (existingPerson) {
@@ -23,7 +29,7 @@ module.exports = (db) => {
             }
 
             await db.collection('person').insertOne({
-               name: name
+               name: sanitizedName
             });
 
             return res.status(200).json({ success: true });
@@ -101,8 +107,14 @@ module.exports = (db) => {
          const { name } = req.params || {};
 
          if (name) {
+            const sanitizedName = String(name).trim();
+
+            if (sanitizedName.length == 0) {
+               return res.status(400).json({ success: false, error: "The name provided is empty" });
+            }
+
             const results = await db.collection('person').findOne({
-               name: { $regex: `^${name}$`, $options: "i" }
+               name: { $regex: `^${sanitizedName}$`, $options: "i" }
             });
 
             if (!results) {
