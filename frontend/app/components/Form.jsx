@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
@@ -16,10 +16,14 @@ export default function Form() {
   const [editing, setEditing] = useState(false)
   const [addMethod, setAddMethod] = useState(false)
   const router = useRouter();
+  const redirected = useRef(false);
 
-  if (!nameID || !cookieCluster) {
-    router.push('/name');
-  }
+  useEffect(() => {
+    if ((!nameID || !cookieCluster) && !redirected.current) {
+      redirected.current = true;
+      router.replace('/name');
+    }
+  }, [nameID, cookieCluster, router]);
 
   // GET NAMES
   useEffect(() => {
@@ -130,7 +134,7 @@ export default function Form() {
       Cookies.remove("currentCluster");
 
       alert("Report submitted successfully.");
-      router.push(`/report?id=${data.body.reportId}`);
+      router.replace(`/report?id=${data.body.reportId}`);
     } catch (err) {
       console.error(err);
     } finally {
@@ -269,35 +273,24 @@ export default function Form() {
                             ) : (
 
                               <div className="mt-4">
-    <textarea
-      
-      rows={6}
-      placeholder="Enter method..."
-      className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
-    />
-
-    <div className="mt-3 flex justify-end">
-      <button
-        type="button"
-        onClick={()=>setAddMethod(false)}
-        className="rounded-lg cursor-pointer bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-      >
-        Save Method
-      </button>
-    </div>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-                            )} 
+                                <textarea
+                                rows={6}
+    
+                                placeholder="Enter method..."
+    
+                                className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
+                                />
+                                <div className="mt-3 flex justify-end">
+                                  <button
+                                  type="button"
+                                  onClick={()=>setAddMethod(false)}
+                                  className="rounded-lg cursor-pointer bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                                  >
+                                    Save Method
+                                    </button>
+                                    </div>
+                                    </div>
+                                  )} 
 
                            
   
@@ -309,7 +302,7 @@ export default function Form() {
                           setEditing(false)
                           setAddMethod(false)
                         }}
-                        
+
                         className="rounded-lg bg-blue-500 px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-blue-600"
                         >
                           Close Editor Ｘ

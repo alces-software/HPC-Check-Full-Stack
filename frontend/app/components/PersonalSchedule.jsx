@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
@@ -9,15 +9,19 @@ export default function PersonalSchedule() {
     const [name, setName] = useState("User");
     const [loading, setLoading] = useState(true);
     const router = useRouter();
+    const redirected = useRef(false);
+    const userId = Cookies.get("selectedPersonId");
+
+    useEffect(() => {
+        if (!userId && !redirected.current) {
+            redirected.current = true;
+            router.replace('/name');
+        }
+    }, [userId, router]);
 
     useEffect(() => {
         async function getName() {
             try {
-                const userId = Cookies.get("selectedPersonId");
-
-                if (!userId) {
-                    router.push("/name");
-                }
 
                 const nameRes = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL}/people/id/${userId}`
@@ -64,7 +68,7 @@ export default function PersonalSchedule() {
         }
 
         getName();
-    }, [router]);
+    }, [router, userId]);
 
     if (loading) {
         return (
@@ -77,8 +81,8 @@ export default function PersonalSchedule() {
     }
 
     const handleClusterClick = (cluster) => {
-        Cookies.set("currentCluster", cluster)
-        router.push("/form")
+        Cookies.set("currentCluster", cluster);
+        router.push("/form");
     };
 
     return (

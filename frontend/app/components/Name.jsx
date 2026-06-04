@@ -22,6 +22,7 @@ export default function Name() {
         setMounted(true);
     }, []);
 
+    console.log(router);
 
     useEffect(() => {
         async function getName() {
@@ -42,11 +43,7 @@ export default function Name() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         Cookies.set("selectedPersonId", selectedId);
-
-        console.log("Saved:", selectedId);
-
         router.push("/personalSchedule");
     };
 

@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
       <div className="relative z-10 w-full max-w-5xl">
@@ -25,9 +28,9 @@ export default function Home() {
 
           <div className="grid gap-6 md:grid-cols-2">
             {/* Schedule */}
-            <Link
-              href="/schedule"
-              className="group rounded-2xl border border-green-400/20 bg-green-500/10 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-green-400/50 hover:bg-green-500/20 hover:shadow-2xl"
+            <button
+              onClick={() => router.push('/schedule')}
+              className="group cursor-pointer text-left rounded-2xl border border-green-400/20 bg-green-500/10 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-green-400/50 hover:bg-green-500/20 hover:shadow-2xl"
             >
               <div className="mb-4 text-5xl">📅</div>
 
@@ -42,12 +45,12 @@ export default function Home() {
               <div className="mt-6 font-semibold text-green-300 transition-transform group-hover:translate-x-2">
                 Open Schedule →
               </div>
-            </Link>
+            </button>
 
             {/* Report */}
-            <Link
-              href="/name"
-              className="group rounded-2xl border border-blue-400/20 bg-blue-500/10 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-blue-400/50 hover:bg-blue-500/20 hover:shadow-2xl"
+            <button
+              onClick={() => router.push('/name')}
+              className="group cursor-pointer text-left rounded-2xl border border-blue-400/20 bg-blue-500/10 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-blue-400/50 hover:bg-blue-500/20 hover:shadow-2xl"
             >
               <div className="mb-4 text-5xl">📝</div>
 
@@ -62,12 +65,12 @@ export default function Home() {
               <div className="mt-6 font-semibold text-blue-300 transition-transform group-hover:translate-x-2">
                 Start Report →
               </div>
-            </Link>
+            </button>
 
             {/* Results */}
-            <Link
-              href="/results"
-              className="group rounded-2xl border border-purple-400/20 bg-purple-500/10 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-purple-400/50 hover:bg-purple-500/20 hover:shadow-2xl"
+            <button
+              onClick={() => router.push('/results')}
+              className="group cursor-pointer text-left rounded-2xl border border-purple-400/20 bg-purple-500/10 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-purple-400/50 hover:bg-purple-500/20 hover:shadow-2xl"
             >
               <div className="mb-4 text-5xl">📊</div>
 
@@ -82,7 +85,7 @@ export default function Home() {
               <div className="mt-6 font-semibold text-purple-300 transition-transform group-hover:translate-x-2">
                 Open Results →
               </div>
-            </Link>
+            </button>
           </div>
         </div>
       </div>
