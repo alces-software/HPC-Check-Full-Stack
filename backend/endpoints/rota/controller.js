@@ -73,8 +73,10 @@ module.exports = (db) => {
 
                response.push({
                   person: personName,
+                  personId: d.personId,
                   cluster: clusterName,
-                  dayIndex: i.dayIndex
+                  clusterId: d.clusterId,
+                  dayIndex: d.dayIndex
                });
             });
 
@@ -115,8 +117,10 @@ module.exports = (db) => {
 
                response.push({
                   person: personName,
+                  personId: d.personId,
                   cluster: clusterName,
-                  dayIndex: i.dayIndex
+                  clusterId: d.clusterId,
+                  dayIndex: d.dayIndex
                });
             });
 
@@ -151,14 +155,16 @@ module.exports = (db) => {
 
             let response = [];
 
-            results.forEach(i => {
-               const personName = people.find(data => data._id.toString() == i.personId).name;
-               const clusterName = clusters.find(data => data._id.toString() == i.clusterId).name;
+            results.forEach(d => {
+               const personName = people.find(i => i._id.toString() == d.personId).name;
+               const clusterName = clusters.find(i => i._id.toString() == d.clusterId).name;
 
                response.push({
                   person: personName,
+                  personId: d.personId,
                   cluster: clusterName,
-                  dayIndex: i.dayIndex
+                  clusterId: d.clusterId,
+                  dayIndex: d.dayIndex
                });
             });
 
@@ -173,7 +179,7 @@ module.exports = (db) => {
 
    async function generateNewRota(req, res) {
       generateSchedule(db)
-      return res.status(200).json({ success: true})
+      return res.status(200).json({ success: true })
    }
 
    return {

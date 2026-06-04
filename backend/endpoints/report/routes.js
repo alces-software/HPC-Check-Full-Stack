@@ -6,6 +6,7 @@ module.exports = (db) => {
    const {
       getTodaysReports,
       getTodaysReportByCluster,
+      getTodaysReportByPerson,
       getReportByPerson,
       getReportByCluster,
       getReportById,
@@ -14,7 +15,8 @@ module.exports = (db) => {
    } = require('./controller')(db);
 
    router.get('/report/today', getTodaysReports);
-   router.get('/report/today/cluster/:id', getReportByCluster);
+   router.get('/report/today/cluster/:id', getTodaysReportByCluster);
+   router.get('/report/today/cluster/:id', getTodaysReportByPerson);
    router.get('/report/person/:id', getReportByPerson);
    router.get('/report/cluster/:id', getReportByCluster);
    router.get('/report/id/:id', getReportById);
