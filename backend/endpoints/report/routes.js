@@ -16,7 +16,7 @@ module.exports = (db) => {
 
    router.get('/report/today', getTodaysReports);
    router.get('/report/today/cluster/:id', getTodaysReportByCluster);
-   router.get('/report/today/cluster/:id', getTodaysReportByPerson);
+   router.get('/report/today/person/:id', getTodaysReportByPerson);
    router.get('/report/person/:id', getReportByPerson);
    router.get('/report/cluster/:id', getReportByCluster);
    router.get('/report/id/:id', getReportById);
