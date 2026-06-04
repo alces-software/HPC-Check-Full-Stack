@@ -15,7 +15,7 @@ export default function Report() {
 
       const hours = Math.floor(diffMs / 1000 / 60 / 60);
       const minutes = Math.floor((diffMs / 1000 / 60) % 60);
-      const seconds = Math.floor((diffMs / 1000 / 60) % 60);
+      const seconds = Math.floor((diffMs / 1000) % 60);
 
       return `${hours}h ${minutes}m ${seconds}s`;
    }
