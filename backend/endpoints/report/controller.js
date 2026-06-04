@@ -45,46 +45,27 @@ module.exports = (db) => {
          const { id } = req.params || {};
 
          if (id) {
-            const startOfDay = new Date();
-            startOfDay.setHours(0, 0, 0, 0);
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            }
 
-            const endOfDay = new Date();
-            endOfDay.setHours(23, 59, 59, 999);
-
-            const report = await db.collection('report').findOne({
+            const response = await db.collection('report').find({
                clusterId: id,
                startDate: {
                   $gte: startOfDay.getTime(),
                   $lte: endOfDay.getTime()
                }
+            }).toArray().then(result => {
+               return result.map(({ _id, ...rest }) => ({
+                  ...rest,
+                  id: _id.toString()
+               }));
             });
 
-            if (!report) {
-               return res.status(404).json({ success: false, error: "There is not report available from today for that cluster" });
-            }
-
-            const results = await db.collection('result').find({
-               reportId: id
-            }).toArray();
-
-            return res.status(200).json({
-               success: true,
-               body: {
-                  id,
-                  clusterId: report.clusterId,
-                  personId: report.personId,
-                  startTime: report.startDate,
-                  endTime: report.endDate,
-                  results: results.map((result) => ({
-                     instructionId: result.instructionId,
-                     passed: result.passed,
-                     note: result.note
-                  }))
-               }
-            });
+            return res.status(200).json({ success: true, body: response });
          }
 
-         return res.status(400).json({ success: false, error: "Cluster id missing" });
+         return res.status(400).json({ success: false, error: "Missing cluster id" });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
@@ -100,46 +81,27 @@ module.exports = (db) => {
          const { id } = req.params || {};
 
          if (id) {
-            const startOfDay = new Date();
-            startOfDay.setHours(0, 0, 0, 0);
+            if (!ObjectId.isValid(id)) {
+               return res.status(400).json({ success: false, error: "Invalid person id provided" });
+            }
 
-            const endOfDay = new Date();
-            endOfDay.setHours(23, 59, 59, 999);
-
-            const report = await db.collection('report').findOne({
+            const response = await db.collection('report').find({
                personId: id,
                startDate: {
                   $gte: startOfDay.getTime(),
                   $lte: endOfDay.getTime()
                }
+            }).toArray().then(result => {
+               return result.map(({ _id, ...rest }) => ({
+                  ...rest,
+                  id: _id.toString()
+               }));
             });
 
-            if (!report) {
-               return res.status(404).json({ success: false, error: "There is not report available from today for that person" });
-            }
-
-            const results = await db.collection('result').find({
-               reportId: id
-            }).toArray();
-
-            return res.status(200).json({
-               success: true,
-               body: {
-                  id,
-                  clusterId: report.clusterId,
-                  personId: report.personId,
-                  startTime: report.startDate,
-                  endTime: report.endDate,
-                  results: results.map((result) => ({
-                     instructionId: result.instructionId,
-                     passed: result.passed,
-                     note: result.note
-                  }))
-               }
-            });
+            return res.status(200).json({ success: true, body: response });
          }
 
-         return res.status(400).json({ success: false, error: "Person id missing" });
+         return res.status(400).json({ success: false, error: "Missing person id" });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
