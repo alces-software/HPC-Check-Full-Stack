@@ -85,7 +85,7 @@ module.exports = (db) => {
     */
    async function addMethod(req, res) {
       try {
-         const { id, content } = req.body | {};
+         const { id, content } = req.body || {};
 
          if (id && content) {
             if (!ObjectId.isValid(id)) {
@@ -96,8 +96,8 @@ module.exports = (db) => {
                _id: new ObjectId(id)
             });
 
-            if (instructionExists) {
-               return res.status(409).json({ success: false, error: "A method with that id already exist" });
+            if (!instructionExists) {
+               return res.status(404).json({ success: false, error: "An instruction with that id doesn't exist" });
             }
 
             const sanitizedContent = String(content).trim();
