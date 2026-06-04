@@ -1,7 +1,12 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOptions,
+  ListboxOption,
+} from "@headlessui/react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -176,6 +181,8 @@ export default function Results() {
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
       <div className="w-full max-w-6xl">
         <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
+
+          {/* HEADER */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-white">
               HPC Test Results
@@ -183,185 +190,217 @@ export default function Results() {
 
             <p className="mt-2 text-slate-300">
               {report
-                ? `Results for ${report.person}'s test on ${report.cluster
-                } (${formatDate(new Date(Number(report.startTime)))})`
+                ? `Results for ${report.person}'s test on ${report.cluster} ${formatDate(
+                  new Date(Number(report.startTime))
+                )}`
                 : "Select tester, cluster and date to display results"}
             </p>
           </div>
 
-          <div className="mb-4 grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 md:grid-cols-3">
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-300">
-                Tester
-              </label>
+          {/* SHARED INPUT STYLE */}
+          {/* (kept inside component for clarity, move outside if you want) */}
+          {(() => {
+            const glassButton =
+              "w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 text-left text-white backdrop-blur-md transition " +
+              "hover:border-white/20 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30";
 
-              <select
-                value={tester}
-                onChange={(event) => setTester(event.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 text-white outline-none focus:border-blue-400"
-              >
-                <option value="" className="bg-slate-900">
-                  Select tester
-                </option>
+            return (
+              <>
+                {/* FILTERS */}
+                <div className="mb-4 grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 md:grid-cols-3">
 
-                {names.map((name) => (
-                  <option key={name} value={name} className="bg-slate-900">
-                    {name}
-                  </option>
-                ))}
-              </select>
-            </div>
+                  {/* TESTER */}
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-slate-300">
+                      Tester
+                    </label>
 
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-300">
-                Cluster
-              </label>
+                    <Listbox value={tester} onChange={setTester}>
+                      <div className="relative">
 
-              <select
-                value={cluster}
-                onChange={(event) => setCluster(event.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 text-white outline-none focus:border-blue-400"
-              >
-                <option value="" className="bg-slate-900">
-                  Select cluster
-                </option>
+                        <ListboxButton className={glassButton}>
+                          {tester || "Select tester"}
 
-                {clusters.map((clusterName) => (
-                  <option
-                    key={clusterName}
-                    value={clusterName}
-                    className="bg-slate-900"
+                          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                            ▼
+                          </span>
+                        </ListboxButton>
+
+                        <ListboxOptions className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl">
+                          {names.map((name) => (
+                            <ListboxOption
+                              key={name}
+                              value={name}
+                              className={({ active, selected }) =>
+                                `cursor-pointer px-4 py-3 text-white transition ${active ? "bg-blue-500/20" : ""
+                                } ${selected ? "font-semibold" : ""}`
+                              }
+                            >
+                              {name}
+                            </ListboxOption>
+                          ))}
+                        </ListboxOptions>
+
+                      </div>
+                    </Listbox>
+                  </div>
+
+                  {/* CLUSTER */}
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-slate-300">
+                      Cluster
+                    </label>
+
+                    <Listbox value={cluster} onChange={setCluster}>
+                      <div className="relative">
+
+                        <ListboxButton className={glassButton}>
+                          {cluster || "Select cluster"}
+
+                          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                            ▼
+                          </span>
+                        </ListboxButton>
+
+                        <ListboxOptions className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl">
+                          {clusters.map((c) => (
+                            <ListboxOption
+                              key={c}
+                              value={c}
+                              className={({ active, selected }) =>
+                                `cursor-pointer px-4 py-3 text-white transition ${active ? "bg-blue-500/20" : ""
+                                } ${selected ? "font-semibold" : ""}`
+                              }
+                            >
+                              {c}
+                            </ListboxOption>
+                          ))}
+                        </ListboxOptions>
+
+                      </div>
+                    </Listbox>
+                  </div>
+
+                  {/* DATE */}
+                  <div>
+                    <label className="mb-2 block text-sm font-semibold text-slate-300">
+                      Date
+                    </label>
+
+                    <DatePicker
+                      selected={date}
+                      onChange={(d) => setDate(d)}
+                      dateFormat="dd/MM/yyyy"
+                      wrapperClassName="w-full"
+                      className="w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30"
+                      calendarClassName="hpc-datepicker"
+                    />
+                  </div>
+
+                </div>
+
+                {/* BUTTON */}
+                <div className="mb-4 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={findReport}
+                    disabled={!canSearch || loadingReport}
+                    className="cursor-pointer rounded-xl bg-blue-500 px-6 py-3 font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {clusterName}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-300">
-                Date
-              </label>
-
-              <DatePicker
-                selected={date}
-                onChange={(selectedDate) => setDate(selectedDate)}
-                dateFormat="dd/MM/yyyy"
-                wrapperClassName="w-full"
-                className="w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 text-white outline-none focus:border-blue-400"
-                calendarClassName="hpc-datepicker"
-              />
-            </div>
-          </div>
-
-          <div className="mb-8 flex justify-center">
-            <button
-              type="button"
-              onClick={findReport}
-              disabled={!canSearch || loadingReport}
-              className="rounded-xl cursor-pointer bg-blue-500 px-6 py-3 font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {loadingReport ? "Loading..." : "View Results"}
-            </button>
-          </div>
-
-          {report ? (
-            <>
-              {/* TABLE */}
-              <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left">
-                    <thead className="bg-slate-900/50">
-                      <tr>
-                        <th className="w-32 px-6 py-4 text-sm font-semibold uppercase tracking-wide text-slate-300">
-                          Outcome
-                        </th>
-                        <th className="px-6 py-4 text-sm font-semibold uppercase tracking-wide text-slate-300">
-                          Task
-                        </th>
-                        <th className="w-64 px-6 py-4 text-sm font-semibold uppercase tracking-wide text-slate-300">
-                          Notes
-                        </th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {report.results.map((result, index) => {
-                        const outcome = result.passed
-                          ? "PASS"
-                          : "FAIL";
-
-                        return (
-                          <tr
-                            key={`${result.instructionId}-${index}`}
-                            className={
-                              index !== report.results.length - 1
-                                ? "border-b border-white/10"
-                                : ""
-                            }
-                          >
-                            <td className="px-6 py-4">
-                              <span
-                                className={`rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wide ${outcomeStyle(
-                                  outcome
-                                )}`}
-                              >
-                                {outcome}
-                              </span>
-                            </td>
-
-                            <td className="px-6 py-4 font-medium text-white">
-                              {result.title}
-                            </td>
-
-                            <td className="whitespace-pre-line px-6 py-4 text-slate-300">
-                              {result.note || "-"}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* FOOTER */}
-              <div className="mt-4 flex flex-col items-end text-md">
-                <div className="text-slate-400">
-                  Tester:{" "}
-                  <span className="text-slate-200">
-                    {report.person}
-                  </span>
+                    {loadingReport ? "Loading..." : "View Results"}
+                  </button>
                 </div>
 
-                <div className="text-slate-400">
-                  Cluster:{" "}
-                  <span className="text-slate-200">
-                    {report.cluster}
-                  </span>
-                </div>
+                {/* RESULTS */}
+                {report ? (
+                  <>
+                    {/* TABLE */}
+                    <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                          <thead className="bg-slate-900/50">
+                            <tr>
+                              <th className="w-32 px-6 py-4 text-sm font-semibold uppercase tracking-wide text-slate-300">
+                                Outcome
+                              </th>
+                              <th className="px-6 py-4 text-sm font-semibold uppercase tracking-wide text-slate-300">
+                                Task
+                              </th>
+                              <th className="w-64 px-6 py-4 text-sm font-semibold uppercase tracking-wide text-slate-300">
+                                Notes
+                              </th>
+                            </tr>
+                          </thead>
 
-                <div className="text-slate-400">
-                  Duration:{" "}
-                  <span className="text-slate-200">
-                    {report.duration}
-                  </span>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-12 text-center">
-              <p className="text-lg font-semibold text-white">
-                {loadingReport
-                  ? "Loading report..."
-                  : "Select tester, cluster and date, then click View Results"}
-              </p>
+                          <tbody>
+                            {report.results.map((result, index) => {
+                              const outcome = result.passed ? "PASS" : "FAIL";
 
-              <p className="mt-2 text-slate-400">
-                The button is disabled until all required fields are selected.
-              </p>
-            </div>
-          )}
+                              return (
+                                <tr
+                                  key={`${result.instructionId}-${index}`}
+                                  className={
+                                    index !== report.results.length - 1
+                                      ? "border-b border-white/10"
+                                      : ""
+                                  }
+                                >
+                                  <td className="px-6 py-4">
+                                    <span
+                                      className={`rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wide ${outcomeStyle(
+                                        outcome
+                                      )}`}
+                                    >
+                                      {outcome}
+                                    </span>
+                                  </td>
+
+                                  <td className="px-6 py-4 font-medium text-white">
+                                    {result.title}
+                                  </td>
+
+                                  <td className="whitespace-pre-line px-6 py-4 text-slate-300">
+                                    {result.note || "-"}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* FOOTER */}
+                    <div className="mt-4 flex flex-col items-end text-md">
+                      <div className="text-slate-400">
+                        Tester: <span className="text-slate-200">{report.person}</span>
+                      </div>
+
+                      <div className="text-slate-400">
+                        Cluster: <span className="text-slate-200">{report.cluster}</span>
+                      </div>
+
+                      <div className="text-slate-400">
+                        Duration: <span className="text-slate-200">{report.duration}</span>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-12 text-center">
+                    <p className="text-lg font-semibold text-white">
+                      {loadingReport
+                        ? "Loading report..."
+                        : "Select tester, cluster and date, then click View Results"}
+                    </p>
+
+                    <p className="mt-2 text-slate-400">
+                      The button is disabled until all required fields are selected.
+                    </p>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
     </main>

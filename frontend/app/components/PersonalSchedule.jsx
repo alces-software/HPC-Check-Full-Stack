@@ -16,9 +16,7 @@ export default function PersonalSchedule() {
                 const userId = Cookies.get("selectedPersonId");
 
                 if (!userId) {
-                    setClusters([]);
-                    setLoading(false);
-                    return;
+                    return router.push("/name");
                 }
 
                 const nameRes = await fetch(
@@ -66,7 +64,7 @@ export default function PersonalSchedule() {
         }
 
         getName();
-    }, []);
+    }, [router]);
 
     if (loading) {
         return (

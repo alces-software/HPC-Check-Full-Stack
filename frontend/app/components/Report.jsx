@@ -232,7 +232,7 @@ export default function Report() {
                                  </td>
 
                                  <td className="whitespace-pre-line px-6 py-4 text-slate-300">
-                                    {result.notes || "-"}
+                                    {result.note || "-"}
                                  </td>
                               </tr>
                            ))}

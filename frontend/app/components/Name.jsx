@@ -3,6 +3,12 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie"
+import {
+    Listbox,
+    ListboxButton,
+    ListboxOptions,
+    ListboxOption,
+} from "@headlessui/react";
 
 
 export default function Name() {
@@ -66,26 +72,36 @@ export default function Name() {
                                 Person
                             </label>
 
-                            <select
-                                id="person"
-                                value={selectedId}
-                                onChange={(e) => setSelectedId(e.target.value)}
-                                className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
-                            >
-                                <option value="" className="text-slate-500">
-                                    Select a person...
-                                </option>
+                            <Listbox value={selectedId} onChange={setSelectedId}>
+                                <div className="relative">
 
-                                {people.map((person) => (
-                                    <option
-                                        key={person.id}
-                                        value={person.id}
-                                        className="bg-slate-800"
+                                    <ListboxButton
+                                        className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-left text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                     >
-                                        {person.name}
-                                    </option>
-                                ))}
-                            </select>
+                                        {people.find((p) => p.id === selectedId)?.name || "Select a person..."}
+
+                                        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                            ▼
+                                        </span>
+                                    </ListboxButton>
+
+                                    <ListboxOptions className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl">
+                                        {people.map((person) => (
+                                            <ListboxOption
+                                                key={person.id}
+                                                value={person.id}
+                                                className={({ active, selected }) =>
+                                                    `cursor-pointer px-4 py-3 text-white transition ${active ? "bg-blue-500/20" : ""
+                                                    } ${selected ? "font-semibold" : ""}`
+                                                }
+                                            >
+                                                {person.name}
+                                            </ListboxOption>
+                                        ))}
+                                    </ListboxOptions>
+
+                                </div>
+                            </Listbox>
                         </div>
 
                         <button

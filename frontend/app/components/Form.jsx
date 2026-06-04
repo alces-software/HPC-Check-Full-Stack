@@ -4,24 +4,20 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
-export default function Wizard() {
+export default function Form() {
   const [completedSteps, setCompletedSteps] = useState({});
   const [allClusters, setAllClusters] = useState([]);
   const [steps, setSteps] = useState([]);
   const [allNames, setAllNames] = useState([]);
-  const [startTime, setStartTime] = useState(null);
+  const [startTime] = useState(() => Date.now());
   const [submitting, setSubmitting] = useState(false);
-  const [nameID, setNameID] = useState("");
-  const [cookieCluster, setCookieCluster] = useState("");
-  const [mounted, setMounted] = useState(false);
-
+  const [nameID] = useState(() => Cookies.get("selectedPersonId") || "");
+  const [cookieCluster] = useState(() => Cookies.get("currentCluster") || "");
   const router = useRouter();
 
-  useEffect(() => {
-    setMounted(true);
-    setNameID(Cookies.get("selectedPersonId") || "");
-    setCookieCluster(Cookies.get("currentCluster") || "");
-  }, []);
+  if (!nameID || !cookieCluster) {
+    return router.push('/name');
+  }
 
   // GET NAMES
   useEffect(() => {
@@ -48,10 +44,6 @@ export default function Wizard() {
   const clusterId = allClusters.find(
     (c) => c.name === cookieCluster
   )?.id;
-
-  useEffect(() => {
-    setStartTime(Date.now());
-  }, []);
 
   // GET STEPS
   useEffect(() => {
@@ -144,7 +136,7 @@ export default function Wizard() {
     }
   }
 
-  if (!mounted || !clusterId || !nameID) {
+  if (!clusterId || !nameID) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900">
         <div className="rounded-2xl border border-white/10 bg-white/10 px-8 py-6 text-white backdrop-blur-xl">
@@ -155,12 +147,13 @@ export default function Wizard() {
   }
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 px-6 py-8">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 px-6 py-8">
       {/* background */}
       <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
       <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl" />
 
-      <div className="relative z-10 mx-auto max-w-6xl">
+      {/* content wrapper */}
+      <div className="relative z-10 w-full max-w-6xl">
         <form
           onSubmit={handleSubmit}
           className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl"
@@ -172,19 +165,15 @@ export default function Wizard() {
                 📋
               </div>
             </div>
-
             <h1 className="text-4xl font-bold text-white">
               Process Documentation
             </h1>
-
-            {mounted && (
-              <p className="mt-3 text-lg text-slate-300">
-                {name}&apos;s Check for{" "}
-                <span className="font-semibold text-blue-300">
-                  {cookieCluster}
-                </span>
-              </p>
-            )}
+            <p className="mt-3 text-lg text-slate-300">
+              {name}&apos;s Check for{" "}
+              <span className="font-semibold text-blue-300">
+                {cookieCluster}
+              </span>
+            </p>
           </div>
 
           {/* Steps */}
@@ -215,7 +204,9 @@ export default function Wizard() {
                         <li key={i}>
                           {method.content.includes(":") ? (
                             <>
-                              <p>{method.content.split(":")[0]}:</p>
+                              <p>
+                                {method.content.split(":")[0]}:
+                              </p>
                               <pre className="mt-3 overflow-auto rounded-xl border border-slate-700 bg-black/70 p-4 text-sm text-green-400">
                                 <code>
                                   {method.content
@@ -253,23 +244,23 @@ export default function Wizard() {
                   </div>
 
                   {/* notes */}
-                  {isCompleted ? (
-                    <>
-                      <textarea
-                        name={`step${step.id}Notes`}
-                        rows={4}
-                        placeholder="Notes (optional)"
-                        className="mt-4 w-full rounded-xl border border-white/10 bg-slate-900/50 p-3 text-white"
-                      />
-                    </>
-                  ) : (
-                    <textarea
-                      name={`step${step.id}FailureReason`}
-                      rows={4}
-                      placeholder="What went wrong?"
-                      className="mt-4 w-full rounded-xl border border-red-500/30 bg-red-900/20 p-3 text-white"
-                    />
-                  )}
+                  <textarea
+                    name={
+                      isCompleted
+                        ? `step${step.id}Notes`
+                        : `step${step.id}FailureReason`
+                    }
+                    rows={4}
+                    placeholder={
+                      isCompleted
+                        ? "Notes (optional)"
+                        : "What went wrong?"
+                    }
+                    className={`mt-4 w-full rounded-xl border p-3 text-white ${isCompleted
+                      ? "border-white/10 bg-slate-900/50"
+                      : "border-red-500/30 bg-red-900/20"
+                      }`}
+                  />
                 </section>
               );
             })}
@@ -285,6 +276,6 @@ export default function Wizard() {
           </button>
         </form>
       </div>
-    </section>
+    </main>
   );
 }

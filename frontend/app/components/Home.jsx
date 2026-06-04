@@ -24,22 +24,10 @@ export default function Home() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
+            {/* Schedule */}
             <Link
               href="/schedule"
-              className="
-                group
-                rounded-2xl
-                border
-                border-green-400/20
-                bg-green-500/10
-                p-8
-                transition-all
-                duration-300
-                hover:-translate-y-2
-                hover:border-green-400/50
-                hover:bg-green-500/20
-                hover:shadow-2xl
-              "
+              className="group rounded-2xl border border-green-400/20 bg-green-500/10 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-green-400/50 hover:bg-green-500/20 hover:shadow-2xl"
             >
               <div className="mb-4 text-5xl">📅</div>
 
@@ -56,22 +44,10 @@ export default function Home() {
               </div>
             </Link>
 
+            {/* Report */}
             <Link
               href="/name"
-              className="
-                group
-                rounded-2xl
-                border
-                border-blue-400/20
-                bg-blue-500/10
-                p-8
-                transition-all
-                duration-300
-                hover:-translate-y-2
-                hover:border-blue-400/50
-                hover:bg-blue-500/20
-                hover:shadow-2xl
-              "
+              className="group rounded-2xl border border-blue-400/20 bg-blue-500/10 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-blue-400/50 hover:bg-blue-500/20 hover:shadow-2xl"
             >
               <div className="mb-4 text-5xl">📝</div>
 
@@ -85,6 +61,26 @@ export default function Home() {
 
               <div className="mt-6 font-semibold text-blue-300 transition-transform group-hover:translate-x-2">
                 Start Report →
+              </div>
+            </Link>
+
+            {/* Results */}
+            <Link
+              href="/results"
+              className="group rounded-2xl border border-purple-400/20 bg-purple-500/10 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-purple-400/50 hover:bg-purple-500/20 hover:shadow-2xl"
+            >
+              <div className="mb-4 text-5xl">📊</div>
+
+              <h2 className="mb-2 text-2xl font-bold text-white">
+                View Results
+              </h2>
+
+              <p className="text-slate-300">
+                Access submitted reports and past test results.
+              </p>
+
+              <div className="mt-6 font-semibold text-purple-300 transition-transform group-hover:translate-x-2">
+                Open Results →
               </div>
             </Link>
           </div>
