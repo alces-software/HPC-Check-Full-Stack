@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
@@ -14,10 +14,14 @@ export default function Form() {
   const [nameID] = useState(() => Cookies.get("selectedPersonId") || "");
   const [cookieCluster] = useState(() => Cookies.get("currentCluster") || "");
   const router = useRouter();
+  const redirected = useRef(false);
 
-  if (!nameID || !cookieCluster) {
-    router.push('/name');
-  }
+  useEffect(() => {
+    if ((!nameID || !cookieCluster) && !redirected.current) {
+      redirected.current = true;
+      router.replace('/name');
+    }
+  }, [nameID, cookieCluster, router]);
 
   // GET NAMES
   useEffect(() => {
@@ -128,7 +132,7 @@ export default function Form() {
       Cookies.remove("currentCluster");
 
       alert("Report submitted successfully.");
-      router.push(`/report?id=${data.body.reportId}`);
+      router.replace(`/report?id=${data.body.reportId}`);
     } catch (err) {
       console.error(err);
     } finally {
