@@ -1,9 +1,9 @@
-import Wizard from "../components/Wizard"
+import Form from "../components/Form"
 
-export default function NamePage() {
+export default function FormPage() {
   return (
     <main>
-      <Wizard />
+      <Form />
     </main>
   );
 }

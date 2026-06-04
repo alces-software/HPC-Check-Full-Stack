@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/components/wizard.jsx", "app/components/Schedule.jsx"  ],
+, "app/components/Form.jsx", "app/components/Schedule.jsx"  ],
   "exclude": ["node_modules"]
 }

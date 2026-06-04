@@ -1,6 +1,6 @@
 import Results from "../components/Results"
 
-export default function SchedulePage() {
+export default function ResultsPage() {
   return (
     <main>
       <Results />
