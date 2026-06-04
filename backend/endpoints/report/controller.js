@@ -49,6 +49,12 @@ module.exports = (db) => {
                return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
             }
 
+            const startOfDay = new Date();
+            startOfDay.setHours(0, 0, 0, 0);
+
+            const endOfDay = new Date();
+            endOfDay.setHours(23, 59, 59, 999);
+
             const response = await db.collection('report').find({
                clusterId: id,
                startDate: {
@@ -84,6 +90,12 @@ module.exports = (db) => {
             if (!ObjectId.isValid(id)) {
                return res.status(400).json({ success: false, error: "Invalid person id provided" });
             }
+
+            const startOfDay = new Date();
+            startOfDay.setHours(0, 0, 0, 0);
+
+            const endOfDay = new Date();
+            endOfDay.setHours(23, 59, 59, 999);
 
             const response = await db.collection('report').find({
                personId: id,
