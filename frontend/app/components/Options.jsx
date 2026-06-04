@@ -11,6 +11,9 @@ export default function Options() {
 
   const [userError, setUserError] = useState("");
   const [clusterError, setClusterError] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
+  const [statusType, setStatusType] = useState("success");
+  const [confirmPrompt, setConfirmPrompt] = useState(null);
 
   const loadPeople = async () => {
     try {
@@ -39,8 +42,12 @@ export default function Options() {
   };
 
   useEffect(() => {
-    loadPeople();
-    loadClusters();
+    async function initialize() {
+      await loadPeople();
+      await loadClusters();
+    }
+
+    initialize();
   }, []);
 
   const deleteItem = async (url, id) => {
@@ -68,16 +75,37 @@ export default function Options() {
     }
   };
 
-  const handleAddUser = async () => {
-    setUserError("");
+  const showStatus = (message, type = "success") => {
+    setStatusMessage(message);
+    setStatusType(type);
+  };
+
+  const clearStatus = () => {
+    setStatusMessage("");
+  };
+
+  const requestConfirmation = (message, action) => {
+    setConfirmPrompt({ message, action });
+  };
+
+  const cancelConfirmation = () => {
+    setConfirmPrompt(null);
+  };
+
+  const confirmPendingAction = async () => {
+    if (!confirmPrompt) return;
+    const action = confirmPrompt.action;
+    setConfirmPrompt(null);
 
     try {
-      const confirmed = window.confirm(
-        `Are you sure you want to add the user "${userName}"?`
-      );
+      await action();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-      if (!confirmed) return;
-
+  const confirmAddUser = async () => {
+    try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/people/add`,
         {
@@ -94,31 +122,37 @@ export default function Options() {
       const json = await res.json();
 
       if (!json.success) {
-        setUserError(
-          json.message ?? "Could not add this user."
-        );
+        setUserError(json.message ?? "Could not add this user.");
         return;
       }
 
       setUserName("");
-
       await loadPeople();
+      showStatus(`Added user "${userName}" successfully.`, "success");
     } catch (err) {
       console.error(err);
       setUserError("Failed to communicate with the server.");
+      showStatus("Failed to add user.", "error");
     }
   };
 
-  const handleAddCluster = async () => {
-    setClusterError("");
+  const handleAddUser = () => {
+    setUserError("");
+    clearStatus();
 
+    if (!userName.trim()) {
+      setUserError("Please enter a username.");
+      return;
+    }
+
+    requestConfirmation(
+      `Are you sure you want to add the user "${userName}"?`,
+      confirmAddUser
+    );
+  };
+
+  const confirmAddCluster = async () => {
     try {
-      const confirmed = window.confirm(
-        `Are you sure you want to add the cluster "${clusterName}"?`
-      );
-
-      if (!confirmed) return;
-
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/hpc/add`,
         {
@@ -135,49 +169,95 @@ export default function Options() {
       const json = await res.json();
 
       if (!json.success) {
-        setClusterError(
-          json.message ?? "Could not add this cluster."
-        );
+        setClusterError(json.message ?? "Could not add this cluster.");
         return;
       }
 
       setClusterName("");
-
       await loadClusters();
+      showStatus(`Added cluster "${clusterName}" successfully.`, "success");
     } catch (err) {
       console.error(err);
-      setClusterError(
-        "Failed to communicate with the server."
-      );
+      setClusterError("Failed to communicate with the server.");
+      showStatus("Failed to add cluster.", "error");
     }
   };
 
-  const handleDeleteUser = async (id, name) => {
-    if (!window.confirm(`Are you sure you want to delete ${name}?`)) {return}
-    try {
-      await deleteItem(
-        `${process.env.NEXT_PUBLIC_API_URL}/people/delete/`,
-        id
-      );
+  const handleAddCluster = () => {
+    setClusterError("");
+    clearStatus();
 
-      await loadPeople();
-    } catch {}
+    if (!clusterName.trim()) {
+      setClusterError("Please enter a cluster name.");
+      return;
+    }
+
+    requestConfirmation(
+      `Are you sure you want to add the cluster "${clusterName}"?`,
+      confirmAddCluster
+    );
   };
 
-  const handleDeleteCluster = async (id, name) => {
-    if (!window.confirm(`Are you sure you want to delete ${name}?`)) {return}
-    try {
-      await deleteItem(
-        `${process.env.NEXT_PUBLIC_API_URL}/hpc/delete/`,
-        id
-      );
+  const handleDeleteUser = (id, name) => {
+    clearStatus();
 
-      await loadClusters();
-    } catch {}
+    requestConfirmation(`Are you sure you want to delete ${name}?`, async () => {
+      try {
+        await deleteItem(
+          `${process.env.NEXT_PUBLIC_API_URL}/people/delete/`,
+          id
+        );
+
+        await loadPeople();
+        showStatus(`Deleted user "${name}" successfully.`, "success");
+      } catch {
+        showStatus(`Failed to delete user "${name}".`, "error");
+      }
+    });
+  };
+
+  const handleDeleteCluster = (id, name) => {
+    clearStatus();
+
+    requestConfirmation(`Are you sure you want to delete ${name}?`, async () => {
+      try {
+        await deleteItem(
+          `${process.env.NEXT_PUBLIC_API_URL}/hpc/delete/`,
+          id
+        );
+
+        await loadClusters();
+        showStatus(`Deleted cluster "${name}" successfully.`, "success");
+      } catch {
+        showStatus(`Failed to delete cluster "${name}".`, "error");
+      }
+    });
   };
 
   const handleRegenerateSchedule = () => {
-    console.log("Regenerating schedule...");
+    clearStatus();
+
+    requestConfirmation(
+      "Are you sure you want to regenerate the schedule?",
+      async () => {
+        try {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/rota/new`
+          );
+
+          const json = await res.json();
+
+          if (json.success) {
+            showStatus("Generated new schedule", "success");
+          } else {
+            throw new Error(json.message || "Failed to regenerate schedule");
+          }
+        } catch (err) {
+          console.error(err);
+          showStatus("Failed to regenerate schedule.", "error");
+        }
+      }
+    );
   };
 
   return (
@@ -202,6 +282,44 @@ export default function Options() {
               options.
             </p>
           </div>
+
+          {confirmPrompt && (
+            <div className="mb-6 rounded-2xl border border-yellow-400/20 bg-yellow-500/10 p-5 text-slate-100">
+              <p className="mb-3 text-sm font-medium">
+                {confirmPrompt.message}
+              </p>
+
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={confirmPendingAction}
+                  className="rounded-xl bg-yellow-500 px-4 py-2 font-semibold text-slate-950 transition hover:bg-yellow-400"
+                >
+                  Confirm
+                </button>
+
+                <button
+                  type="button"
+                  onClick={cancelConfirmation}
+                  className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 text-white transition hover:bg-slate-800"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          {statusMessage && (
+            <div
+              className={`mb-6 rounded-2xl border px-4 py-4 text-sm ${
+                statusType === "error"
+                  ? "border-red-500/30 bg-red-500/10 text-red-100"
+                  : "border-green-500/30 bg-green-500/10 text-emerald-100"
+              }`}
+            >
+              {statusMessage}
+            </div>
+          )}
 
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Users */}
@@ -358,8 +476,7 @@ export default function Options() {
             </h2>
 
             <p className="mb-6 text-slate-300">
-              Rebuild and redistribute the rota using the latest
-              users, clusters, and scheduling rules.
+              Rebuild and redistribute the rota using the latest users, clusters, and scheduling rules. If you do not click this, the schedule will be updated next monday with the new fields
             </p>
 
             <button

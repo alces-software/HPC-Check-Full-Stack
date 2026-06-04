@@ -86,6 +86,25 @@ export default function Home() {
                 Open Results →
               </div>
             </button>
+            {/* Options */}
+            <button
+              onClick={() => router.push('/options')}
+              className="group cursor-pointer text-left rounded-2xl border border-amber-400/20 bg-amber-500/10 p-8 transition-all duration-300 hover:-translate-y-2 hover:border-amber-400/50 hover:bg-amber-500/20 hover:shadow-2xl"
+            >
+              <div className="mb-4 text-5xl">⚙️</div>
+
+              <h2 className="mb-2 text-2xl font-bold text-white">
+                Administration
+              </h2>
+
+              <p className="text-slate-300">
+                Manage users, clusters, and scheduling options.
+              </p>
+
+              <div className="mt-6 font-semibold text-amber-300 transition-transform group-hover:translate-x-2">
+                Open Administration →
+              </div>
+            </button>
           </div>
         </div>
       </div>
