@@ -20,7 +20,7 @@ export default function PersonalSchedule() {
     }, [userId, router]);
 
     useEffect(() => {
-        async function getName() {
+        async function init() {
             try {
 
                 const nameRes = await fetch(
@@ -54,11 +54,30 @@ export default function PersonalSchedule() {
                     return;
                 }
 
-                const todaysClusters = rotaData.body.filter(
-                    (item) => item.dayIndex === dayIndex
+                const usersCompletedClusters = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}/report/today/person/${userId}`
                 );
 
-                setClusters(todaysClusters);
+                const completedJson = await usersCompletedClusters.json();
+                const completedJsonArr = completedJson.body;
+                const clusterIds = completedJsonArr.map(
+                    (item) => item.clusterId
+                );
+                console.log(completedJson);
+
+                const todaysClusters = rotaData.body.filter(
+                    (item) => item.dayIndex === dayIndex
+                )
+
+                console.log(todaysClusters)
+
+                const filteredClusters = todaysClusters.filter(
+                    (item) => !clusterIds.includes(item.clusterId)
+                )
+
+                console.log(filteredClusters)
+
+                setClusters(filteredClusters);
             } catch (err) {
                 console.error(err);
                 setClusters([]);
@@ -67,7 +86,7 @@ export default function PersonalSchedule() {
             }
         }
 
-        getName();
+        init();
     }, [router, userId]);
 
     if (loading) {
