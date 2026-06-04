@@ -184,7 +184,7 @@ export default function Results() {
             <p className="mt-2 text-slate-300">
               {report
                 ? `Results for ${report.person}'s test on ${report.cluster
-                } ${formatDate(new Date(Number(report.startTime)))}`
+                } (${formatDate(new Date(Number(report.startTime)))})`
                 : "Select tester, cluster and date to display results"}
             </p>
           </div>
@@ -259,7 +259,7 @@ export default function Results() {
               type="button"
               onClick={findReport}
               disabled={!canSearch || loadingReport}
-              className="cursor-pointer rounded-xl bg-blue-500 px-6 py-3 font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl cursor-pointer bg-blue-500 px-6 py-3 font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loadingReport ? "Loading..." : "View Results"}
             </button>

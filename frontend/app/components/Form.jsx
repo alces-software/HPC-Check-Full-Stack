@@ -279,7 +279,7 @@ export default function Wizard() {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-10 w-full rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 py-4 text-lg font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50"
+            className="mt-10 w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 py-4 text-lg font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50"
           >
             {submitting ? "Submitting..." : "Submit Report"}
           </button>

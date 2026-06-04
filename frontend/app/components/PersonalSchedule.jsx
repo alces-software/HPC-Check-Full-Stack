@@ -114,6 +114,7 @@ export default function PersonalSchedule() {
                                     onClick={() => handleClusterClick(item.cluster)}
                                     className="
                                         group
+                                        cursor-pointer
                                         rounded-2xl
                                         border
                                         border-blue-400/20
