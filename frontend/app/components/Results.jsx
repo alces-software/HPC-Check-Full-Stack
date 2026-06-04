@@ -262,7 +262,7 @@ export default function Results() {
                           </span>
                         </ListboxButton>
 
-                        <ListboxOptions className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl">
+                        <ListboxOptions className="absolute z-50 cursor-pointer mt-2 max-h-60 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl">
 
                           {clusters.map((name) => (
                             <ListboxOption
@@ -291,7 +291,7 @@ export default function Results() {
                       onChange={(d) => setDate(d)}
                       dateFormat="dd/MM/yyyy"
                       wrapperClassName="w-full"
-                      className="w-full rounded-xl border border-white/10 bg-slate-900/60 px-4 py-3 text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30"
+                      className="w-full rounded-xl cursor-pointer border border-white/10 bg-slate-900/60 px-4 py-3 text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30"
                       calendarClassName="hpc-datepicker"
                     />
                   </div>

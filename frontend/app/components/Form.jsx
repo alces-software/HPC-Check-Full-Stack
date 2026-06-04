@@ -17,9 +17,6 @@ export default function Form() {
   const [addMethod, setAddMethod] = useState(false)
   const [newMethod, setNewMethod] = useState("");
 
-
-
-
   const router = useRouter();
   const redirected = useRef(false);
 
@@ -56,36 +53,21 @@ export default function Form() {
     (c) => c.name === cookieCluster
   )?.id;
 
-  // GET STEPS
-  // useEffect(() => {
-  //   if (!clusterId) return;
+  // NEW CODE - REVIEW
+  async function getSteps() {
+    if (!clusterId) return;
 
-  //   async function getSteps() {
-  //     const res = await fetch(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`
-  //     );
-  //     const data = await res.json();
-  //     setSteps(data.body);
-  //   }
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`
+    );
 
-  //   getSteps();
-  // }, [clusterId]);
+    const data = await res.json();
+    setSteps(data.body);
+  }
 
-// NEW CODE - REVIEW
-async function getSteps() {
-  if (!clusterId) return;
-
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`
-  );
-
-  const data = await res.json();
-  setSteps(data.body);
-}
-
-useEffect(() => {
-  getSteps();
-}, [clusterId]);
+  useEffect(() => {
+    getSteps();
+  }, [clusterId]);
 
   function toggleStep(stepId) {
     setCompletedSteps((prev) => ({
@@ -175,83 +157,70 @@ useEffect(() => {
     );
   }
 
-
-
-
-
-
-
-
-
   // DELETE METHOD
   async function deleteMethod(methodId) {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/method/delete/`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: methodId,
-        }),
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/method/delete/`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: methodId,
+          }),
+        }
+      );
+
+      console.log("Method id: ", methodId);
+
+      if (!res.ok) {
+        throw new Error("Failed to delete method");
+
       }
-    );
 
-    console.log("Method id: ",  methodId);
-
-    if (!res.ok) {
-      throw new Error("Failed to delete method");
-      
+      await getSteps(); // refresh methods
+    } catch (err) {
+      console.error(err);
     }
-
-    await getSteps(); // refresh methods
-  } catch (err) {
-    console.error(err);
   }
-}
 
+  // ADD METHOD
+  async function addNewMethod(instructionId, content) {
+    try {
 
+      console.log(instructionId, content)
 
-// ADD METHOD
-async function addNewMethod(instructionId, content) {
-  try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/method/add`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: instructionId,
+            content: content,
+          }),
+        }
+      );
 
-    console.log(instructionId, content)
+      const data = await res.json();
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/method/add`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id:instructionId,
-          content:content,
-        }),
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to add method");
       }
-    );
 
-    
+      await getSteps();
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || "Failed to add method");
+      setNewMethod("");
+      setAddMethod(false);
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
     }
-
-    await getSteps();
-
-    setNewMethod("");
-    setAddMethod(false);
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
   }
-}
-
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 px-6 py-8">
@@ -326,112 +295,101 @@ async function addNewMethod(instructionId, content) {
                             </>
                           ) : (
                             <div className="mt-7 overflow-auto p-4 text-md">
-                            {method.content}
+                              {method.content}
                             </div>
                           )}
 
                           {editing && (
 
-                          <div className="flex justify-end">
+                            <div className="flex justify-end">
 
-                          <button
-                          type="button"
-                          onClick={() => {
+                              <button
+                                type="button"
+                                onClick={() => {
 
-                            const confirmed = window.confirm("Are you sure you want to delete this method?");
-                            if (confirmed) {
-                              deleteMethod(method.id);
-                            }
-                            
-                          }
-                          }
-                          className="rounded-lg bg-red-700 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-red-600">
-                            Delete Method
-                            </button>
+                                  const confirmed = window.confirm("Are you sure you want to delete this method?");
+                                  if (confirmed) {
+                                    deleteMethod(method.id);
+                                  }
+
+                                }
+                                }
+                                className="rounded-lg bg-red-700 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-red-600">
+                                Delete Method
+                              </button>
                             </div>
 
                           )}
                         </li>
-                        
+
                       ))}
 
-                       {!editing ? (
-                      <div className="flex flex-col justify-end">
-                      <button
-                          type="button"
-                          onClick={() => setEditing(true)}
-                          className="rounded-lg bg-blue-500 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-blue-600">
+                      {!editing ? (
+                        <div className="flex flex-col justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setEditing(true)}
+                            className="rounded-lg bg-blue-500 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-blue-600">
                             Edit Methods
-                            </button>
-                            </div>
-                       ) : (
+                          </button>
+                        </div>
+                      ) : (
                         <>
 
-                        
-                        <div className="flex flex-col justify-end">
+
+                          <div className="flex flex-col justify-end">
 
 
-                          {!addMethod? (
-                      <button
-                          type="button"
-                          onClick={() => setAddMethod(true)}
-                          className="rounded-lg bg-green-600 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-green-700">
-                            Add Method ＋
-                            </button>
+                            {!addMethod ? (
+                              <button
+                                type="button"
+                                onClick={() => setAddMethod(true)}
+                                className="rounded-lg bg-green-600 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-green-700">
+                                Add Method ＋
+                              </button>
                             ) : (
 
                               <div className="mt-4">
                                 <textarea
-                                rows={6}
-                                value={newMethod}
-                                onChange={(e) => setNewMethod(e.target.value)}
-    
-                                placeholder="Enter method..."
-    
-                                className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
+                                  rows={6}
+                                  value={newMethod}
+                                  onChange={(e) => setNewMethod(e.target.value)}
+
+                                  placeholder="Enter method..."
+
+                                  className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
                                 />
                                 <div className="mt-3 flex justify-end">
                                   <button
-                                  type="button"
-                                  
-                                    
-                                    
-                                  
-                                  
-                                 onClick={() => {
-                                  const sanitizedContent = newMethod.trim()
-                                  sanitizedContent === "" ? alert("Please enter a method") : addNewMethod(step.id, sanitizedContent);}}
- 
-                                  className="rounded-lg cursor-pointer bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                                    type="button"
+                                    onClick={() => {
+                                      const sanitizedContent = newMethod.trim()
+                                      sanitizedContent === "" ? alert("Please enter a method") : addNewMethod(step.id, sanitizedContent);
+                                    }}
+
+                                    className="rounded-lg cursor-pointer bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                                   >
                                     Save Method
-                                    </button>
-                                    </div>
-                                    </div>
-                                  )} 
-
-                           
-  
-
+                                  </button>
+                                </div>
+                              </div>
+                            )}
 
                             <button
-                        type="button"
-                        onClick={() => {
-                          setEditing(false)
-                          setAddMethod(false)
-                        }}
+                              type="button"
+                              onClick={() => {
+                                setEditing(false)
+                                setAddMethod(false)
+                              }}
 
-                        className="rounded-lg bg-blue-500 px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-blue-600"
-                        >
-                          Close Editor Ｘ
-                          </button>
-                            </div>
-                       
-                        
-                          
-                          </>
-                        )
-                        }
+                              className="rounded-lg bg-blue-500 px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-blue-600"
+                            >
+                              Close Editor Ｘ
+                            </button>
+                          </div>
+                        </>
+                      )
+                      }
                     </ul>
                   </details>
 

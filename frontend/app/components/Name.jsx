@@ -73,7 +73,7 @@ export default function Name() {
                                 <div className="relative">
 
                                     <ListboxButton
-                                        className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-left text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                                        className="w-full cursor-pointer rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-left text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                     >
                                         {people.find((p) => p.id === selectedId)?.name || "Select a person..."}
 
