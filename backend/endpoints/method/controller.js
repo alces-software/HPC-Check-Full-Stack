@@ -85,15 +85,15 @@ module.exports = (db) => {
     */
    async function addMethod(req, res) {
       try {
-         const { instructionId, content } = req.body | {};
+         const { id, content } = req.body | {};
 
-         if (instructionId, content) {
-            if (!ObjectId.isValid(instructionId)) {
+         if (id, content) {
+            if (!ObjectId.isValid(id)) {
                return res.status(400).json({ success: false, error: "Invalid instruction id provided" });
             }
 
             const instructionExists = await db.collection('instruction').findOne({
-               _id: new ObjectId(instructionId)
+               _id: new ObjectId(id)
             });
 
             if (instructionExists) {
@@ -107,7 +107,7 @@ module.exports = (db) => {
             }
 
             await db.collection('method').insertOne({
-               instructionId: instructionId,
+               instructionId: id,
                content: sanitizedContent
             });
 
