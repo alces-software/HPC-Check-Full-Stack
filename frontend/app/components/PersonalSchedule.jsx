@@ -54,28 +54,32 @@ export default function PersonalSchedule() {
                     return;
                 }
 
-                const usersCompletedClusters = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/report/today/person/${userId}`
-                );
-
-                const completedJson = await usersCompletedClusters.json();
-                const completedJsonArr = completedJson.body;
-                const clusterIds = completedJsonArr.map(
-                    (item) => item.clusterId
-                );
-                console.log(completedJson);
-
                 const todaysClusters = rotaData.body.filter(
                     (item) => item.dayIndex === dayIndex
-                )
+                );
 
-                console.log(todaysClusters)
+                const completedClusterIds = await Promise.all(
+                    todaysClusters.map(async (item) => {
+                        try {
+                            const response = await fetch(
+                                `${process.env.NEXT_PUBLIC_API_URL}/report/today/cluster/${item.clusterId}`
+                            );
+                            const json = await response.json();
+                            return json?.success && Array.isArray(json.body) && json.body.length > 0
+                                ? item.clusterId
+                                : null;
+                        } catch (error) {
+                            console.error('Failed to load completed report for cluster', item.clusterId, error);
+                            return null;
+                        }
+                    })
+                );
+
+                const completedIdsSet = new Set(completedClusterIds.filter(Boolean));
 
                 const filteredClusters = todaysClusters.filter(
-                    (item) => !clusterIds.includes(item.clusterId)
-                )
-
-                console.log(filteredClusters)
+                    (item) => !completedIdsSet.has(item.clusterId)
+                );
 
                 setClusters(filteredClusters);
             } catch (err) {
