@@ -173,15 +173,18 @@ export default function Results() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
-      <div className="mx-auto max-w-6xl">
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
+      <div className="w-full max-w-6xl">
         <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-white">HPC Test Results</h1>
+            <h1 className="text-4xl font-bold text-white">
+              HPC Test Results
+            </h1>
 
             <p className="mt-2 text-slate-300">
               {report
-                ? `Results for ${report.person}'s test on ${report.cluster} ${formatDate(new Date(Number(report.startTime)))}  `
+                ? `Results for ${report.person}'s test on ${report.cluster
+                } ${formatDate(new Date(Number(report.startTime)))}`
                 : "Select tester, cluster and date to display results"}
             </p>
           </div>
@@ -256,7 +259,7 @@ export default function Results() {
               type="button"
               onClick={findReport}
               disabled={!canSearch || loadingReport}
-              className="rounded-xl cursor-pointer bg-blue-500 px-6 py-3 font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-xl bg-blue-500 px-6 py-3 font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loadingReport ? "Loading..." : "View Results"}
             </button>
@@ -264,6 +267,7 @@ export default function Results() {
 
           {report ? (
             <>
+              {/* TABLE */}
               <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
@@ -283,7 +287,9 @@ export default function Results() {
 
                     <tbody>
                       {report.results.map((result, index) => {
-                        const outcome = result.passed ? "PASS" : "FAIL";
+                        const outcome = result.passed
+                          ? "PASS"
+                          : "FAIL";
 
                         return (
                           <tr
@@ -319,19 +325,27 @@ export default function Results() {
                 </div>
               </div>
 
+              {/* FOOTER */}
               <div className="mt-4 flex flex-col items-end text-md">
                 <div className="text-slate-400">
-                  Tester: <span className="text-slate-200">{report.person}</span>
+                  Tester:{" "}
+                  <span className="text-slate-200">
+                    {report.person}
+                  </span>
                 </div>
 
                 <div className="text-slate-400">
                   Cluster:{" "}
-                  <span className="text-slate-200">{report.cluster}</span>
+                  <span className="text-slate-200">
+                    {report.cluster}
+                  </span>
                 </div>
 
                 <div className="text-slate-400">
                   Duration:{" "}
-                  <span className="text-slate-200">{report.duration}</span>
+                  <span className="text-slate-200">
+                    {report.duration}
+                  </span>
                 </div>
               </div>
             </>
@@ -342,6 +356,7 @@ export default function Results() {
                   ? "Loading report..."
                   : "Select tester, cluster and date, then click View Results"}
               </p>
+
               <p className="mt-2 text-slate-400">
                 The button is disabled until all required fields are selected.
               </p>
