@@ -15,7 +15,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   icons: {
-    icon: "/images/alces_logo.png",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/images/alces_logo.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/images/alces_logo.png",
   },
 };
 

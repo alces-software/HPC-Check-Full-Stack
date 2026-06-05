@@ -18,14 +18,13 @@ export default function Header() {
   return (
 <>
 <header className="fixed top-5 left-0 z-50 w-full bg-transparent">
-        <div className="mx-auto flex max-w-8xl items-center justify-between px-25 py-4">
-          <Link href="/" className="text-xl font-semibold text-white">
+        <div className="mx-auto flex max-w-8xl items-center justify-between px-15 py-4">
+          <Link href="/" className="text-xl">
           <Image
             src="/images/alces_logo.png"
             alt="Logo"
             width={100}
             height={100}
-            className="rounded-full"
           />
             
           </Link>
@@ -46,13 +45,21 @@ export default function Header() {
         <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-slate-950">
           <button
             onClick={() => setMenuOpen(false)}
-            className="absolute right-25 cursor-pointer top-12 text-5xl text-white hover:text-blue-400"
+            className="absolute right-15 cursor-pointer top-12 text-5xl text-white hover:text-blue-400"
             aria-label="Close menu"
           >
             ×
           </button>
 
           <nav className="flex flex-col items-center gap-10">
+             <Link
+              href="/"
+              onClick={() => setMenuOpen(false)}
+              className="text-4xl text-white hover:text-blue-400 transition"
+            >
+              Home
+            </Link>
+
             <Link
               href="/schedule"
               onClick={() => setMenuOpen(false)}
