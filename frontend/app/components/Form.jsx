@@ -314,7 +314,7 @@ export default function Form() {
 
                                 }
                                 }
-                                className="rounded-lg bg-red-700 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-red-600">
+                                className="mt-8 cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0">
                                 Delete Method
                               </button>
                             </div>
@@ -329,7 +329,7 @@ export default function Form() {
                           <button
                             type="button"
                             onClick={() => setEditing(true)}
-                            className="rounded-lg bg-blue-500 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-blue-600">
+                            className="mt-8 cursor-pointer rounded-xl border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-400/15 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0">
                             Edit Methods
                           </button>
                         </div>
@@ -344,7 +344,7 @@ export default function Form() {
                               <button
                                 type="button"
                                 onClick={() => setAddMethod(true)}
-                                className="rounded-lg bg-green-600 opacity-[0.9] px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-green-700">
+                                className="mt-8 cursor-pointer rounded-xl border border-emerald-300/25 bg-emerald-400/10 px-5 py-2.5 text-sm font-semibold text-emerald-100 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-emerald-300/45 hover:bg-emerald-400/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0">
                                 Add Method ＋
                               </button>
                             ) : (
@@ -367,7 +367,7 @@ export default function Form() {
                                       sanitizedContent === "" ? alert("Please enter a method") : addNewMethod(step.id, sanitizedContent);
                                     }}
 
-                                    className="rounded-lg cursor-pointer bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                                    className="cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/15 px-5 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/25 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
                                   >
                                     Save Method
                                   </button>
@@ -382,7 +382,7 @@ export default function Form() {
                                 setAddMethod(false)
                               }}
 
-                              className="rounded-lg bg-blue-500 px-3 py-2 mt-8 font-medium text-white cursor-pointer hover:bg-blue-600"
+                              className="mt-8 cursor-pointer rounded-xl border border-slate-300/20 bg-slate-100/10 px-5 py-2.5 text-sm font-semibold text-slate-200 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-slate-200/40 hover:bg-slate-100/15 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-200/40 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
                             >
                               Close Editor Ｘ
                             </button>
@@ -438,7 +438,7 @@ export default function Form() {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-10 w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 py-4 text-lg font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50"
+            className="mt-10 w-full cursor-pointer rounded-2xl border border-blue-200/25 bg-gradient-to-r from-blue-500 via-blue-500 to-indigo-600 py-4 text-lg font-semibold text-white shadow-xl shadow-blue-950/30 transition duration-200 hover:-translate-y-0.5 hover:border-blue-100/40 hover:from-blue-400 hover:via-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-200/60 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
           >
             {submitting ? "Submitting..." : "Submit Report"}
           </button>
