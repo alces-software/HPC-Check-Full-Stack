@@ -10,7 +10,7 @@ module.exports.seedData = async (db) => {
   const users = [
     { _id: new ObjectId(), name: "Oscar" },
     { _id: new ObjectId(), name: "Alex" },
-    { _id: new ObjectId(), name: "Callum" },
+    { _id: new ObjectId(), name: "Calum" },
   ];
 
   await peopleCollection.insertMany(users);
