@@ -163,7 +163,7 @@ module.exports = (db) => {
                clusterId: id
             }).toArray().then(result => {
                return result.map(({ _id }) => ({
-                  id: _id.toString()
+                  _id: _id
                }));
             });
 
@@ -173,11 +173,27 @@ module.exports = (db) => {
 
             reports.forEach(async report => {
                await db.collection('result').deleteMany({
-                  reportId: report.id
+                  reportId: report._id
                });
             });
 
-            await db.collection('report').deleteMany(reports);
+            await db.collection('report').deleteMany({ _id: { $in: reports.map(r => r._id) } });
+
+            const instructions = await db.collection('instruction').find({
+               clusterId: new ObjectId(id)
+            }).toArray().then(result => {
+               return result.map(({ _id }) => ({
+                  _id: _id
+               }));
+            });
+
+            instructions.forEach(async instruction => {
+               await db.collection('method').deleteMany({
+                  instructionId: instruction._id
+               });
+            });
+
+            await db.collection('instruction').deleteMany({ _id: { $in: instructions.map(i => i._id) } });
 
             return res.status(200).json({ success: true });
          }
