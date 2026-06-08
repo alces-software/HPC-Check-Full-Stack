@@ -279,6 +279,7 @@ export default function Form() {
                     <ul className="mt-4 space-y-2 text-slate-300">
                       {step.methods.map((method, i) => (
                         <li key={method.id}>
+                          {i > 0 && <hr className="border-white/10 mb-2" />}
                           <div className="prose prose-invert max-w-none">
                             <ReactMarkdown>{method.content}</ReactMarkdown>
                           </div>
