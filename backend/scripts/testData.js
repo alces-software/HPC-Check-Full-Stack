@@ -1,110 +1,109 @@
 const { ObjectId } = require("mongodb");
 
-
 module.exports.seedData = async (db) => {
   const peopleCollection = db.collection("person");
   const clustersCollection = db.collection("cluster");
   const instructionsCollection = db.collection("instruction");
   const methodsCollection = db.collection("method");
 
-  // Optional: clear existing test data
-  await Promise.all([
-    peopleCollection.deleteMany({}),
-    clustersCollection.deleteMany({}),
-    instructionsCollection.deleteMany({}),
-    methodsCollection.deleteMany({}),
-  ]);
-
-  // People
-  const people = [
+  // Users
+  const users = [
     { _id: new ObjectId(), name: "Oscar" },
     { _id: new ObjectId(), name: "Alex" },
-    { _id: new ObjectId(), name: "Calum" },
+    { _id: new ObjectId(), name: "Callum" },
   ];
 
-  await peopleCollection.insertMany(people);
+  await peopleCollection.insertMany(users);
 
-  // Clusters
-  const clusters = [
-    { _id: new ObjectId(), name: "Banana Research" },
-    { _id: new ObjectId(), name: "Department of Questionable Ideas" },
-  ];
+  // Cluster
+  const cognitionCluster = {
+    _id: new ObjectId(),
+    name: "Cognition",
+  };
 
-  await clustersCollection.insertMany(clusters);
+  await clustersCollection.insertOne(cognitionCluster);
 
   const instructions = [
-    // Cluster 1
     {
       _id: new ObjectId(),
-      title: "Measure Banana Aerodynamics",
-      expectedTime: "5 mins",
-      description:
-        "Determine whether a banana becomes more efficient when given encouraging words.",
-      clusterId: clusters[0]._id.toString(),
-      good: "Banana travels with confidence.",
-      bad: "Banana refuses to participate.",
+      title: "Login & Basic Access",
+      expectedTime: "2-3 mins",
+      description: "Confirm login nodes and user-facing hosts are reachable.",
+      clusterId: cognitionCluster._id.toString(),
+      good: "Successful login and filesystem access on all tested hosts.",
+      bad: "Login failures, timeouts, or inaccessible filesystems.",
     },
     {
       _id: new ObjectId(),
-      title: "Emergency Duck Census",
-      expectedTime: "8 mins",
-      description:
-        "Count all visible ducks and estimate how many are undercover agents.",
-      clusterId: clusters[0]._id.toString(),
-      good: "Most ducks appear honest.",
-      bad: "Too many ducks know your name.",
+      title: "Home Directory & User Quota + Filesystem Experience",
+      expectedTime: "6-7 mins",
+      description: "Verify quota system and test home filesystem performance.",
+      clusterId: cognitionCluster._id.toString(),
+      good: "Usage below limits and filesystem tests complete quickly.",
+      bad: "Quota issues or poor filesystem performance.",
     },
     {
       _id: new ObjectId(),
-      title: "Keyboard Crumb Analysis",
-      expectedTime: "6 mins",
-      description:
-        "Investigate the ecosystem beneath a frequently used keyboard.",
-      clusterId: clusters[0]._id.toString(),
-      good: "Only harmless cracker fragments found.",
-      bad: "New civilization discovered.",
-    },
-
-    // Cluster 2
-    {
-      _id: new ObjectId(),
-      title: "Coffee Temperature Diplomacy",
-      expectedTime: "4 mins",
-      description:
-        "Negotiate a peace treaty between hot coffee and impatient humans.",
-      clusterId: clusters[1]._id.toString(),
-      good: "Coffee reaches agreeable temperature.",
-      bad: "Tongue regrets decision.",
+      title: "Scratch / Lustre Storage + Filesystem Experience",
+      expectedTime: "5-6 mins",
+      description: "Verify scratch storage quotas and Lustre performance.",
+      clusterId: cognitionCluster._id.toString(),
+      good: "Commands succeed with healthy performance.",
+      bad: "Filesystem issues, errors, or slow performance.",
     },
     {
       _id: new ObjectId(),
-      title: "Chair Stability Olympics",
-      expectedTime: "7 mins",
-      description:
-        "Evaluate office chairs for balance, squeakiness, and dramatic flair.",
-      clusterId: clusters[1]._id.toString(),
-      good: "Chair remains loyal.",
-      bad: "Chair develops trust issues.",
+      title: "Slurm Scheduler Status",
+      expectedTime: "4-5 mins",
+      description: "Confirm scheduler responsiveness and node availability.",
+      clusterId: cognitionCluster._id.toString(),
+      good: "Nodes visible and scheduler operating normally.",
+      bad: "Nodes down/drained or scheduler unresponsive.",
     },
     {
       _id: new ObjectId(),
-      title: "Suspiciously Intelligent Toaster Audit",
-      expectedTime: "9 mins",
-      description:
-        "Verify toaster is producing toast and not plotting expansion.",
-      clusterId: clusters[1]._id.toString(),
-      good: "Only toast detected.",
-      bad: "Toaster requests admin privileges.",
+      title: "GPU / Compute Node Availability",
+      expectedTime: "3-4 mins",
+      description: "Validate GPU node health and availability.",
+      clusterId: cognitionCluster._id.toString(),
+      good: "GPU nodes healthy and accessible.",
+      bad: "Missing nodes or unhealthy GPU resources.",
     },
     {
       _id: new ObjectId(),
-      title: "Rubber Duck Code Review",
-      expectedTime: "5 mins",
-      description:
-        "Explain a bug to a rubber duck and record the duck's reaction.",
-      clusterId: clusters[1]._id.toString(),
-      good: "Bug identified.",
-      bad: "Duck appears disappointed.",
+      title: "Light Test Job Submission",
+      expectedTime: "5-6 mins",
+      description: "Verify jobs can be submitted and completed.",
+      clusterId: cognitionCluster._id.toString(),
+      good: "Jobs execute successfully.",
+      bad: "Jobs fail or remain pending.",
+    },
+    {
+      _id: new ObjectId(),
+      title: "Services & Environment",
+      expectedTime: "3-4 mins",
+      description: "Verify Slurm commands and environment modules.",
+      clusterId: cognitionCluster._id.toString(),
+      good: "Environment commands work normally.",
+      bad: "Broken environment or unavailable commands.",
+    },
+    {
+      _id: new ObjectId(),
+      title: "Cleanup & Verification",
+      expectedTime: "2 mins",
+      description: "Ensure no test artifacts remain.",
+      clusterId: cognitionCluster._id.toString(),
+      good: "No jobs or files left behind.",
+      bad: "Residual jobs, files, or quota usage.",
+    },
+    {
+      _id: new ObjectId(),
+      title: "Final Notes / Escalation",
+      expectedTime: "1 min",
+      description: "Record outcome and escalate issues if required.",
+      clusterId: cognitionCluster._id.toString(),
+      good: "Daily check completed successfully.",
+      bad: "Issues require escalation to OPS.",
     },
   ];
 
@@ -112,8 +111,8 @@ module.exports.seedData = async (db) => {
 
   const methods = [];
 
-  const addMethods = (instructionId, methodTexts) => {
-    methodTexts.forEach((content) => {
+  const addMethods = (instructionId, items) => {
+    items.forEach((content) => {
       methods.push({
         _id: new ObjectId(),
         content,
@@ -123,48 +122,63 @@ module.exports.seedData = async (db) => {
   };
 
   addMethods(instructions[0]._id, [
-    "Throw banana gently across room.",
-    "Repeat after complimenting banana.",
-    "Compare flight paths and document confidence levels.",
+    "SSH to login1.cognition.gla.alces.network and verify a normal prompt appears.",
+    "SSH to a random selection of user-facing nodes.",
+    "Confirm home directories and shared filesystems are accessible.",
   ]);
 
   addMethods(instructions[1]._id, [
-    "Count visible ducks.",
-    "Ask each duck a harmless question.",
-    "Flag any duck that answers too quickly.",
+    "Run: quota -s",
+    "Run: df -h ~",
+    "Perform block and metadata filesystem tests using dd and touch.",
+    "Create a large test file and verify quota reporting updates correctly.",
   ]);
 
   addMethods(instructions[2]._id, [
-    "Turn keyboard upside down.",
-    "Collect crumbs on a sheet of paper.",
-    "Classify findings by snack category.",
+    "Run: lfs quota /mnt/scratch/users/$USER",
+    "Verify scratch directory contents are accessible.",
+    "Perform large file write and metadata performance tests.",
+    "Confirm filesystem performance and quota reporting are acceptable.",
   ]);
 
   addMethods(instructions[3]._id, [
-    "Pour coffee into mug.",
-    "Wait 60 seconds.",
-    "Attempt cautious sip and record outcome.",
+    "Run: sinfo -Nl",
+    "Review partition information using scontrol show partitions.",
+    "Inspect nodes using scontrol show node.",
+    "Review running jobs and investigate a sample job where possible.",
   ]);
 
   addMethods(instructions[4]._id, [
-    "Sit carefully.",
-    "Rotate chair three times.",
-    "Listen for concerning noises.",
+    "Review node status using sinfo.",
+    "SSH to a selection of GPU nodes and verify responsiveness.",
+    "Submit an interactive GPU job and run nvidia-smi health checks.",
+    "Inspect a node currently running a GPU workload.",
   ]);
 
   addMethods(instructions[5]._id, [
-    "Inspect toaster exterior.",
-    "Produce one test toast.",
-    "Confirm toaster does not ask philosophical questions.",
+    "Run a simple CPU test job with srun.",
+    "Monitor queue status using squeue -u $USER.",
+    "Submit a small batch script and confirm successful completion.",
   ]);
 
   addMethods(instructions[6]._id, [
-    "Explain bug to rubber duck.",
-    "Pause dramatically.",
-    "Write down any revelations.",
+    "Run: module avail",
+    "Run: which srun",
+    "Run: squeue",
+  ]);
+
+  addMethods(instructions[7]._id, [
+    "Check for active jobs using squeue -u $USER.",
+    "Remove temporary files from home and scratch storage.",
+    "Run quota and verify usage has returned to normal.",
+  ]);
+
+  addMethods(instructions[8]._id, [
+    'If all checks pass, log: "Daily user check complete – no issues".',
+    "For any RED item, escalate to OPS with exact command output.",
   ]);
 
   await methodsCollection.insertMany(methods);
 
-  console.log("✅ Test data seeded");
+  console.log("✅ Cognition test data seeded");
 }
