@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
 
 export default function Form() {
   const [completedSteps, setCompletedSteps] = useState({});
@@ -278,26 +279,9 @@ export default function Form() {
                     <ul className="mt-4 space-y-2 text-slate-300">
                       {step.methods.map((method, i) => (
                         <li key={method.id}>
-                          {method.content.includes(":") ? (
-                            <>
-                              <p>
-                                {method.content.split(":")[0]}:
-                              </p>
-                              <pre className="mt-3 overflow-auto rounded-xl border border-slate-700 bg-black/70 p-4 text-sm text-green-400">
-                                <code>
-                                  {method.content
-                                    .split(":")
-                                    .slice(1)
-                                    .join(":")
-                                    .trim()}
-                                </code>
-                              </pre>
-                            </>
-                          ) : (
-                            <div className="mt-7 overflow-auto p-4 text-md">
-                              {method.content}
-                            </div>
-                          )}
+                          <div className="prose prose-invert max-w-none">
+                            <ReactMarkdown>{method.content}</ReactMarkdown>
+                          </div>
 
                           {editing && (
 
