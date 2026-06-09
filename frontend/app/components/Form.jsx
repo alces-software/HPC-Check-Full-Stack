@@ -146,8 +146,6 @@ export default function Form() {
     }
   }
 
-  console.log(steps);
-
   if (!clusterId || !nameID) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900">
@@ -174,11 +172,8 @@ export default function Form() {
         }
       );
 
-      console.log("Method id: ", methodId);
-
       if (!res.ok) {
         throw new Error("Failed to delete method");
-
       }
 
       await getSteps(); // refresh methods
@@ -190,9 +185,6 @@ export default function Form() {
   // ADD METHOD
   async function addNewMethod(instructionId, content) {
     try {
-
-      console.log(instructionId, content)
-
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/method/add`,
         {
@@ -255,6 +247,7 @@ export default function Form() {
 
           {/* Steps */}
           <div className="space-y-6">
+            {steps.length == 0 && <p className="text-lg text-slate-300 text-center">No instruction available</p>}
             {steps.map((step) => {
               const isCompleted = Boolean(completedSteps[step.id]);
 
@@ -277,7 +270,7 @@ export default function Form() {
                     </summary>
 
                     <ul className="mt-4 space-y-2 text-slate-300">
-                      {step.methods.map((method, i) => (
+                      {(step.methods || []).map((method, i) => (
                         <li key={method.id}>
                           {i > 0 && <hr className="border-white/10 mb-2" />}
                           <div className="prose prose-invert max-w-none">
@@ -422,7 +415,8 @@ export default function Form() {
           {/* submit */}
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || steps.length === 0}
+            aria-disabled={submitting || steps.length === 0}
             className="mt-10 w-full cursor-pointer rounded-2xl border border-blue-200/25 bg-gradient-to-r from-blue-500 via-blue-500 to-indigo-600 py-4 text-lg font-semibold text-white shadow-xl shadow-blue-950/30 transition duration-200 hover:-translate-y-0.5 hover:border-blue-100/40 hover:from-blue-400 hover:via-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-200/60 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
           >
             {submitting ? "Submitting..." : "Submit Report"}
