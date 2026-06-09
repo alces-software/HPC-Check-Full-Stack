@@ -33,9 +33,7 @@ module.exports = (db) => {
             if (Object.hasOwn(response[dayName], personName)) {
                response[dayName][personName].push(clusterName);
             } else {
-               response[dayName] = {
-                  [personName]: [clusterName]
-               }
+               response[dayName][personName] = [clusterName];
             }
          });
 
