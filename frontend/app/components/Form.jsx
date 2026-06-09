@@ -5,7 +5,6 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 
-// Git Push - Checking for account 
 
 export default function Form() {
   const [completedSteps, setCompletedSteps] = useState({});
