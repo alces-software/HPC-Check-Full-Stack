@@ -21,6 +21,8 @@ export default function Results() {
   const [report, setReport] = useState(null);
   const [loadingReport, setLoadingReport] = useState(false);
 
+  const [copied, setCopied] = useState(false);
+
   const canSearch = cluster !== "" && date !== null;
 
   const names = Array.isArray(allNames)
@@ -177,6 +179,19 @@ export default function Results() {
 
     getAllClusters();
   }, []);
+
+
+  const handleShare = async () => {
+    await navigator.clipboard.writeText(
+      `${window.location.protocol}//${window.location.host}/report?id=${report.id}`
+    );
+
+    setCopied(true);
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
@@ -382,6 +397,18 @@ export default function Results() {
                       <div className="text-slate-400">
                         Duration: <span className="text-slate-200">{report.duration}</span>
                       </div>
+
+                      <button
+                        type="button"
+                        onClick={handleShare}
+                        className={`mt-4 rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                          copied
+                            ? "border-emerald-500/30 bg-emerald-500/20 text-emerald-300"
+                            : "border-white/10 bg-white/10 text-white hover:bg-white/20"
+                        }`}
+                      >
+                        {copied ? "✓ Link Copied" : "Share Results"}
+                      </button>
                     </div>
                   </>
                 ) : (
