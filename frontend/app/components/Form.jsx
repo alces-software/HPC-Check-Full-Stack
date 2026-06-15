@@ -17,9 +17,15 @@ export default function Form() {
   const [cookieCluster] = useState(() => Cookies.get("currentCluster") || "");
 
 
+
+
 // OLD WAY
   // const [editing, setEditing] = useState(false)
   // const [addMethod, setAddMethod] = useState(false)
+
+  // METHOD EDITING
+const [editingMethodId, setEditingMethodId] = useState(null);
+const [editedMethodContent, setEditedMethodContent] = useState("");
 
 
 
@@ -292,13 +298,66 @@ export default function Form() {
                       {(step.methods || []).map((method, i) => (
                         <li key={method.id}>
                           {i > 0 && <hr className="border-white/10 mb-2" />}
-                          <div className="prose prose-invert max-w-none">
-                            <ReactMarkdown>{method.content}</ReactMarkdown>
-                          </div>
 
-                          {isEditing && (
 
-                            <div className="flex justify-end">
+                        {editingMethodId === method.id ? (
+  <div className="mt-4">
+    <textarea
+      rows={6}
+      value={editedMethodContent}
+      onChange={(e) => setEditedMethodContent(e.target.value)}
+      className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
+    />
+
+    <div className="mt-3 flex justify-end gap-3">
+      <button
+        type="button"
+        onClick={() => {
+          setEditingMethodId(null);
+          setEditedMethodContent("");
+        }}
+        className="cursor-pointer rounded-xl border border-slate-300/20 bg-slate-100/10 px-4 py-2 text-sm font-semibold text-slate-200"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        onClick={() => {
+          const sanitizedContent = editedMethodContent.trim();
+
+          if (sanitizedContent === "") {
+            alert("Please enter method content");
+            return;
+          }
+          alert(sanitizedContent)
+        }}
+        className="cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/15 px-4 py-2 text-sm font-semibold text-blue-100"
+      >
+        Save Changes
+      </button>
+    </div>
+  </div>
+) : (
+  <div className="prose prose-invert max-w-none">
+    <ReactMarkdown>{method.content}</ReactMarkdown>
+  </div>
+)}
+
+                          {isEditing && !(editingMethodId === method.id) &&(
+
+                            <div className="flex justify-end gap-3">
+
+                               <button
+      type="button"
+      onClick={() => {
+        setEditingMethodId(method.id);
+        setEditedMethodContent(method.content);
+      }}
+      className="mt-8 cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+    >
+      Edit Method
+    </button>
 
                               <button
                                 type="button"
@@ -356,7 +415,18 @@ export default function Form() {
 
                                   className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
                                 />
-                                <div className="mt-3 flex justify-end">
+                                <div className="mt-3 flex justify-end gap-3">
+                                     <button
+                                    type="button"
+                                    onClick={() => {
+                                      setAddMethodStepID(null)
+                                    }}
+
+                                    className="cursor-pointer rounded-xl border border-slate-300/20 bg-slate-100/10 px-4 py-2 text-sm font-semibold text-slate-200"
+                                  >
+                                    Cancel
+                                  </button>
+
                                   <button
                                     type="button"
                                     onClick={() => {
@@ -366,7 +436,7 @@ export default function Form() {
 
                                     className="cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/15 px-5 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/25 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
                                   >
-                                    Save Method
+                                    Add Method
                                   </button>
                                 </div>
                               </div>
