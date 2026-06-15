@@ -15,9 +15,20 @@ export default function Form() {
   const [submitting, setSubmitting] = useState(false);
   const [nameID] = useState(() => Cookies.get("selectedPersonId") || "");
   const [cookieCluster] = useState(() => Cookies.get("currentCluster") || "");
-  const [editing, setEditing] = useState(false)
-  const [addMethod, setAddMethod] = useState(false)
+
+
+// OLD WAY
+  // const [editing, setEditing] = useState(false)
+  // const [addMethod, setAddMethod] = useState(false)
+
+
+
   const [newMethod, setNewMethod] = useState("");
+
+
+  // NEW WAY
+  const [editingStepID, setEditingStepID] = useState(null);
+  const [addMethodStepID, setAddMethodStepID] = useState(null);
 
   const router = useRouter();
   const redirected = useRef(false);
@@ -147,6 +158,9 @@ export default function Form() {
     }
   }
 
+
+  
+
   if (!clusterId || !nameID) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900">
@@ -209,7 +223,7 @@ export default function Form() {
       await getSteps();
 
       setNewMethod("");
-      setAddMethod(false);
+      setAddMethodStepID(null);
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -252,6 +266,10 @@ export default function Form() {
             {steps.map((step) => {
               const isCompleted = Boolean(completedSteps[step.id]);
 
+              const isEditing = editingStepID === step.id;
+              const isAddingMethod = addMethodStepID === step.id;
+
+
               return (
                 <section
                   key={step.id}
@@ -278,7 +296,7 @@ export default function Form() {
                             <ReactMarkdown>{method.content}</ReactMarkdown>
                           </div>
 
-                          {editing && (
+                          {isEditing && (
 
                             <div className="flex justify-end">
 
@@ -303,11 +321,11 @@ export default function Form() {
 
                       ))}
 
-                      {!editing ? (
+                      {!isEditing ? (
                         <div className="flex flex-col justify-end">
                           <button
                             type="button"
-                            onClick={() => setEditing(true)}
+                            onClick={() => setEditingStepID(step.id)}
                             className="mt-8 cursor-pointer rounded-xl border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-400/15 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0">
                             Edit Methods
                           </button>
@@ -319,10 +337,10 @@ export default function Form() {
                           <div className="flex flex-col justify-end">
 
 
-                            {!addMethod ? (
+                            {!isAddingMethod ? (
                               <button
                                 type="button"
-                                onClick={() => setAddMethod(true)}
+                                onClick={() => setAddMethodStepID(step.id)}
                                 className="mt-8 cursor-pointer rounded-xl border border-emerald-300/25 bg-emerald-400/10 px-5 py-2.5 text-sm font-semibold text-emerald-100 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-emerald-300/45 hover:bg-emerald-400/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0">
                                 Add Method ＋
                               </button>
@@ -357,8 +375,12 @@ export default function Form() {
                             <button
                               type="button"
                               onClick={() => {
-                                setEditing(false)
-                                setAddMethod(false)
+                                // setEditing(false)
+                                // setAddMethod(false)
+
+                                setEditingStepID(null);
+                              setAddMethodStepID(null);
+                              setNewMethod("");
                               }}
 
                               className="mt-8 cursor-pointer rounded-xl border border-slate-300/20 bg-slate-100/10 px-5 py-2.5 text-sm font-semibold text-slate-200 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-slate-200/40 hover:bg-slate-100/15 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-200/40 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
@@ -427,3 +449,7 @@ export default function Form() {
     </main>
   );
 }
+
+
+
+
