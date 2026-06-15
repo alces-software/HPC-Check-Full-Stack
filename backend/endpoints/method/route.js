@@ -7,13 +7,15 @@ module.exports = (db) => {
       getMethods,
       getMethodById,
       addMethod,
-      deleteMethod
+      deleteMethod,
+      updateMethod
    } = require('./controller')(db);
 
    router.get('/method/:id', getMethods);
    router.get('/method/id/:id', getMethodById);
    router.post('/method/add', addMethod);
    router.delete('/method/delete', deleteMethod);
+   router.put('/method/update', updateMethod);
 
    return router;
 }
