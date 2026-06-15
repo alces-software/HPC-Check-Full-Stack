@@ -19,13 +19,13 @@ export default function Form() {
 
 
 
-// OLD WAY
+  // OLD WAY
   // const [editing, setEditing] = useState(false)
   // const [addMethod, setAddMethod] = useState(false)
 
   // METHOD EDITING
-const [editingMethodId, setEditingMethodId] = useState(null);
-const [editedMethodContent, setEditedMethodContent] = useState("");
+  const [editingMethodId, setEditingMethodId] = useState(null);
+  const [editedMethodContent, setEditedMethodContent] = useState("");
 
 
 
@@ -165,7 +165,7 @@ const [editedMethodContent, setEditedMethodContent] = useState("");
   }
 
 
-  
+
 
   if (!clusterId || !nameID) {
     return (
@@ -239,40 +239,40 @@ const [editedMethodContent, setEditedMethodContent] = useState("");
 
   // UPDATE METHOD
 
-async function updateMethod(methodId, content) {
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const url = `${apiUrl}/method/update`;
+  async function updateMethod(methodId, content) {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const url = `${apiUrl}/method/update`;
 
-    console.log("API URL:", apiUrl);
-    console.log("Update URL:", url);
+      console.log("API URL:", apiUrl);
+      console.log("Update URL:", url);
 
-    const res = await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        id: methodId,
-        content,
-      }),
-    });
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: methodId,
+          content,
+        }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(data.error || "Failed to update method");
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to update method");
+      }
+
+      await getSteps();
+
+      setEditingMethodId(null);
+      setEditedMethodContent("");
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
     }
-
-    await getSteps();
-
-    setEditingMethodId(null);
-    setEditedMethodContent("");
-  } catch (err) {
-    console.error(err);
-    alert(err.message);
   }
-}
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 px-6 py-8">
       {/* background */}
@@ -337,66 +337,66 @@ async function updateMethod(methodId, content) {
                           {i > 0 && <hr className="border-white/10 mb-2" />}
 
 
-                        {editingMethodId === method.id ? (
-  <div className="mt-4">
-    <textarea
-      rows={6}
-      value={editedMethodContent}
-      onChange={(e) => setEditedMethodContent(e.target.value)}
-      className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
-    />
+                          {editingMethodId === method.id ? (
+                            <div className="mt-4">
+                              <textarea
+                                rows={6}
+                                value={editedMethodContent}
+                                onChange={(e) => setEditedMethodContent(e.target.value)}
+                                className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
+                              />
 
-    <div className="mt-3 flex justify-end gap-3">
-      <button
-        type="button"
-        onClick={() => {
-          setEditingMethodId(null);
-          setEditedMethodContent("");
-        }}
-        className="cursor-pointer rounded-xl border border-slate-300/20 bg-slate-100/10 px-4 py-2 text-sm font-semibold text-slate-200"
-      >
-        Cancel
-      </button>
+                              <div className="mt-3 flex justify-end gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingMethodId(null);
+                                    setEditedMethodContent("");
+                                  }}
+                                  className="mt-8 cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+                                >
+                                  Cancel
+                                </button>
 
-    <button
-  type="button"
-  onClick={() => {
-    const sanitizedContent = editedMethodContent.trim();
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const sanitizedContent = editedMethodContent.trim();
 
-    if (sanitizedContent === "") {
-      alert("Please enter method content");
-      return;
-    }
-    // alert(sanitizedContent)
+                                    if (sanitizedContent === "") {
+                                      alert("Please enter method content");
+                                      return;
+                                    }
+                                    // alert(sanitizedContent)
 
-    updateMethod(method.id, sanitizedContent);
-  }}
-  className="cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/15 px-4 py-2 text-sm font-semibold text-blue-100"
->
-  Save Changes
-</button>
-    </div>
-  </div>
-) : (
-  <div className="prose prose-invert max-w-none">
-    <ReactMarkdown>{method.content}</ReactMarkdown>
-  </div>
-)}
+                                    updateMethod(method.id, sanitizedContent);
+                                  }}
+                                  className="mt-8 cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+                                >
+                                  Save Changes
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="prose prose-invert max-w-none">
+                              <ReactMarkdown>{method.content}</ReactMarkdown>
+                            </div>
+                          )}
 
-                          {isEditing && !(editingMethodId === method.id) &&(
+                          {isEditing && !(editingMethodId === method.id) && (
 
                             <div className="flex justify-end gap-3">
 
-                               <button
-      type="button"
-      onClick={() => {
-        setEditingMethodId(method.id);
-        setEditedMethodContent(method.content);
-      }}
-      className="mt-8 cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
-    >
-      Edit Method
-    </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingMethodId(method.id);
+                                  setEditedMethodContent(method.content);
+                                }}
+                                className="mt-8 cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+                              >
+                                Edit Method
+                              </button>
 
                               <button
                                 type="button"
@@ -455,13 +455,17 @@ async function updateMethod(methodId, content) {
                                   className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
                                 />
                                 <div className="mt-3 flex justify-end gap-3">
-                                     <button
+                                  <button
                                     type="button"
                                     onClick={() => {
                                       setAddMethodStepID(null)
                                     }}
 
-                                    className="cursor-pointer rounded-xl border border-slate-300/20 bg-slate-100/10 px-4 py-2 text-sm font-semibold text-slate-200"
+                                    className="cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+
+
+
+                                    
                                   >
                                     Cancel
                                   </button>
@@ -473,7 +477,7 @@ async function updateMethod(methodId, content) {
                                       sanitizedContent === "" ? alert("Please enter a method") : addNewMethod(step.id, sanitizedContent);
                                     }}
 
-                                    className="cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/15 px-5 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/25 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+                                    className="cursor-pointer rounded-xl border border-green-300/25 bg-green-500/15 px-5 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/25 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-300/45 focus:ring-offset-2 focus:ring-offset-green-950 active:translate-y-0"
                                   >
                                     Add Method
                                   </button>
@@ -488,8 +492,8 @@ async function updateMethod(methodId, content) {
                                 // setAddMethod(false)
 
                                 setEditingStepID(null);
-                              setAddMethodStepID(null);
-                              setNewMethod("");
+                                setAddMethodStepID(null);
+                                setNewMethod("");
                               }}
 
                               className="mt-8 cursor-pointer rounded-xl border border-slate-300/20 bg-slate-100/10 px-5 py-2.5 text-sm font-semibold text-slate-200 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-slate-200/40 hover:bg-slate-100/15 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-200/40 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
