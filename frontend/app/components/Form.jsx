@@ -236,6 +236,43 @@ const [editedMethodContent, setEditedMethodContent] = useState("");
     }
   }
 
+
+  // UPDATE METHOD
+
+async function updateMethod(methodId, content) {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const url = `${apiUrl}/method/update`;
+
+    console.log("API URL:", apiUrl);
+    console.log("Update URL:", url);
+
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: methodId,
+        content,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to update method");
+    }
+
+    await getSteps();
+
+    setEditingMethodId(null);
+    setEditedMethodContent("");
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+}
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 px-6 py-8">
       {/* background */}
@@ -321,21 +358,23 @@ const [editedMethodContent, setEditedMethodContent] = useState("");
         Cancel
       </button>
 
-      <button
-        type="button"
-        onClick={() => {
-          const sanitizedContent = editedMethodContent.trim();
+    <button
+  type="button"
+  onClick={() => {
+    const sanitizedContent = editedMethodContent.trim();
 
-          if (sanitizedContent === "") {
-            alert("Please enter method content");
-            return;
-          }
-          alert(sanitizedContent)
-        }}
-        className="cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/15 px-4 py-2 text-sm font-semibold text-blue-100"
-      >
-        Save Changes
-      </button>
+    if (sanitizedContent === "") {
+      alert("Please enter method content");
+      return;
+    }
+    // alert(sanitizedContent)
+
+    updateMethod(method.id, sanitizedContent);
+  }}
+  className="cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/15 px-4 py-2 text-sm font-semibold text-blue-100"
+>
+  Save Changes
+</button>
     </div>
   </div>
 ) : (
