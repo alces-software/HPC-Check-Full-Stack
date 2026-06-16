@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
     Listbox,
@@ -9,43 +9,9 @@ import {
     ListboxOption,
 } from "@headlessui/react";
 
-const testUsers = [
-    {
-        id: "user-calum",
-        name: "Calum",
-    },
-    {
-        id: "user-amy",
-        name: "Amy",
-    },
-    {
-        id: "user-james",
-        name: "James",
-    },
-    {
-        id: "user-morgan",
-        name: "Morgan",
-    },
-];
 
-const testClusters = [
-    {
-        id: "cluster-apollo",
-        name: "Apollo",
-    },
-    {
-        id: "cluster-zeus",
-        name: "Zeus",
-    },
-    {
-        id: "cluster-athena",
-        name: "Athena",
-    },
-    {
-        id: "cluster-hermes",
-        name: "Hermes",
-    },
-];
+
+
 
 export default function TeamSettingsPage({ team, teamId }) {
     const [selectedUserId, setSelectedUserId] = useState("");
@@ -54,8 +20,70 @@ export default function TeamSettingsPage({ team, teamId }) {
     const [teamUserIds, setTeamUserIds] = useState(team?.userIds ?? []);
     const [teamClusterIds, setTeamClusterIds] = useState(team?.clusterIds ?? []);
 
+    const [teamUsers, setTeamUsers] = useState([])
+    const [users, setUsers] = useState([])
+
+    const [clusters, setClusters] = useState([])
+    const [teamClusters, setTeamClusters] = useState([])
+
     const [statusMessage, setStatusMessage] = useState("");
     const [statusType, setStatusType] = useState("success");
+
+
+
+
+
+    async function getTeamUsers() {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${teamId}`);
+        const data = await res.json();
+        console.log("Users", data.body)
+        setTeamUsers(data.body)
+    }
+
+    useEffect(() => {
+
+        getTeamUsers();
+    }, []);
+
+
+
+
+
+    useEffect(() => {
+        async function getUsers() {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/notteam/${teamId}`);
+            const data = await res.json();
+            console.log("Users", data.body)
+            setUsers(data.body)
+        }
+        getUsers();
+    }, []);
+
+
+
+
+    useEffect(() => {
+        async function getClusters() {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/notteam/${teamId}`);
+            const data = await res.json();
+            setClusters(data.body)
+        }
+        getClusters();
+    }, []);
+
+    async function getTeamClusters() {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${teamId}`);
+        const data = await res.json();
+        setTeamClusters(data.body)
+    }
+
+
+    useEffect(() => {
+
+        getTeamClusters();
+    }, []);
+
+
 
     if (!team) {
         return (
@@ -75,71 +103,89 @@ export default function TeamSettingsPage({ team, teamId }) {
         );
     }
 
-    const teamUsers = testUsers.filter((user) =>
-        teamUserIds.includes(user.id)
-    );
 
-    const availableUsers = testUsers.filter(
-        (user) => !teamUserIds.includes(user.id)
-    );
 
-    const teamClusters = testClusters.filter((cluster) =>
-        teamClusterIds.includes(cluster.id)
-    );
+    // const showStatus = (message, type = "success") => {
+    //     setStatusMessage(message);
+    //     setStatusType(type);
+    // };
 
-    const availableClusters = testClusters.filter(
-        (cluster) => !teamClusterIds.includes(cluster.id)
-    );
 
-    const showStatus = (message, type = "success") => {
-        setStatusMessage(message);
-        setStatusType(type);
-    };
 
-    const handleAddUser = () => {
+    const handleAddUser = async () => {
         if (!selectedUserId) {
             showStatus("Please select a user.", "error");
             return;
         }
 
-        setTeamUserIds((previousUserIds) => [
-            ...previousUserIds,
-            selectedUserId,
-        ]);
+        try {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/people/team/${selectedUserId}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        teamId: teamId,
+                    }),
+                }
+            );
 
-        setSelectedUserId("");
-        showStatus("User added to team.", "success");
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.message || "Failed to add user to team.");
+            }
+
+            setSelectedUserId("");
+            getTeamUsers()
+
+
+            // showStatus("User added to team.", "success");
+        } catch (err) {
+            console.error(err);
+            // showStatus("Failed to add user to team.", "error");
+        }
     };
 
-    const handleRemoveUser = (userId) => {
-        setTeamUserIds((previousUserIds) =>
-            previousUserIds.filter((id) => id !== userId)
-        );
 
-        showStatus("User removed from team.", "success");
-    };
 
-    const handleAddCluster = () => {
+    const handleAddCluster = async () => {
         if (!selectedClusterId) {
-            showStatus("Please select a cluster.", "error");
+            showStatus("Please select a user.", "error");
             return;
         }
 
-        setTeamClusterIds((previousClusterIds) => [
-            ...previousClusterIds,
-            selectedClusterId,
-        ]);
+        try {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${selectedClusterId}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        teamId: teamId,
+                    }),
+                }
+            );
 
-        setSelectedClusterId("");
-        showStatus("Cluster added to team.", "success");
-    };
+            const data = await res.json();
 
-    const handleRemoveCluster = (clusterId) => {
-        setTeamClusterIds((previousClusterIds) =>
-            previousClusterIds.filter((id) => id !== clusterId)
-        );
+            if (!res.ok || !data.success) {
+                throw new Error(data.message || "Failed to add user to team.");
+            }
 
-        showStatus("Cluster removed from team.", "success");
+            setSelectedClusterId("");
+            getTeamClusters()
+
+
+            // showStatus("User added to team.", "success");
+        } catch (err) {
+            console.error(err);
+            // showStatus("Failed to add user to team.", "error");
+        }
     };
 
     return (
@@ -173,8 +219,8 @@ export default function TeamSettingsPage({ team, teamId }) {
                     {statusMessage && (
                         <div
                             className={`mt-8 rounded-2xl border px-4 py-4 text-sm ${statusType === "error"
-                                    ? "border-red-500/30 bg-red-500/10 text-red-100"
-                                    : "border-green-500/30 bg-green-500/10 text-emerald-100"
+                                ? "border-red-500/30 bg-red-500/10 text-red-100"
+                                : "border-green-500/30 bg-green-500/10 text-emerald-100"
                                 }`}
                         >
                             {statusMessage}
@@ -197,30 +243,30 @@ export default function TeamSettingsPage({ team, teamId }) {
 
 
 
-                                  <Listbox as="div" value={selectedUserId} onChange={setSelectedUserId} className="w-full">
-  <div className="relative">
-    <ListboxButton className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-3 py-3 text-left cursor-pointer text-white outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
-      {availableUsers.find((user) => user.id === selectedUserId)?.name || "Select user"}
+                                <Listbox as="div" value={selectedUserId} onChange={setSelectedUserId} className="w-full">
+                                    <div className="relative">
+                                        <ListboxButton className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-3 py-3 text-left cursor-pointer text-white outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
+                                            {users.find((user) => user._id === selectedUserId)?.name || "Select user"}
 
-      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-        ▼
-      </span>
-    </ListboxButton>
+                                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                                ▼
+                                            </span>
+                                        </ListboxButton>
 
-    <ListboxOptions className="absolute z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-white/10 bg-slate-900/95 shadow-2xl backdrop-blur-xl">
-      {availableUsers.map((user) => (
-        <ListboxOption
-          key={user.id}
-          value={user.id}
-          className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
-        >
-          {user.name}
-        </ListboxOption>
-      ))}
-    </ListboxOptions>
-  </div>
-</Listbox>
-                                
+                                        <ListboxOptions className="absolute z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-white/10 bg-slate-900/95 shadow-2xl backdrop-blur-xl">
+                                            {users.map((user) => (
+                                                <ListboxOption
+                                                    key={user._id}
+                                                    value={user._id}
+                                                    className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
+                                                >
+                                                    {user.name}
+                                                </ListboxOption>
+                                            ))}
+                                        </ListboxOptions>
+                                    </div>
+                                </Listbox>
+
 
                                 <button
                                     type="button"
@@ -244,7 +290,7 @@ export default function TeamSettingsPage({ team, teamId }) {
                                     ) : (
                                         teamUsers.map((user) => (
                                             <div
-                                                key={user.id}
+                                                key={user._id}
                                                 className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
                                             >
                                                 <div>
@@ -253,18 +299,11 @@ export default function TeamSettingsPage({ team, teamId }) {
                                                     </p>
 
                                                     <p className="text-xs text-slate-400">
-                                                        {user.id}
+                                                        {user._id}
                                                     </p>
                                                 </div>
 
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleRemoveUser(user.id)}
-                                                    className="ml-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
-                                                    title="Remove user"
-                                                >
-                                                    ✕
-                                                </button>
+
                                             </div>
                                         ))
                                     )}
@@ -303,7 +342,7 @@ export default function TeamSettingsPage({ team, teamId }) {
                                 <Listbox as="div" value={selectedClusterId} onChange={setSelectedClusterId} className={"w-full"}>
                                     <div className="relative">
                                         <ListboxButton className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-3 py-3 text-left cursor-pointer text-white outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
-                                            {availableClusters.find((cluster) => cluster.id === selectedClusterId)?.name ||
+                                            {clusters.find((cluster) => cluster._id === selectedClusterId)?.name ||
                                                 "Select cluster"}
 
                                             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
@@ -312,10 +351,10 @@ export default function TeamSettingsPage({ team, teamId }) {
                                         </ListboxButton>
 
                                         <ListboxOptions className="absolute z-50 mt-2 max-h-40 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 shadow-2xl backdrop-blur-xl">
-                                            {availableClusters.map((user) => (
+                                            {clusters.map((user) => (
                                                 <ListboxOption
-                                                    key={user.id}
-                                                    value={user.id}
+                                                    key={user._id}
+                                                    value={user._id}
                                                     className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
                                                 >
                                                     {user.name}
@@ -348,7 +387,7 @@ export default function TeamSettingsPage({ team, teamId }) {
                                     ) : (
                                         teamClusters.map((cluster) => (
                                             <div
-                                                key={cluster.id}
+                                                key={cluster._id}
                                                 className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
                                             >
                                                 <div>
@@ -357,18 +396,11 @@ export default function TeamSettingsPage({ team, teamId }) {
                                                     </p>
 
                                                     <p className="text-xs text-slate-400">
-                                                        {cluster.id}
+                                                        {cluster._id}
                                                     </p>
                                                 </div>
 
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleRemoveCluster(cluster.id)}
-                                                    className="ml-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
-                                                    title="Remove cluster"
-                                                >
-                                                    ✕
-                                                </button>
+
                                             </div>
                                         ))
                                     )}
