@@ -358,7 +358,7 @@ export default function Options() {
 
   
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
+    <main className="flex justify-center space-y-8">
       <div className="absolute h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
 
       <div className="relative z-10 w-full max-w-6xl">

@@ -3,25 +3,22 @@
  */
 module.exports = (db) => {
    const router = require('express').Router();
-   const {
-      addHpc,
-      getAllHpc,
-      getHpcById,
-      getHpcByName,
-      getHpcByTeam,
-      getHpcNotInTeam,
-      deleteHpc,
-      assignToTeam
-   } = require('./controller')(db);
 
-   router.post('/hpc/add', addHpc);
-   router.get('/hpc', getAllHpc);
-   router.get('/hpc/id/:id', getHpcById);
-   router.get('/hpc/name/:name', getHpcByName);
-   router.get('/hpc/team/:id', getHpcByTeam);
-   router.get('/hpc/notteam/:id', getHpcNotInTeam);
-   router.delete('/hpc/delete', deleteHpc);
-   router.patch('/hpc/team/:id', assignToTeam);
+   // GET
+   router.get('/hpc', require('./controller/getAllHpc')(db));
+   router.get('/hpc/id/:id', require('./controller/getHpcById')(db));
+   router.get('/hpc/name/:name', require('./controller/getHpcByName')(db));
+   router.get('/hpc/team/:id', require('./controller/getHpcByTeam')(db));
+   router.get('/hpc/notteam/:id', require('./controller/getHpcNotInTeam')(db));
+
+   // POST
+   router.post('/hpc/add', require('./controller/addHpc')(db));
+
+   // DELETE
+   router.delete('/hpc/delete', require('./controller/deleteHpc')(db));
+
+   // UPDATE
+   router.patch('/hpc/team/:id', require('./controller/assignToTeam')(db));
 
    return router;
 }

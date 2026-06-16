@@ -17,6 +17,20 @@ module.exports = (db) => {
          const endOfDay = new Date();
          endOfDay.setHours(23, 59, 59, 999);
 
+         const people = await db.collection('person').find({}).toArray().then(res => {
+            return res.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
+
+         const cluster = await db.collection('cluster').find({}).toArray().then(res => {
+            return res.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
+
          const response = await db.collection('report').find({
             startDate: {
                $gte: startOfDay.getTime(),
@@ -25,7 +39,9 @@ module.exports = (db) => {
          }).toArray().then(result => {
             return result.map(({ _id, ...rest }) => ({
                ...rest,
-               id: _id.toString()
+               id: _id.toString(),
+               person: people.find(p => p.id === rest.personId)?.name,
+               cluster: cluster.find(c => c.id === rest.clusterId)?.name
             }));
          });
 
@@ -55,6 +71,20 @@ module.exports = (db) => {
             const endOfDay = new Date();
             endOfDay.setHours(23, 59, 59, 999);
 
+            const people = await db.collection('person').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
+
+            const cluster = await db.collection('cluster').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
+
             const response = await db.collection('report').find({
                clusterId: id,
                startDate: {
@@ -64,7 +94,9 @@ module.exports = (db) => {
             }).toArray().then(result => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
-                  id: _id.toString()
+                  id: _id.toString(),
+                  person: people.find(p => p.id === rest.personId)?.name,
+                  cluster: cluster.find(c => c.id === rest.clusterId)?.name
                }));
             });
 
@@ -78,74 +110,79 @@ module.exports = (db) => {
    }
 
    /**
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @returns {Promise<void>}
- */
-   async function getTodaysReportByPerson(req, res) {
-      try {
-         const { id } = req.params || {};
-
-         if (id) {
-            if (!ObjectId.isValid(id)) {
-               return res.status(400).json({ success: false, error: "Invalid person id provided" });
-            }
-
-            const startOfDay = new Date();
-            startOfDay.setHours(0, 0, 0, 0);
-
-            const endOfDay = new Date();
-            endOfDay.setHours(23, 59, 59, 999);
-
-            const response = await db.collection('report').find({
-               personId: id,
-               startDate: {
-                  $gte: startOfDay.getTime(),
-                  $lte: endOfDay.getTime()
-               }
-            }).toArray().then(result => {
-               return result.map(({ _id, ...rest }) => ({
-                  ...rest,
-                  id: _id.toString()
-               }));
-            });
-
-            return res.status(200).json({ success: true, body: response });
-         }
-
-         return res.status(400).json({ success: false, error: "Missing person id" });
-      } catch (error) {
-         return res.status(500).json({ success: false, error: error.message });
-      }
-   }
-
-   /**
     * @param {import('express').Request} req
     * @param {import('express').Response} res
     * @returns {Promise<void>}
     */
-   async function getReportByPerson(req, res) {
+   async function getReportWeek(req, res) {
       try {
-         const { id } = req.params || {};
+         const page = parseInt(req.query.page, 10) || 1;
+         const limit = parseInt(req.query.limit, 10) || 20;
+         const skip = (page - 1) * limit;
 
-         if (id) {
-            if (!ObjectId.isValid(id)) {
-               return res.status(400).json({ success: false, error: "Invalid person id provided" });
+         const people = await db.collection('person').find({}).toArray().then(res => {
+            return res.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
+
+         const cluster = await db.collection('cluster').find({}).toArray().then(res => {
+            return res.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
+
+         const d = new Date();
+         const day = d.getDay();
+
+         const diffToMonday = day === 0 ? -6 : 1 - day;
+
+         const start = new Date(d);
+         start.setDate(d.getDate() + diffToMonday);
+         start.setUTCHours(0, 0, 0, 0);
+
+         const end = new Date(start);
+         end.setDate(start.getDate() + 6);
+         end.setUTCHours(23, 59, 59, 999);
+
+         const query = {
+            startDate: {
+               $gte: start.getTime(),
+               $lte: end.getTime()
             }
+         };
 
-            const response = await db.collection('report').find({
-               personId: id
-            }).toArray().then(result => {
-               return result.map(({ _id, ...rest }) => ({
-                  ...rest,
-                  id: _id.toString()
-               }));
-            });
+         const [totalCount, results] = await Promise.all([
+            db.collection('report').countDocuments(query),
+            db.collection('report')
+               .find(query)
+               .sort({ startDate: -1 })
+               .skip(skip)
+               .limit(limit)
+               .toArray()
+         ]);
 
-            return res.status(200).json({ success: true, body: response });
-         }
+         const totalPages = Math.ceil(totalCount / limit);
 
-         return res.status(400).json({ success: false, error: "Missing person id" });
+         return res.status(200).json({
+            success: true,
+            body: results.map(({ _id, ...rest }) => ({
+               ...rest,
+               id: _id.toString(),
+               person: people.find(p => p.id === rest.personId)?.name,
+               cluster: cluster.find(c => c.id === rest.clusterId)?.name
+            })),
+            pagination: {
+               totalCount,
+               page,
+               limit,
+               totalPages,
+               hasNextPage: page < totalPages,
+               hasPrevPage: page > 1
+            }
+         });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
@@ -158,26 +195,67 @@ module.exports = (db) => {
     */
    async function getReportByCluster(req, res) {
       try {
-         const { id } = req.params || {};
+         const id = req.params.id || null;
 
-         if (id) {
-            if (!ObjectId.isValid(id)) {
-               return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
-            }
+         const page = parseInt(req.query.page, 10) || 1;
+         const limit = parseInt(req.query.limit, 10) || 20;
+         const skip = (page - 1) * limit;
 
-            const response = await db.collection('report').find({
-               clusterId: id
-            }).toArray().then(result => {
-               return result.map(({ _id, ...rest }) => ({
-                  ...rest,
-                  id: _id.toString()
-               }));
-            });
-
-            return res.status(200).json({ success: true, body: response });
+         if (!id) {
+            return res.status(400).json({ success: false, error: "Missing cluster id" });
          }
 
-         return res.status(400).json({ success: false, error: "Missing cluster id" });
+         if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+         }
+
+         const people = await db.collection('person').find({}).toArray().then(res => {
+            return res.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
+
+         const cluster = await db.collection('cluster').find({}).toArray().then(res => {
+            return res.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
+
+         const query = { clusterId: id };
+
+         // run count + data in parallel
+         const [total, data] = await Promise.all([
+            db.collection('report').countDocuments(query),
+            db.collection('report')
+               .find(query)
+               .sort({ startDate: -1 })
+               .skip(skip)
+               .limit(limit)
+               .toArray()
+         ]);
+
+         const totalPages = Math.ceil(total / limit);
+
+         return res.status(200).json({
+            success: true,
+            id,
+            body: data.map(({ _id, ...rest }) => ({
+               ...rest,
+               id: _id.toString(),
+               person: people.find(p => p.id === rest.personId)?.name,
+               cluster: cluster.find(c => c.id == rest.clusterId)?.name
+            })),
+            pagination: {
+               total,
+               page,
+               limit,
+               totalPages,
+               hasNextPage: page < totalPages,
+               hasPrevPage: page > 1
+            }
+         });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
@@ -209,14 +287,31 @@ module.exports = (db) => {
                reportId: id
             }).toArray();
 
+            const people = await db.collection('person').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
+
+            const cluster = await db.collection('cluster').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
+
             return res.status(200).json({
                success: true,
                body: {
                   id,
                   clusterId: report.clusterId,
+                  cluster: cluster.find(c => c.id === report.clusterId)?.name,
                   personId: report.personId,
+                  person: people.find(p => p.id === report.personId)?.name,
                   startTime: report.startDate,
                   endTime: report.endDate,
+                  passed: report.passed,
                   results: results.map((result) => ({
                      instructionId: result.instructionId,
                      passed: result.passed,
@@ -292,7 +387,8 @@ module.exports = (db) => {
                clusterId: clusterId,
                personId: personId,
                startDate: Long.fromNumber(startTime),
-               endDate: Long.fromNumber(endTime)
+               endDate: Long.fromNumber(endTime),
+               passed: results.every(r => r.passed)
             }).then(i => {
                return i.insertedId.toString();
             });
@@ -322,49 +418,12 @@ module.exports = (db) => {
       }
    }
 
-   /**
-    * @param {import('express').Request} req
-    * @param {import('express').Response} res
-    * @returns {Promise<void>}
-    */
-   async function deleteReport(req, res) {
-      try {
-         const { id } = req.body || {};
-
-         if (id) {
-            if (!ObjectId.isValid(id)) {
-               return res.status(400).json({ success: false, error: "Invalid report id provided" });
-            }
-
-            const reportExists = await db.collection('report').findOneAndDelete({
-               _id: new ObjectId(id)
-            });
-
-            if (!reportExists) {
-               return res.status(404).json({ success: false, error: "No report exists with that id" });
-            }
-
-            await db.collection('result').deleteMany({
-               reportId: id
-            });
-
-            return res.status(200).json({ success: true });
-         }
-
-         return res.status(400).json({ success: false, error: "Missing report id" });
-      } catch (error) {
-         return res.status(500).json({ success: false, error: error.message });
-      }
-   }
-
    return {
       getTodaysReports,
       getTodaysReportByCluster,
-      getTodaysReportByPerson,
-      getReportByPerson,
+      getReportWeek,
       getReportByCluster,
       getReportById,
-      addReport,
-      deleteReport
+      addReport
    }
 }

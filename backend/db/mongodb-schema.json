@@ -185,6 +185,9 @@
           },
           "startDate": {
             "bsonType": "long"
+          },
+          "passed": {
+            "bsonType": "bool"
           }
         }
       }

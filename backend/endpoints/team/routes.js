@@ -13,9 +13,9 @@ module.exports = (db) => {
 
    router.get('/teams', getTeams);
    router.get('/teams/id/:id', getTeamsById);
-   router.get('/teams/name/:name', getTeamsByName)
-   router.post('/teams', addTeam),
-   router.delete('/teams', deleteTeam)
+   router.get('/teams/name/:name', getTeamsByName);
+   router.post('/teams', addTeam);
+   router.delete('/teams', deleteTeam);
 
    return router;
 }
