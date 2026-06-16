@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { generateSchedule, scheduleExists } = require("./methods/schedule")
+const { generateSchedule } = require("./methods/schedule")
 
 /**
  * @param {import('mongodb').Db} db

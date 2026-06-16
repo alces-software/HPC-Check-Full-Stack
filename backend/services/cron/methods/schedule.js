@@ -12,13 +12,11 @@ module.exports.generateSchedule = async (db) => {
         console.log(`Creating schecdule for team ${i}`)
         // Get all people from the database
         let peopleIDs = await db.collection('person').find({ teamId: teamIds[i] }).project({ _id: 1  }).toArray().then(results => results.map((id) => id._id.toString()));
-        console.log(peopleIDs)
         // Get all clusters from the database
         let clusterIDs = await db.collection('cluster').find({ teamId: teamIds[i] }).project({ _id: 1 }).toArray().then(results => results.map((id) => id._id.toString()));
-        console.log(clusterIDs)
 
-        const per_person = Number(process.env.CLUSTERS_PER_PERSON) || 1
-        const per_day = Number(process.env.PEOPLE_PER_DAY) || 1
+        const per_person = Number(process.env.CLUSTERS_PER_PERSON) || 1;
+        const per_day = Number(process.env.PEOPLE_PER_DAY) || 1;
 
         const shuffle = (array) => {
             const shuffled = [...array]
