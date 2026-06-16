@@ -62,6 +62,9 @@
           },
           "name": {
             "bsonType": "string"
+          },
+          "teamId": {
+            "bsonType": "string"
           }
         }
       }
@@ -76,13 +79,17 @@
         "bsonType": "object",
         "required": [
           "_id",
-          "name"
+          "name",
+          "teamId"
         ],
         "properties": {
           "_id": {
             "bsonType": "objectId"
           },
           "name": {
+            "bsonType": "string"
+          },
+          "team": {
             "bsonType": "string"
           }
         }
@@ -181,6 +188,28 @@
           },
           "passed": {
             "bsonType": "bool"
+          }
+        }
+      }
+    },
+    "validationLevel": "moderate",
+    "validationAction": "error"
+  },
+  {
+    "name": "team",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+          "_id",
+          "name"
+        ],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "name": {
+            "bsonType": "string"
           }
         }
       }
