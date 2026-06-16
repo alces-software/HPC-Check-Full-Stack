@@ -180,11 +180,95 @@ module.exports = (db) => {
       }
    };
 
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
+   async function assignToTeam(req, res) {
+      // get person
+      try {
+         const { id } = req.params || {};
+         const { teamId } = req.body || {}
+         if (!id) {
+            return res.status(400).json({ success: false, error: 'Missing person\'s id' });
+         }
+
+         if (!teamId) {
+            return res.status(400).json({ success: false, error: 'Missing team\'s id' });
+         }
+
+         if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, error: "Invalid person id provided" });
+         }
+
+         const person = await db.collection('person').findOne({
+            _id: new ObjectId(id)
+         });
+
+         if (!person) {
+            return res.status(404).json({ success: false, error: "Person doesn't exist" });
+         }
+
+         const teamExists = await db.collection('team').findOne({
+            _id: new ObjectId(teamId)
+         });
+
+         if (!teamExists) {
+            return res.status(404).json({ success: false, error: "Person doesn't exist" });
+         }
+
+         db.collection('person').updateOne(
+            { _id: new ObjectId(id) },
+            { teamId: teamId}
+         );
+
+         return res.status(200).json({ success: true });
+
+      } catch (error) {
+         return res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
+   async function getPeopleByTeam(req, res) {
+      try {
+         const { id } = req.params || {};
+
+         if (!id) {
+            return res.status(400).json({ success: false, error: 'Missing team id' });
+         }
+
+         if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, error: "Invalid team id provided" });
+         }
+
+         const results = await db.collection('person').find({
+            teamId: id
+         });
+
+         const data = await results.toArray().then(results => results.map((result) => {
+            result._id = result._id.toString();
+            return result;
+         }))
+
+         return res.status(200).json({
+            success: true, body: {
+               people: data
+            }
+         });
+
+      } catch (error) {
+         return res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
    return {
       addPeople,
       getAllPeople,
       getPeopleById,
       getPeopleByName,
-      deletePeople
+      getPeopleByTeam,
+      deletePeople,
+      assignToTeam
    };
 }
