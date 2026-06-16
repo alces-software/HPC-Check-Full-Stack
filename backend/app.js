@@ -51,6 +51,10 @@ const { seedData } = require('./scripts/testData');
    const methodRoutes = require('./endpoints/method/route')(databaseConnection);
    app.use('/', methodRoutes);
 
+   // Register team routes
+   const teamRoutes = require('./endpoints/team/routes')(databaseConnection);
+   app.use('/', teamRoutes);
+
    // Start new weekly schedule cron job
    startWeeklySchedule(databaseConnection);
 
