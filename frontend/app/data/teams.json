@@ -1,0 +1,20 @@
+[
+  {
+    "id": "team-support",
+    "name": "Support Team",
+    "userIds": ["user-calum", "user-amy"],
+    "clusterIds": ["cluster-apollo", "cluster-zeus"]
+  },
+  {
+    "id": "team-infrastructure",
+    "name": "Infrastructure Team",
+    "userIds": ["user-morgan"],
+    "clusterIds": ["cluster-athena"]
+  },
+  {
+    "id": "team-research-computing",
+    "name": "Research Computing Team",
+    "userIds": ["user-james"],
+    "clusterIds": ["cluster-hermes"]
+  }
+]

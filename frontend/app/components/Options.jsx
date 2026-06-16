@@ -1,16 +1,27 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+
+
 
 export default function Options() {
   const [userName, setUserName] = useState("");
   const [clusterName, setClusterName] = useState("");
 
+  const [teamName, setTeamName] = useState("");
+
   const [people, setPeople] = useState([]);
   const [clusters, setClusters] = useState([]);
 
+  const [teams, setTeams] = useState([]);
+
+
+
   const [userError, setUserError] = useState("");
   const [clusterError, setClusterError] = useState("");
+  const [teamError, setTeamError] = useState("");
+
   const [statusMessage, setStatusMessage] = useState("");
   const [statusType, setStatusType] = useState("success");
   const [confirmPrompt, setConfirmPrompt] = useState(null);
@@ -41,10 +52,23 @@ export default function Options() {
     }
   };
 
+    const loadTeams = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`)
+      const data = await res.json()
+
+      setTeams(data.body ?? []);
+    } catch (err) {
+      console.error("Failed to fetch teams:", err);
+      setTeams([])
+    }
+  };
+
   useEffect(() => {
     async function initialize() {
       await loadPeople();
       await loadClusters();
+      await loadTeams();
     }
 
     initialize();
@@ -151,6 +175,39 @@ export default function Options() {
     );
   };
 
+ const confirmAddTeam = async () => {
+  const nameToAdd = teamName.trim();
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: nameToAdd,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      setTeamError(data.message ?? data.error ?? "Could not add this team.");
+      showStatus("Failed to add team.", "error");
+      return;
+    }
+
+    setTeamName("");
+    await loadTeams();
+    showStatus(`Added team "${nameToAdd}" successfully.`, "success");
+  } catch (err) {
+    console.error(err);
+    setTeamError("Failed to communicate with the server.");
+    showStatus("Failed to add team.", "error");
+  }
+};
+
+
   const confirmAddCluster = async () => {
     try {
       const res = await fetch(
@@ -234,6 +291,29 @@ export default function Options() {
     });
   };
 
+
+
+  const handleDeleteTeam = (id, name) => {
+    clearStatus();
+
+    requestConfirmation(`Are you sure you want to delete ${name}?`, async () => {
+      try {
+        await deleteItem(
+          `${process.env.NEXT_PUBLIC_API_URL}/teams`,
+          id
+        );
+
+
+        await loadTeams()
+      
+
+      showStatus(`Deleted team "${name}" successfully.`, "success");
+    } catch {
+      showStatus(`Failed to delete team "${name}".`, "error");
+      
+    }
+  })};
+
   const handleRegenerateSchedule = () => {
     clearStatus();
 
@@ -260,6 +340,23 @@ export default function Options() {
     );
   };
 
+  const handleAddTeam = () => {
+    setTeamError("");
+    clearStatus();
+
+    if (!teamName.trim()) {
+      setTeamError("Please enter a team name.");
+      return;
+    }
+
+    requestConfirmation(
+      `Are you sure you want to add the team "${teamName}"?`,
+      confirmAddTeam
+    );
+  };
+
+
+  
   return (
     <main className="flex justify-center space-y-8">
       <div className="absolute h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
@@ -320,7 +417,7 @@ export default function Options() {
             </div>
           )}
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-6 lg:grid-cols-3">
             {/* Users */}
             <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-6">
               <div className="mb-3 text-4xl">👤</div>
@@ -466,6 +563,93 @@ export default function Options() {
                 </div>
               </div>
             </div>
+
+            {/* Teams */}
+            <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 p-6">
+              <div className="mb-3 text-4xl">👥</div>
+
+              <h2 className="mb-2 text-2xl font-bold text-white">
+                Add Team
+              </h2>
+
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={teamName}
+                  onChange={(e) => setTeamName(e.target.value)}
+                  placeholder="Team name"
+                  className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-left text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                />
+
+                <button
+                  onClick={handleAddTeam}
+                  className="w-full rounded-xl bg-amber-600 px-4 py-3 font-semibold text-white transition hover:bg-amber-500 cursor-pointer"
+                >
+                  Add Team
+                </button>
+
+                {teamError && (
+                  <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                    {teamError}
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6 border-t border-white/10 pt-4">
+                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-300">
+                  Existing Teams
+                </h3>
+
+                <div className="max-h-64 space-y-2 overflow-y-auto">
+                  {teams.length === 0 ? (
+                    <p className="text-sm text-slate-400">
+                      No teams found.
+                    </p>
+                  ) : (
+                    teams.map((team) => (
+                      <div
+                        key={team.id}
+                        className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
+                      >
+                        <Link href={`/teams/${team.id}`} className="flex-1">
+                          <p className="font-medium text-white transition hover:text-amber-300">
+                            {team.name}
+                          </p>
+
+                          <p className="text-xs text-slate-400">
+                            {team.id}
+                          </p>
+
+                          <p className="mt-1 text-xs text-amber-300">
+                            View team settings
+                          </p>
+                        </Link>
+
+                        <button
+                          onClick={() => handleDeleteTeam(team.id, team.name)}
+                          className="ml-3 cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
+                          title="Delete team"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
           </div>
           <div className="mt-6 rounded-2xl border border-purple-400/20 bg-purple-500/10 p-6">
             <div className="mb-3 text-4xl">📅</div>
