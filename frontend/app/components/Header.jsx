@@ -10,92 +10,94 @@ export default function Header() {
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
 
+    const handleKeyDown = e => {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
       document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [menuOpen]);
 
-  return (
-<>
-<header className="fixed top-5 left-0 z-50 w-full bg-transparent">
-        <div className="mx-auto flex max-w-8xl items-center justify-between px-15 py-4">
-          <Link href="/" className="text-xl">
-          <Image
-            src="/images/alces_logo.png"
-            alt="Logo"
-            width={100}
-            height={100}
-          />
-            
-          </Link>
+  const navItems = [
+    { href: "/", label: "Home" },
+    { href: "/schedule", label: "Schedule" },
+    { href: "/name", label: "Submit Report" },
+    { href: "/results", label: "Results" },
+    { href: "/options", label: "Administration" },
+  ];
 
-          <button
-            onClick={() => setMenuOpen(true)}
-            className="flex flex-col cursor-pointer gap-1.5"
-            aria-label="Open menu"
-          >
-            <span className="h-0.5 w-7 bg-white"></span>
-            <span className="h-0.5 w-7 bg-white"></span>
-            <span className="h-0.5 w-7 bg-white"></span>
-          </button>
+  return (
+    <>
+      <header className="sticky top-0 pt-3 z-50">
+        <div className="w-full px-4 sm:px-6">
+          <div className="mt-3 flex items-center justify-between rounded-2xl border border-white/10 bg-white/10 px-4 py-3 shadow-xl backdrop-blur-xl">
+            <Link
+              href="/"
+              className="transition-opacity hover:opacity-90"
+            >
+              <Image
+                src="/images/alces_logo.png"
+                alt="Alces Logo"
+                width={120}
+                height={40}
+                priority
+                className="h-8 w-auto sm:h-10"
+              />
+            </Link>
+
+            <button
+              onClick={() => setMenuOpen(prev => !prev)}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              className="relative flex h-10 w-10 items-center justify-center"
+            >
+              <span
+                className={`absolute h-0.5 w-6 bg-white transition-all duration-300 ${menuOpen ? "rotate-45" : "-translate-y-2"
+                  }`}
+              />
+
+              <span
+                className={`absolute h-0.5 w-6 bg-white transition-all duration-300 ${menuOpen ? "opacity-0" : "opacity-100"
+                  }`}
+              />
+
+              <span
+                className={`absolute h-0.5 w-6 bg-white transition-all duration-300 ${menuOpen ? "-rotate-45" : "translate-y-2"
+                  }`}
+              />
+            </button>
+          </div>
         </div>
       </header>
 
-      {menuOpen && (
-        <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-slate-950">
-          <button
-            onClick={() => setMenuOpen(false)}
-            className="absolute right-15 cursor-pointer top-12 text-5xl text-white hover:text-blue-400"
-            aria-label="Close menu"
-          >
-            ×
-          </button>
+      <div
+        className={`fixed inset-0 z-40 transition-all duration-300 ${menuOpen
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
+          }`}
+      >
+        <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-2xl" />
 
-          <nav className="flex flex-col items-center gap-10">
-             <Link
-              href="/"
-              onClick={() => setMenuOpen(false)}
-              className="text-4xl text-white hover:text-blue-400 transition"
-            >
-              Home
-            </Link>
-
-            <Link
-              href="/schedule"
-              onClick={() => setMenuOpen(false)}
-              className="text-4xl text-white hover:text-blue-400 transition"
-            >
-              View Schedule
-            </Link>
-
-             <Link
-              href="/name"
-              onClick={() => setMenuOpen(false)}
-              className="text-4xl text-white hover:text-blue-400 transition"
-            >
-              Fill Out Report
-            </Link>
-
-            <Link
-              href="/results"
-              onClick={() => setMenuOpen(false)}
-              className="text-4xl text-white hover:text-blue-400 transition"
-            >
-              Results
-            </Link>
-
-            <Link
-              href="/options"
-              onClick={() => setMenuOpen(false)}
-              className="text-4xl text-white hover:text-blue-400 transition"
-            >
-              Administration
-            </Link>
-
-           
+        <div className="relative flex h-full items-center justify-center">
+          <nav className="flex flex-col items-center gap-6 sm:gap-8">
+            {navItems.map(item => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+                className="text-3xl font-medium text-white transition-colors duration-200 hover:text-blue-400 sm:text-4xl md:text-5xl"
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
         </div>
-      )}
+      </div>
     </>
   );
 }

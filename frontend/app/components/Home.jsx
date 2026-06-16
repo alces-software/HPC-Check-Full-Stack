@@ -6,7 +6,7 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
+    <main className="flex justify-center space-y-8">
       <div className="relative z-10 w-full max-w-5xl">
         <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
           <div className="mb-12 text-center">

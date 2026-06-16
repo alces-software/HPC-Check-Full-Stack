@@ -109,7 +109,7 @@ export default function PersonalSchedule() {
     };
 
     return (
-        <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
+        <main className="flex justify-center space-y-8">
 
             <div className="relative z-10 mx-auto max-w-5xl">
                 <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">

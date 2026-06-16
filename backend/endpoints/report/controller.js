@@ -217,6 +217,7 @@ module.exports = (db) => {
                   personId: report.personId,
                   startTime: report.startDate,
                   endTime: report.endDate,
+                  passed: report.passed,
                   results: results.map((result) => ({
                      instructionId: result.instructionId,
                      passed: result.passed,
@@ -292,7 +293,8 @@ module.exports = (db) => {
                clusterId: clusterId,
                personId: personId,
                startDate: Long.fromNumber(startTime),
-               endDate: Long.fromNumber(endTime)
+               endDate: Long.fromNumber(endTime),
+               passed: results.every(r => r.passed)
             }).then(i => {
                return i.insertedId.toString();
             });
