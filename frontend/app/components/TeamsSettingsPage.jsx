@@ -138,6 +138,10 @@ export default function TeamSettingsPage({ team, teamId }) {
                 throw new Error(data.message || "Failed to add user to team.");
             }
 
+           setUsers((previousUsers) =>
+                previousUsers.filter((user) => user._id !== selectedUserId)
+            );
+
             setSelectedUserId("");
             getTeamUsers()
 
@@ -176,6 +180,10 @@ export default function TeamSettingsPage({ team, teamId }) {
             if (!res.ok || !data.success) {
                 throw new Error(data.message || "Failed to add user to team.");
             }
+
+            setUsers((previousClusters) =>
+                previousClusters.filter((cluster) => cluster._id !== selectedClusterId)
+            );
 
             setSelectedClusterId("");
             getTeamClusters()
