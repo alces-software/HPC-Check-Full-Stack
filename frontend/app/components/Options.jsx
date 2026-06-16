@@ -577,7 +577,7 @@ export default function Options() {
                           </p>
 
                           <p className="mt-1 text-xs text-amber-300">
-                            View team settings →
+                            View team settings
                           </p>
                         </Link>
 
