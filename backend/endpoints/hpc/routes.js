@@ -8,14 +8,18 @@ module.exports = (db) => {
       getAllHpc,
       getHpcById,
       getHpcByName,
-      deleteHpc
+      getHpcByTeam,
+      deleteHpc,
+      assignToTeam
    } = require('./controller')(db);
 
    router.post('/hpc/add', addHpc);
    router.get('/hpc', getAllHpc);
    router.get('/hpc/id/:id', getHpcById);
    router.get('/hpc/name/:name', getHpcByName);
+   router.get('/hpc/team/:id', getHpcByTeam);
    router.delete('/hpc/delete', deleteHpc);
+   router.patch('/hpc/team/:id', assignToTeam);
 
    return router;
 }

@@ -51,7 +51,8 @@ module.exports = (db) => {
          const response = await db.collection('cluster').find({}).toArray().then(results => {
             return results.map(data => ({
                id: data._id.toString(),
-               name: data.name
+               name: data.name,
+               teamId: data.teamId
             }));
          });
 
@@ -86,7 +87,8 @@ module.exports = (db) => {
             return res.status(200).json({
                success: true, body: {
                   id: id,
-                  name: results.name
+                  name: results.name,
+                  teamId: results.teamId
                }
             });
          }
@@ -124,7 +126,8 @@ module.exports = (db) => {
             return res.status(200).json({
                success: true, body: {
                   id: results._id.toString(),
-                  name: results.name
+                  name: results.name,
+                  teamId: results.teamId
                }
             });
          }
@@ -204,11 +207,89 @@ module.exports = (db) => {
       }
    };
 
+   async function getHpcByTeam(req, res) {
+      try {
+         const { id } = req.params || {};
+
+         if (!id) {
+            return res.status(400).json({ success: false, error: 'Missing cluster id' });
+         }
+
+         if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+         }
+
+         const results = await db.collection('cluster').find({
+            teamId: id
+         });
+
+         const data = await results.toArray().then(results => results.map((result) => {
+            result._id = result._id.toString();
+            return result;
+         }))
+
+         return res.status(200).json({
+            success: true, body: {
+               clusters: data
+            }
+         });
+
+      } catch (error) {
+         return res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
+   async function assignToTeam(req, res) {
+      try {
+         const { id } = req.params || {};
+         const { teamId } = req.body || {}
+         if (!id) {
+            return res.status(400).json({ success: false, error: 'Missing cluster\'s id' });
+         }
+
+         if (!teamId) {
+            return res.status(400).json({ success: false, error: 'Missing team\'s id' });
+         }
+
+         if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+         }
+
+         const person = await db.collection('cluster').findOne({
+            _id: new ObjectId(id)
+         });
+
+         if (!person) {
+            return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
+         }
+
+         const teamExists = await db.collection('team').findOne({
+            _id: new ObjectId(teamId)
+         });
+
+         if (!teamExists) {
+            return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
+         }
+
+         db.collection('cluster').updateOne(
+            { _id: new ObjectId(id) },
+            { $set: {teamId: teamId} }
+         );
+
+         return res.status(200).json({ success: true });
+
+      } catch (error) {
+         return res.status(500).json({ success: false, error: error.message });
+      }
+   }
+
    return {
       addHpc,
       getAllHpc,
       getHpcById,
       getHpcByName,
-      deleteHpc
+      getHpcByTeam,
+      deleteHpc,
+      assignToTeam
    };
 }

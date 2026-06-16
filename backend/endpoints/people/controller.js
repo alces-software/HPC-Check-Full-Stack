@@ -51,7 +51,8 @@ module.exports = (db) => {
          const response = await db.collection('person').find({}).toArray().then(results => {
             return results.map(data => ({
                id: data._id.toString(),
-               name: data.name
+               name: data.name,
+               teamId: data.teamId
             }));
          });
 
@@ -86,7 +87,8 @@ module.exports = (db) => {
             return res.status(200).json({
                success: true, body: {
                   id: id,
-                  name: results.name
+                  name: results.name,
+                  teamId: results.teamId
                }
             });
          }
@@ -124,7 +126,8 @@ module.exports = (db) => {
             return res.status(200).json({
                success: true, body: {
                   id: results._id.toString(),
-                  name: results.name
+                  name: results.name,
+                  teamId: results.teamId
                }
             });
          }
@@ -186,7 +189,6 @@ module.exports = (db) => {
     * @returns {Promise<void>}
     */
    async function assignToTeam(req, res) {
-      // get person
       try {
          const { id } = req.params || {};
          const { teamId } = req.body || {}
@@ -215,12 +217,12 @@ module.exports = (db) => {
          });
 
          if (!teamExists) {
-            return res.status(404).json({ success: false, error: "Person doesn't exist" });
+            return res.status(404).json({ success: false, error: "Team doesn't exist" });
          }
 
          db.collection('person').updateOne(
             { _id: new ObjectId(id) },
-            { teamId: teamId}
+            { $set: {teamId: teamId} }
          );
 
          return res.status(200).json({ success: true });
