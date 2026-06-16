@@ -3,6 +3,7 @@ const { ObjectId } = require("mongodb");
 module.exports.seedData = async (db) => {
   const peopleCollection = db.collection("person");
   const clustersCollection = db.collection("cluster");
+  const teamsCollection = db.collection("team");
   const instructionsCollection = db.collection("instruction");
   const methodsCollection = db.collection("method");
 
@@ -13,13 +14,23 @@ module.exports.seedData = async (db) => {
     { _id: new ObjectId(), name: "Calum" },
   ];
 
-  await peopleCollection.insertMany(users);
+  // Insert a team and associate people/clusters with it
+  const defaultTeam = { _id: new ObjectId(), name: "HPC Ops" };
+  await teamsCollection.insertOne(defaultTeam);
+
+  // Attach teamId (as string) to each user to satisfy schema
+  const usersWithTeam = users.map((u) => ({ ...u, teamId: defaultTeam._id.toString() }));
+
+  await peopleCollection.insertMany(usersWithTeam);
 
   // Cluster
   const cognitionCluster = {
     _id: new ObjectId(),
     name: "Cognition",
   };
+
+  // Associate cluster with the default team
+  cognitionCluster.teamId = defaultTeam._id.toString();
 
   await clustersCollection.insertOne(cognitionCluster);
 
@@ -181,4 +192,84 @@ module.exports.seedData = async (db) => {
   await methodsCollection.insertMany(methods);
 
   console.log("✅ Cognition test data seeded");
+
+  // Additional users
+  const additionalUsers = [
+    { _id: new ObjectId(), name: "Sarah" },
+    { _id: new ObjectId(), name: "Jamie" },
+    { _id: new ObjectId(), name: "Priya" },
+  ];
+
+  // Additional team
+  const aiResearchTeam = {
+    _id: new ObjectId(),
+    name: "AI Research",
+  };
+
+  await teamsCollection.insertOne(aiResearchTeam);
+
+  const additionalUsersWithTeam = additionalUsers.map((u) => ({
+    ...u,
+    teamId: aiResearchTeam._id.toString(),
+  }));
+
+  await peopleCollection.insertMany(additionalUsersWithTeam);
+
+  // Additional cluster
+  const inferenceCluster = {
+    _id: new ObjectId(),
+    name: "Inference",
+    teamId: aiResearchTeam._id.toString(),
+  };
+
+  await clustersCollection.insertOne(inferenceCluster);
+
+  // Additional instructions
+  const inferenceInstructions = [
+    {
+      _id: new ObjectId(),
+      title: "Inference API Health Check",
+      expectedTime: "2-3 mins",
+      description: "Verify inference endpoints are responding normally.",
+      clusterId: inferenceCluster._id.toString(),
+      good: "All endpoints return successful responses.",
+      bad: "Errors, timeouts, or degraded performance detected.",
+    },
+    {
+      _id: new ObjectId(),
+      title: "GPU Utilisation Review",
+      expectedTime: "3-4 mins",
+      description: "Check serving GPUs are healthy and available.",
+      clusterId: inferenceCluster._id.toString(),
+      good: "GPU resources are healthy and within expected usage.",
+      bad: "Unavailable devices or abnormal utilisation.",
+    },
+    {
+      _id: new ObjectId(),
+      title: "Sample Inference Test",
+      expectedTime: "2-3 mins",
+      description: "Run a test request through the production model.",
+      clusterId: inferenceCluster._id.toString(),
+      good: "Inference completes successfully with expected output.",
+      bad: "Request fails or produces unexpected results.",
+    },
+  ];
+
+  await instructionsCollection.insertMany(inferenceInstructions);
+
+  // Methods
+  addMethods(inferenceInstructions[0]._id, [
+    "Call the health endpoint for each inference service.",
+    "Verify response times are within expected limits.",
+  ]);
+
+  addMethods(inferenceInstructions[1]._id, [
+    "Run nvidia-smi on serving nodes.",
+    "Check for hardware errors or unavailable devices.",
+  ]);
+
+  addMethods(inferenceInstructions[2]._id, [
+    "Submit a standard inference request.",
+    "Confirm the response is returned successfully.",
+  ]);
 }
