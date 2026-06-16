@@ -17,6 +17,20 @@ module.exports = (db) => {
          const endOfDay = new Date();
          endOfDay.setHours(23, 59, 59, 999);
 
+         const people = await db.collection('person').find({}).toArray().then(res => {
+            return res.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
+
+         const cluster = await db.collection('cluster').find({}).toArray().then(res => {
+            return res.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
+
          const response = await db.collection('report').find({
             startDate: {
                $gte: startOfDay.getTime(),
@@ -25,7 +39,9 @@ module.exports = (db) => {
          }).toArray().then(result => {
             return result.map(({ _id, ...rest }) => ({
                ...rest,
-               id: _id.toString()
+               id: _id.toString(),
+               person: people.find(p => p.id === rest.personId)?.name,
+               cluster: cluster.find(c => c.id === rest.clusterId)?.name
             }));
          });
 
@@ -55,6 +71,20 @@ module.exports = (db) => {
             const endOfDay = new Date();
             endOfDay.setHours(23, 59, 59, 999);
 
+            const people = await db.collection('person').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
+
+            const cluster = await db.collection('cluster').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
+
             const response = await db.collection('report').find({
                clusterId: id,
                startDate: {
@@ -64,7 +94,9 @@ module.exports = (db) => {
             }).toArray().then(result => {
                return result.map(({ _id, ...rest }) => ({
                   ...rest,
-                  id: _id.toString()
+                  id: _id.toString(),
+                  person: people.find(p => p.id === rest.personId)?.name,
+                  cluster: cluster.find(c => c.id === rest.clusterId)?.name
                }));
             });
 
@@ -72,48 +104,6 @@ module.exports = (db) => {
          }
 
          return res.status(400).json({ success: false, error: "Missing cluster id" });
-      } catch (error) {
-         return res.status(500).json({ success: false, error: error.message });
-      }
-   }
-
-   /**
- * @param {import('express').Request} req
- * @param {import('express').Response} res
- * @returns {Promise<void>}
- */
-   async function getTodaysReportByPerson(req, res) {
-      try {
-         const { id } = req.params || {};
-
-         if (id) {
-            if (!ObjectId.isValid(id)) {
-               return res.status(400).json({ success: false, error: "Invalid person id provided" });
-            }
-
-            const startOfDay = new Date();
-            startOfDay.setHours(0, 0, 0, 0);
-
-            const endOfDay = new Date();
-            endOfDay.setHours(23, 59, 59, 999);
-
-            const response = await db.collection('report').find({
-               personId: id,
-               startDate: {
-                  $gte: startOfDay.getTime(),
-                  $lte: endOfDay.getTime()
-               }
-            }).toArray().then(result => {
-               return result.map(({ _id, ...rest }) => ({
-                  ...rest,
-                  id: _id.toString()
-               }));
-            });
-
-            return res.status(200).json({ success: true, body: response });
-         }
-
-         return res.status(400).json({ success: false, error: "Missing person id" });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
@@ -130,14 +120,14 @@ module.exports = (db) => {
          const limit = parseInt(req.query.limit, 10) || 20;
          const skip = (page - 1) * limit;
 
-         const people = await db.collection('person').find({}).then(res => {
+         const people = await db.collection('person').find({}).toArray().then(res => {
             return res.map(data => ({
                id: data._id.toString(),
                name: data.name
             }));
          });
 
-         const cluster = await db.collection('cluster').find({}).then(res => {
+         const cluster = await db.collection('cluster').find({}).toArray().then(res => {
             return res.map(data => ({
                id: data._id.toString(),
                name: data.name
@@ -219,14 +209,14 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
          }
 
-         const people = await db.collection('person').find({}).then(res => {
+         const people = await db.collection('person').find({}).toArray().then(res => {
             return res.map(data => ({
                id: data._id.toString(),
                name: data.name
             }));
          });
 
-         const cluster = await db.collection('cluster').find({}).then(res => {
+         const cluster = await db.collection('cluster').find({}).toArray().then(res => {
             return res.map(data => ({
                id: data._id.toString(),
                name: data.name
@@ -297,14 +287,14 @@ module.exports = (db) => {
                reportId: id
             }).toArray();
 
-            const people = await db.collection('person').find({}).then(res => {
+            const people = await db.collection('person').find({}).toArray().then(res => {
                return res.map(data => ({
                   id: data._id.toString(),
                   name: data.name
                }));
             });
 
-            const cluster = await db.collection('cluster').find({}).then(res => {
+            const cluster = await db.collection('cluster').find({}).toArray().then(res => {
                return res.map(data => ({
                   id: data._id.toString(),
                   name: data.name
@@ -431,9 +421,7 @@ module.exports = (db) => {
    return {
       getTodaysReports,
       getTodaysReportByCluster,
-      getTodaysReportByPerson,
       getReportWeek,
-      getReportByPerson,
       getReportByCluster,
       getReportById,
       addReport
