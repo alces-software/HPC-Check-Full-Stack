@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import testTeams from "../data/teams.json";
+
 
 
 export default function Options() {
@@ -14,7 +14,7 @@ export default function Options() {
   const [people, setPeople] = useState([]);
   const [clusters, setClusters] = useState([]);
 
-  const [teams, setTeams] = useState(testTeams);
+  const [teams, setTeams] = useState([]);
 
 
 
@@ -52,10 +52,23 @@ export default function Options() {
     }
   };
 
+    const loadTeams = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`)
+      const data = await res.json()
+
+      setTeams(data.body ?? []);
+    } catch (err) {
+      console.error("Failed to fetch teams:", err);
+      setTeams([])
+    }
+  };
+
   useEffect(() => {
     async function initialize() {
       await loadPeople();
       await loadClusters();
+      await loadTeams();
     }
 
     initialize();
@@ -162,20 +175,38 @@ export default function Options() {
     );
   };
 
-  const confirmAddTeam = async () => {
-    const nameToAdd = teamName.trim();
+ const confirmAddTeam = async () => {
+  const nameToAdd = teamName.trim();
 
-    const newTeam = {
-      id: `team-${nameToAdd.toLowerCase().replaceAll(" ", "-")}`,
-      name: nameToAdd,
-      userIds: [],
-      clusterIds: [],
-    };
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: nameToAdd,
+      }),
+    });
 
-    setTeams((previousTeams) => [...previousTeams, newTeam]);
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      setTeamError(data.message ?? data.error ?? "Could not add this team.");
+      showStatus("Failed to add team.", "error");
+      return;
+    }
+
     setTeamName("");
+    await loadTeams();
     showStatus(`Added team "${nameToAdd}" successfully.`, "success");
-  };
+  } catch (err) {
+    console.error(err);
+    setTeamError("Failed to communicate with the server.");
+    showStatus("Failed to add team.", "error");
+  }
+};
+
 
   const confirmAddCluster = async () => {
     try {
@@ -260,17 +291,28 @@ export default function Options() {
     });
   };
 
+
+
   const handleDeleteTeam = (id, name) => {
     clearStatus();
 
     requestConfirmation(`Are you sure you want to delete ${name}?`, async () => {
-      setTeams((previousTeams) =>
-        previousTeams.filter((team) => team.id !== id)
-      );
+      try {
+        await deleteItem(
+          `${process.env.NEXT_PUBLIC_API_URL}/teams`,
+          id
+        );
+
+
+        await loadTeams()
+      
 
       showStatus(`Deleted team "${name}" successfully.`, "success");
-    });
-  };
+    } catch {
+      showStatus(`Failed to delete team "${name}".`, "error");
+      
+    }
+  })};
 
   const handleRegenerateSchedule = () => {
     clearStatus();
@@ -313,6 +355,8 @@ export default function Options() {
     );
   };
 
+
+  
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
       <div className="absolute h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
