@@ -7,21 +7,21 @@ module.exports = (db) => {
       getTodaysReports,
       getTodaysReportByCluster,
       getTodaysReportByPerson,
+      getReportWeek,
       getReportByPerson,
       getReportByCluster,
       getReportById,
-      addReport,
-      deleteReport
+      addReport
    } = require('./controller')(db);
 
    router.get('/report/today', getTodaysReports);
    router.get('/report/today/cluster/:id', getTodaysReportByCluster);
    router.get('/report/today/person/:id', getTodaysReportByPerson);
+   router.get('/report/week', getReportWeek);
    router.get('/report/person/:id', getReportByPerson);
    router.get('/report/cluster/:id', getReportByCluster);
    router.get('/report/id/:id', getReportById);
    router.post('/report/add', addReport);
-   router.delete('/report/delete', deleteReport)
 
    return router;
 }

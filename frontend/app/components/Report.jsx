@@ -63,18 +63,6 @@ export default function Report() {
                })
             );
 
-            await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/people/id/${data.personId}`
-            )
-               .then(r => r.json())
-               .then(r => (data.person = r.body.name));
-
-            await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/hpc/id/${data.clusterId}`
-            )
-               .then(r => r.json())
-               .then(r => (data.cluster = r.body.name));
-
             data.duration = calculateDuration(
                new Date(data.startTime),
                new Date(data.endTime)
@@ -137,8 +125,8 @@ export default function Report() {
                   Checks:
                   <span
                      className={`ml-2 rounded-full border px-2 py-1 text-xs font-semibold uppercase tracking-wide ${report.passed
-                           ? "border-green-400/30 bg-green-500/20 text-green-300"
-                           : "border-red-400/30 bg-red-500/20 text-red-300"
+                        ? "border-green-400/30 bg-green-500/20 text-green-300"
+                        : "border-red-400/30 bg-red-500/20 text-red-300"
                         }`}
                   >
                      {report.passed ? "Passed" : "Failed"}
