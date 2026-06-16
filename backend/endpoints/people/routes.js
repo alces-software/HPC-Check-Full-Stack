@@ -9,6 +9,7 @@ module.exports = (db) => {
       getPeopleById,
       getPeopleByName,
       getPeopleByTeam,
+      getPeopleNotInTeam,
       deletePeople,
       assignToTeam
    } = require('./controller')(db);
@@ -17,9 +18,10 @@ module.exports = (db) => {
    router.get('/people', getAllPeople);
    router.get('/people/id/:id', getPeopleById);
    router.get('/people/name/:name', getPeopleByName);
-   router.get('/people/team/:id', getPeopleByTeam)
+   router.get('/people/team/:id', getPeopleByTeam);
+   router.get('/people/notteam/:id', getPeopleNotInTeam);
    router.delete('/people/delete', deletePeople);
-   router.patch('/people/team/:id', assignToTeam)
+   router.patch('/people/team/:id', assignToTeam);
 
    return router;
 }
