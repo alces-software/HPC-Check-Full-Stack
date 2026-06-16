@@ -147,6 +147,11 @@ module.exports = (db) => {
       }
    }
 
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
    async function updateMethod(req, res) {
       try {
          const { id, content } = req.body;
