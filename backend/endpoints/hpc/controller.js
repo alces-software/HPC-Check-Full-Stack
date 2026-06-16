@@ -229,9 +229,7 @@ module.exports = (db) => {
          }))
 
          return res.status(200).json({
-            success: true, body: {
-               clusters: data
-            }
+            success: true, body: data
          });
 
       } catch (error) {

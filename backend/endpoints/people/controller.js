@@ -232,6 +232,11 @@ module.exports = (db) => {
       }
    }
 
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
    async function getPeopleByTeam(req, res) {
       try {
          const { id } = req.params || {};
@@ -254,9 +259,7 @@ module.exports = (db) => {
          }))
 
          return res.status(200).json({
-            success: true, body: {
-               people: data
-            }
+            success: true, body: data
          });
 
       } catch (error) {
