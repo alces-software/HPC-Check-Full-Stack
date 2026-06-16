@@ -14,8 +14,20 @@ module.exports = (db) => {
    async function getAllRota(req, res) {
       try {
          const results = await db.collection('schedule').find({}).toArray();
-         const people = await db.collection('person').find({}).toArray();
-         const clusters = await db.collection('cluster').find({}).toArray();
+
+         const people = await db.collection('person').find({}).toArray().then(res => {
+            return res.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
+
+         const cluster = await db.collection('cluster').find({}).toArray().then(res => {
+            return res.map(data => ({
+               id: data._id.toString(),
+               name: data.name
+            }));
+         });
 
          let response = {
             mon: {},
@@ -27,8 +39,8 @@ module.exports = (db) => {
 
          results.forEach(d => {
             const dayName = dayFromIndex(d.dayIndex);
-            const personName = people.find(i => i._id.toString() == d.personId).name;
-            const clusterName = clusters.find(i => i._id.toString() == d.clusterId).name;
+            const personName = people.find(i => i.id == d.personId).name;
+            const clusterName = cluster.find(i => i.id == d.clusterId).name;
 
             if (Object.hasOwn(response[dayName], personName)) {
                response[dayName][personName].push(clusterName);
@@ -60,19 +72,28 @@ module.exports = (db) => {
             const results = await db.collection('schedule').find({
                dayIndex: indexFromDay(day)
             }).toArray();
-            const people = await db.collection('person').find({}).toArray();
-            const clusters = await db.collection('cluster').find({}).toArray();
+
+            const people = await db.collection('person').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
+
+            const cluster = await db.collection('cluster').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
 
             let response = [];
 
             results.forEach(d => {
-               const personName = people.find(i => i._id.toString() == d.personId).name;
-               const clusterName = clusters.find(i => i._id.toString() == d.clusterId).name;
-
                response.push({
-                  person: personName,
+                  person: people.find(i => i.id == d.personId).name,
                   personId: d.personId,
-                  cluster: clusterName,
+                  cluster: cluster.find(i => i.id == d.clusterId).namerName,
                   clusterId: d.clusterId,
                   dayIndex: d.dayIndex
                });
@@ -104,19 +125,28 @@ module.exports = (db) => {
             const results = await db.collection('schedule').find({
                clusterId: id
             }).toArray();
-            const people = await db.collection('person').find({}).toArray();
-            const clusters = await db.collection('cluster').find({}).toArray();
+
+            const people = await db.collection('person').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
+
+            const cluster = await db.collection('cluster').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
 
             let response = [];
 
             results.forEach(d => {
-               const personName = people.find(i => i._id.toString() == d.personId).name;
-               const clusterName = clusters.find(i => i._id.toString() == d.clusterId).name;
-
                response.push({
-                  person: personName,
+                  person: people.find(i => i.id == d.personId).name,
                   personId: d.personId,
-                  cluster: clusterName,
+                  cluster: cluster.find(i => i.id == d.clusterId).name,
                   clusterId: d.clusterId,
                   dayIndex: d.dayIndex
                });
@@ -148,19 +178,28 @@ module.exports = (db) => {
             const results = await db.collection('schedule').find({
                personId: id
             }).toArray();
-            const people = await db.collection('person').find({}).toArray();
-            const clusters = await db.collection('cluster').find({}).toArray();
+
+            const people = await db.collection('person').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
+
+            const cluster = await db.collection('cluster').find({}).toArray().then(res => {
+               return res.map(data => ({
+                  id: data._id.toString(),
+                  name: data.name
+               }));
+            });
 
             let response = [];
 
             results.forEach(d => {
-               const personName = people.find(i => i._id.toString() == d.personId).name;
-               const clusterName = clusters.find(i => i._id.toString() == d.clusterId).name;
-
                response.push({
-                  person: personName,
+                  person: people.find(i => i.id == d.personId).name,
                   personId: d.personId,
-                  cluster: clusterName,
+                  cluster: cluster.find(i => i.id == d.clusterId).name,
                   clusterId: d.clusterId,
                   dayIndex: d.dayIndex
                });
@@ -175,6 +214,11 @@ module.exports = (db) => {
       }
    }
 
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
    async function generateNewRota(req, res) {
       generateSchedule(db)
       return res.status(200).json({ success: true })

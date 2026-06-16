@@ -10,18 +10,18 @@ module.exports = (db) => {
     * @returns {Promise<void>}
     */
    async function getTeams(req, res) {
-        try {
-            const response = await db.collection('team').find({}).toArray().then(results => {
+      try {
+         const response = await db.collection('team').find({}).toArray().then(results => {
             return results.map(data => ({
-                id: data._id.toString(),
-                name: data.name
+               id: data._id.toString(),
+               name: data.name
             }));
-            });
+         });
 
-            return res.status(200).json({ success: true, body: response });
-        } catch (error) {
-            return res.status(500).json({ success: false, error: error.message });
-        }
+         return res.status(200).json({ success: true, body: response });
+      } catch (error) {
+         return res.status(500).json({ success: false, error: error.message });
+      }
    }
 
    /**
@@ -189,10 +189,10 @@ module.exports = (db) => {
    };
 
    return {
-    getTeams,
-    getTeamsById,
-    getTeamsByName,
-    deleteTeam,
-    addTeam
+      getTeams,
+      getTeamsById,
+      getTeamsByName,
+      deleteTeam,
+      addTeam
    }
 }
