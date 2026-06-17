@@ -14,26 +14,28 @@ module.exports = (db) => {
          const { id } = req.params || {};
 
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing team id' });
+            return res.status(400).json({ success: false, error: 'Missing teams id' });
          }
 
          if (!ObjectId.isValid(id)) {
             return res.status(400).json({ success: false, error: "Invalid team id provided" });
          }
 
-         const data = await db.collection('cluster')
-            .find({
-               teamId: { $ne: id }
-            })
-            .toArray()
-            .then(results => results
-               .map(({ _id, ...rest }) => ({
-                  id: _id.toString(),
-                  ...rest
-               }))
-            );
+         const results = await db.collection('team')
+            .findOne({
+               _id: new ObjectId(id)
+            });
 
-         return res.status(200).json({ success: true, body: data });
+         if (!results) {
+            return res.status(404).json({ success: false, error: "Team doesn't exist" });
+         }
+
+         return res.status(200).json({
+            success: true, body: {
+               id: id,
+               name: results.name
+            }
+         });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }

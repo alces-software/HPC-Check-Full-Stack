@@ -1,21 +1,12 @@
 /**
  * @param {import('mongodb').Db} db
  */
-module.exports = (db) => {
-   const router = require('express').Router();
-   const {
-      getTeams,
-      getTeamsById,
-      getTeamsByName,
-      addTeam,
-      deleteTeam
-   } = require('./controller')(db);
-
-   router.get('/teams', getTeams);
-   router.get('/teams/id/:id', getTeamsById);
-   router.get('/teams/name/:name', getTeamsByName);
-   router.post('/teams', addTeam);
-   router.delete('/teams', deleteTeam);
-
-   return router;
-}
+module.exports = (db) => require('express').Router()
+   // GET
+   .get('/teams', require('./controller/getAllTeam')(db))
+   .get('/teams/id/:id', require('./controller/getTeamById')(db))
+   .get('/teams/name/:name', require('./controller/getTeamByName')(db))
+   // POST
+   .post('/teams', require('./controller/addTeam')(db))
+   // DELETE
+   .delete('/teams', require('./controller/deleteTeam')(db));

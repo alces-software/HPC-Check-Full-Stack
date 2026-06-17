@@ -241,6 +241,9 @@ export default function Form() {
 
   async function updateMethod(methodId, content) {
     try {
+      console.log(methodId)
+      console.log(content)
+      
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const url = `${apiUrl}/method/update`;
 
@@ -248,13 +251,13 @@ export default function Form() {
       console.log("Update URL:", url);
 
       const res = await fetch(url, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           id: methodId,
-          content,
+          content: content,
         }),
       });
 
@@ -274,7 +277,7 @@ export default function Form() {
     }
   }
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-8">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden">
       {/* background */}
       <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
       <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl" />
@@ -465,7 +468,7 @@ export default function Form() {
 
 
 
-                                    
+
                                   >
                                     Cancel
                                   </button>
@@ -562,7 +565,3 @@ export default function Form() {
     </main>
   );
 }
-
-
-
-

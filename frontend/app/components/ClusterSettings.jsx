@@ -1,10 +1,11 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import ReactMarkdown from "react-markdown";
 import ClusterInstructionsPDF from "./ClusterInstructionsPDF.jsx";
+import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ClusterSettingsPage({ cluster, clusterId }) {
   const [activeTab, setActiveTab] = useState("instructions");
@@ -22,6 +23,34 @@ export default function ClusterSettingsPage({ cluster, clusterId }) {
   const [newMethod, setNewMethod] = useState("");
   const [editingStepID, setEditingStepID] = useState(null);
   const [addMethodStepID, setAddMethodStepID] = useState(null);
+
+  const [reports, setReports] = useState([])
+
+  const router = useRouter();
+
+  const recentReports = useMemo(() => {
+  const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+
+  return (reports ?? []).filter((report) => {
+    return report.startDate >= oneWeekAgo;
+  });
+}, [reports]);
+
+const groupedReports = useMemo(() => {
+  const map = {};
+
+  for (const report of recentReports) {
+    const key = new Date(report.startDate).toLocaleDateString("en-GB");
+
+    if (!map[key]) {
+      map[key] = [];
+    }
+
+    map[key].push(report);
+  }
+
+  return map;
+}, [recentReports]);
 
   async function getSteps() {
     if (!clusterId) return;
@@ -92,13 +121,14 @@ export default function ClusterSettingsPage({ cluster, clusterId }) {
         
 
         setRecentCheckDate(formatted);
+        setReports(data.body ?? [])
       } catch (err) {
         console.error(err);
       }
     }
 
     getReports();
-  }, [clusterId]);
+  }, []);
 
   async function deleteMethod(methodId) {
     try {
@@ -156,15 +186,17 @@ export default function ClusterSettingsPage({ cluster, clusterId }) {
   }
 
   async function updateMethod(methodId, content) {
+    console.log(methodId)
+      console.log(content)
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method/update`, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           id: methodId,
-          content,
+          content: content,
         }),
       });
 
@@ -173,6 +205,8 @@ export default function ClusterSettingsPage({ cluster, clusterId }) {
       if (!res.ok) {
         throw new Error(data.error || "Failed to update method");
       }
+
+      
 
       await getSteps();
 
@@ -578,17 +612,122 @@ export default function ClusterSettingsPage({ cluster, clusterId }) {
             </div>
           )}
 
-          {activeTab === "results" && (
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm">
-              <h2 className="text-3xl font-bold text-white">
-                Results
-              </h2>
+{activeTab === "results" && (
+  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm">
+    <div className="mb-6">
+      <h2 className="text-3xl font-bold text-white">
+        Recent Results
+      </h2>
 
-              <p className="mt-3 text-slate-300">
-                Results for this cluster will go here.
-              </p>
-            </div>
-          )}
+      <p className="mt-3 text-slate-300">
+        Reports from the last 7 days for this cluster.
+      </p>
+    </div>
+
+    {reports.length === 0 && (
+      <p className="text-center text-slate-400">
+        No reports found
+      </p>
+    )}
+
+    {reports.length > 0 && recentReports.length === 0 && (
+      <p className="text-center text-slate-400">
+        No reports found in the last 7 days
+      </p>
+    )}
+
+    <div className="space-y-6">
+      {Object.entries(groupedReports).map(([date, items]) => (
+        <div
+          key={date}
+          className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm"
+        >
+          <div className="flex items-center justify-between border-b border-white/10 bg-white/5 px-5 py-3">
+            <h2 className="font-semibold tracking-wide text-white">
+              {date}
+            </h2>
+
+            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
+              {items.length} reports
+            </span>
+          </div>
+
+          <div className="space-y-2 p-4">
+            {items.map((report) => {
+              const passed = report.passed;
+
+              return (
+                <button
+                  key={report.id}
+                  type="button"
+                  onClick={() => router.push(`/report?id=${report.id}`)}
+                  className={[
+                    "group w-full text-left",
+                    "rounded-xl border px-4 py-4",
+                    "transition-all duration-200",
+                    "hover:-translate-y-[1px] hover:shadow-lg",
+                    "active:scale-[0.99]",
+                    passed
+                      ? "border-green-400/30 bg-green-500/20"
+                      : "border-red-400/30 bg-red-500/20",
+                  ].join(" ")}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex gap-3">
+                      <div
+                        className={[
+                          "mt-1 h-3 w-3 shrink-0 rounded-full",
+                          passed ? "bg-green-400" : "bg-red-400",
+                        ].join(" ")}
+                      />
+
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-white">
+                            Report #{report.id}
+                          </span>
+
+                          <span
+                            className={[
+                              "rounded-full border px-2 py-0.5 text-[11px]",
+                              passed
+                                ? "border-green-400/30 bg-green-500/20 text-green-300"
+                                : "border-red-400/30 bg-red-500/20 text-red-300",
+                            ].join(" ")}
+                          >
+                            {passed ? "Passed" : "Failed"}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-300">
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <span className="rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
+                              👤 {report.person || "Unknown"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1 text-xs text-slate-300 transition group-hover:text-white">
+                      <span className="opacity-0 transition group-hover:opacity-100">
+                        Open
+                      </span>
+
+                      <span className="transition group-hover:translate-x-0.5">
+                        →
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
         </div>
       </div>
     </main>

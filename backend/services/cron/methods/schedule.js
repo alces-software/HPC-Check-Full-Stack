@@ -1,4 +1,6 @@
-
+/**
+ * @param {import('mongodb').Db} db
+ */
 module.exports.generateSchedule = async (db) => {
     console.log("Generating schedule");
 
@@ -8,10 +10,10 @@ module.exports.generateSchedule = async (db) => {
 
     // Generate a schedule for each team
 
-    for (let i=0; i<teamIds.length; i++){
-        console.log(`Creating schecdule for team ${i}`);
+    for (let i = 0; i < teamIds.length; i++) {
+        console.log(`Creating schedule for team ${i}`);
         // Get all people from the database
-        let peopleIDs = await db.collection('person').find({ teamId: teamIds[i] }).project({ _id: 1  }).toArray().then(results => results.map((id) => id._id.toString()));
+        let peopleIDs = await db.collection('person').find({ teamId: teamIds[i] }).project({ _id: 1 }).toArray().then(results => results.map((id) => id._id.toString()));
         // Get all clusters from the database
         let clusterIDs = await db.collection('cluster').find({ teamId: teamIds[i] }).project({ _id: 1 }).toArray().then(results => results.map((id) => id._id.toString()));
 

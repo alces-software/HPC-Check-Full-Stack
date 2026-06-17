@@ -12,10 +12,10 @@ module.exports = (db) => {
    return async (req, res) => {
       try {
          const { id } = req.params || {};
-         const { teamId } = req.body || {};
+         const { teamId } = req.body || {}
 
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing cluster\'s id' });
+            return res.status(400).json({ success: false, error: 'Missing person\'s id' });
          }
 
          if (!teamId) {
@@ -23,16 +23,16 @@ module.exports = (db) => {
          }
 
          if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            return res.status(400).json({ success: false, error: "Invalid person id provided" });
          }
 
-         const person = await db.collection('cluster')
+         const person = await db.collection('person')
             .findOne({
                _id: new ObjectId(id)
             });
 
          if (!person) {
-            return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
+            return res.status(404).json({ success: false, error: "Person doesn't exist" });
          }
 
          const teamExists = await db.collection('team')
@@ -41,10 +41,10 @@ module.exports = (db) => {
             });
 
          if (!teamExists) {
-            return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
+            return res.status(404).json({ success: false, error: "Team doesn't exist" });
          }
 
-         await db.collection('cluster')
+         db.collection('person')
             .updateOne(
                { _id: new ObjectId(id) },
                { $set: { teamId: teamId } }

@@ -12,7 +12,7 @@ module.exports = (db) => {
          const { name } = req.body || {};
 
          if (!name) {
-            return res.status(400).json({ success: false, error: 'Missing hpc name' });
+            return res.status(400).json({ success: false, error: 'Missing team\'s name' });
          }
 
          const sanitizedName = String(name).trim();
@@ -21,19 +21,17 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "The name provided is empty" });
          }
 
-         const existingPerson = await db.collection('cluster')
-            .findOne({
-               name: sanitizedName
-            });
+         const existingTeam = await db.collection('team').findOne({
+            name: sanitizedName
+         });
 
-         if (existingPerson) {
-            return res.status(409).json({ success: false, error: 'HPC already exits' });
+         if (existingTeam) {
+            return res.status(409).json({ success: false, error: 'Team already exits' });
          }
 
-         await db.collection('cluster')
-            .insertOne({
-               name: sanitizedName
-            });
+         await db.collection('team').insertOne({
+            name: sanitizedName
+         });
 
          return res.status(200).json({ success: true });
       } catch (error) {
