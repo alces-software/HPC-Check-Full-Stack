@@ -13,25 +13,24 @@ module.exports = (db) => {
       try {
          const { id, content } = req.body || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: "Missing instruction id" });
          }
 
-         if (!content) {
-            return res.status(400).json({ success: false, error: "Missing method content" });
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The instruction id provided is empty' });
          }
 
-         if (!ObjectId.isValid(id)) {
+         if (!ObjectId.isValid(sanitizedId)) {
             return res.status(400).json({ success: false, error: "Invalid instruction id provided" });
          }
 
-         const instructionExists = await db.collection('instruction')
-            .findOne({
-               _id: new ObjectId(id)
-            });
-
-         if (!instructionExists) {
-            return res.status(404).json({ success: false, error: "An instruction with that id doesn't exist" });
+         // Check content
+         if (!content) {
+            return res.status(400).json({ success: false, error: "Missing method content" });
          }
 
          const sanitizedContent = String(content).trim();
@@ -40,9 +39,20 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "The content provided is empty" });
          }
 
+         // Check if instruction exists
+         const instructionExists = await db.collection('instruction')
+            .findOne({
+               _id: new ObjectId(sanitizedId)
+            });
+
+         if (!instructionExists) {
+            return res.status(404).json({ success: false, error: "An instruction with that id doesn't exist" });
+         }
+
+         // Add to database
          await db.collection('method')
             .insertOne({
-               instructionId: id,
+               instructionId: sanitizedId,
                content: sanitizedContent
             });
 

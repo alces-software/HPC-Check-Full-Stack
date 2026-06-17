@@ -205,7 +205,9 @@ export default function ClusterInstructionsPDF({
             Daily cluster checks and methods
           </Text>
 
-          
+          <View style={styles.statusRow}>
+            <Text style={styles.pill}>Healthy</Text>
+          </View>
         </View>
 
         {steps.length === 0 && (

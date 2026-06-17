@@ -18,17 +18,33 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'Missing cluster\'s id' });
          }
 
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
+            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+         }
+
          if (!teamId) {
             return res.status(400).json({ success: false, error: 'Missing team\'s id' });
          }
 
+         const sanitizedTeamId = String(teamId).trim();
+
+         if (sanitizedTeamId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
+         }
+
          if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            return res.status(400).json({ success: false, error: "Invalid team id provided" });
          }
 
          const person = await db.collection('cluster')
             .findOne({
-               _id: new ObjectId(id)
+               _id: new ObjectId(sanitizedId)
             });
 
          if (!person) {
@@ -37,7 +53,7 @@ module.exports = (db) => {
 
          const teamExists = await db.collection('team')
             .findOne({
-               _id: new ObjectId(teamId)
+               _id: new ObjectId(sanitizedTeamId)
             });
 
          if (!teamExists) {
@@ -46,8 +62,8 @@ module.exports = (db) => {
 
          await db.collection('cluster')
             .updateOne(
-               { _id: new ObjectId(id) },
-               { $set: { teamId: teamId } }
+               { _id: new ObjectId(sanitizedId) },
+               { $set: { teamId: sanitizedTeamId } }
             );
 
          return res.status(200).json({ success: true });

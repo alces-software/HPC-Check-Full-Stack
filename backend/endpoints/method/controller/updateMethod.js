@@ -13,25 +13,24 @@ module.exports = (db) => {
       try {
          const { id, content } = req.body;
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: "Missing method id" });
          }
 
-         if (!content) {
-            return res.status(400).json({ success: false, error: "Missing method content" });
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The method id provided is empty' });
          }
 
-         if (!ObjectId.isValid(id)) {
+         if (!ObjectId.isValid(sanitizedId)) {
             return res.status(400).json({ success: false, error: "Invalid method id provided" });
          }
 
-         const method = await db.collection('method')
-            .findOne({
-               _id: new ObjectId(id)
-            });
-
-         if (!method) {
-            return res.status(404).json({ success: false, error: "No method found with that id" });
+         // Check content
+         if (!content) {
+            return res.status(400).json({ success: false, error: "Missing method content" });
          }
 
          const sanitizedContent = String(content).trim();
@@ -40,9 +39,20 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "The content provided is empty" });
          }
 
+         // Make sure the method is in the database
+         const method = await db.collection('method')
+            .findOne({
+               _id: new ObjectId(sanitizedId)
+            });
+
+         if (!method) {
+            return res.status(404).json({ success: false, error: "No method found with that id" });
+         }
+
+         // Update the method in the database
          await db.collection('method')
             .updateOne(
-               { _id: new ObjectId(id) },
+               { _id: new ObjectId(sanitizedId) },
                { $set: { content: sanitizedContent } }
             );
 

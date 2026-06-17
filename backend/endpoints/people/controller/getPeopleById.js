@@ -13,17 +13,25 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing persons id' });
          }
 
-         if (!ObjectId.isValid(id)) {
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The persons id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
             return res.status(400).json({ success: false, error: "Invalid person id provided" });
          }
 
+         // Get the person from the database
          const results = await db.collection('person')
             .findOne({
-               _id: new ObjectId(id)
+               _id: new ObjectId(sanitizedId)
             });
 
          if (!results) {
@@ -32,7 +40,7 @@ module.exports = (db) => {
 
          return res.status(200).json({
             success: true, body: {
-               id: id,
+               id: sanitizedId,
                name: results.name,
                teamId: results.teamId
             }

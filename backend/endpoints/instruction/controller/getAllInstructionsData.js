@@ -13,34 +13,44 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }
 
-         if (!ObjectId.isValid(id)) {
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
             return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
          }
+
          const response = [];
 
+         // Get all the instructions
          const instructions = await db.collection('instruction')
             .find({
-               clusterId: id
+               clusterId: sanitizedId
             })
             .toArray()
-            .then(result => result
+            .then(res => res
                .map(({ _id, ...rest }) => ({
                   id: _id.toString(),
                   ...rest
                }))
             );
 
+         // Get all the methods associated with the instruction
          for (const i of instructions) {
             const methods = await db.collection('method')
                .find({
                   instructionId: i.id
                })
                .toArray()
-               .then(result => result
+               .then(res => res
                   .map(({ _id, ...rest }) => ({
                      id: _id.toString(),
                      ...rest
