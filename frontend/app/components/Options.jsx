@@ -131,7 +131,7 @@ export default function Options() {
   const confirmAddUser = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/people/add`,
+        `${process.env.NEXT_PUBLIC_API_URL}/people`,
         {
           method: "POST",
           headers: {
@@ -211,7 +211,7 @@ export default function Options() {
   const confirmAddCluster = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/hpc/add`,
+        `${process.env.NEXT_PUBLIC_API_URL}/hpc`,
         {
           method: "POST",
           headers: {
@@ -261,7 +261,7 @@ export default function Options() {
     requestConfirmation(`Are you sure you want to delete ${name}?`, async () => {
       try {
         await deleteItem(
-          `${process.env.NEXT_PUBLIC_API_URL}/people/delete/`,
+          `${process.env.NEXT_PUBLIC_API_URL}/people`,
           id
         );
 
@@ -279,7 +279,7 @@ export default function Options() {
     requestConfirmation(`Are you sure you want to delete ${name}?`, async () => {
       try {
         await deleteItem(
-          `${process.env.NEXT_PUBLIC_API_URL}/hpc/delete/`,
+          `${process.env.NEXT_PUBLIC_API_URL}/hpc`,
           id
         );
 

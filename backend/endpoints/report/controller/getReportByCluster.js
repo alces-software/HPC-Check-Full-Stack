@@ -17,11 +17,18 @@ module.exports = (db) => {
          const limit = parseInt(req.query.limit, 10) || 20;
          const skip = (page - 1) * limit;
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: "Missing cluster id" });
          }
 
-         if (!ObjectId.isValid(id)) {
+         const sanitizedClusterId = String(id).trim();
+
+         if (sanitizedClusterId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedClusterId)) {
             return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
          }
 
@@ -45,7 +52,7 @@ module.exports = (db) => {
                }))
             );
 
-         const query = { clusterId: id };
+         const query = { clusterId: sanitizedClusterId };
 
          // run count + data in parallel
          const [total, data] = await Promise.all([
