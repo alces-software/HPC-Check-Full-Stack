@@ -54,9 +54,7 @@ export default function PersonalSchedule() {
                     return;
                 }
 
-                const todaysClusters = rotaData.body.filter(
-                    (item) => item.dayIndex === dayIndex
-                );
+                const todaysClusters = rotaData.body;
 
                 const completedClusterIds = await Promise.all(
                     todaysClusters.map(async (item) => {
