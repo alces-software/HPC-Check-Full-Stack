@@ -1,5 +1,5 @@
-const { dayFromIndex } = require('../../../enums/days');
-
+require('dotenv').config();
+const Scheduler = require('../../../schedule/scheduler');
 /**
  * @param {import('mongodb').Db} db
  */
@@ -11,49 +11,40 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const results = await db.collection('schedule')
-            .find({})
-            .toArray();
-
-         const people = await db.collection('person')
-            .find({})
-            .toArray()
-            .then(res => res
-               .map(data => ({
-                  id: data._id.toString(),
-                  name: data.name
-               }))
+         const teams = await db.collection("team").find({}, {projection: { _id: 1 }}).toArray()
+            .then(results =>
+               results.map(data => data._id.toString())
             );
 
-         const cluster = await db.collection('cluster')
-            .find({})
-            .toArray()
-            .then(res => res
-               .map(data => ({
-                  id: data._id.toString(),
-                  name: data.name
-               }))
-            );
-
-         let response = {
-            mon: {},
-            tue: {},
-            wed: {},
-            thu: {},
-            fri: {}
+         const schedules = []
+         
+         for (const team of teams) {
+            const people = await db.collection("person").find({ teamId: team }, {projection: { name: 1 }}).toArray()
+               .then(results =>
+                  results.map(data => data.name.toString())
+               );
+            const clusters = await db.collection("cluster").find({ teamId: team }, {projection: { name: 1 }}).toArray()
+               .then(results =>
+                  results.map(data => data.name.toString())
+               );
+            const scheduler = new Scheduler(people, clusters, process.env.CLUSTERS_PER_DAY, new Date("2026-06-08"));
+            schedules.push(await scheduler.getScheduleForWeek(db, new Date()));
          }
 
-         results.forEach(d => {
-            const dayName = dayFromIndex(d.dayIndex);
-            const personName = people.find(i => i.id == d.personId).name;
-            const clusterName = cluster.find(i => i.id == d.clusterId).name;
+         const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
 
-            if (Object.hasOwn(response[dayName], personName)) {
-               response[dayName][personName].push(clusterName);
-            } else {
-               response[dayName][personName] = [clusterName];
+         const response = schedules.reduce((acc, schedule) => {
+            for (const day of days) {
+               acc[day] ??= {};
+
+               for (const [person, tasks] of Object.entries(schedule[day] || {})) {
+                  acc[day][person] ??= [];
+                  acc[day][person].push(...tasks);
+               }
             }
-         });
+
+            return acc;
+         }, {});
 
          return res.status(200).json({ success: true, body: response });
       } catch (error) {

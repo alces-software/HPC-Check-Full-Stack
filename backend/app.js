@@ -28,14 +28,10 @@ const Scheduler = require('./schedule/scheduler');
 
    await Scheduler.populateClosedDays(databaseConnection);
 
-   const scheduler = new Scheduler(["Oscar", "Alex", "Calum", "Arun"], ["Cognition", "DMOG", "Cluster", "Mars", "Jupiter", "Saturn"], 5, new Date("2026-06-15"));
-
-   console.log(await scheduler.getScheduleForWeek(databaseConnection, new Date("2026-06-17")));
-
    console.log("Connected to database");
 
    // Register rota routes
-   app.use('/', require('./endpoints/rota/routes')(databaseConnection));
+   app.use('/', await require('./endpoints/rota/routes')(databaseConnection));
 
    // Register people routes
    app.use('/', require('./endpoints/people/routes')(databaseConnection));
