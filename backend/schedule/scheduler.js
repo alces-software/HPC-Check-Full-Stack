@@ -1,3 +1,5 @@
+const seedrandom = require("seedrandom");
+
 class Scheduler {
     /**
      * @param {Array<string>} people - Array of person IDs
@@ -128,6 +130,40 @@ class Scheduler {
         }
 
         return current;
+    }
+
+    generatePersonBlock(index) {
+        const rng = seedrandom(`Seed${index}`);
+
+        const arr = [...this.people];
+
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(rng() * (i + 1));
+
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    getPersonFromPersonNum(num) {
+        const blockIndex = Math.floor(num/this.people.length);
+        const posInBlock = num%this.people.length;
+
+        const person = this.generatePersonBlock(blockIndex)[posInBlock];
+        return person;
+    }
+
+    async getPeopleForDay(db, nowsi) {
+        if (nowsi instanceof Date) {
+            nowsi = await this.dateToNowsi(db, nowsi);
+        }
+
+        const totalPeople = nowsi * this.cpd;
+        const people = [];
+        for (let i=0; i<this.cpd; i++) {
+            people.push(this.getPersonFromPersonNum(totalPeople+i));
+        }
+        return people;
     }
 }
 
