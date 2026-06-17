@@ -1,4 +1,7 @@
 const seedrandom = require("seedrandom");
+require('dotenv').config;
+
+const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
 
 /**
  * Scheduler handles the generation of assignment sequences across working days.
@@ -105,6 +108,38 @@ class Scheduler {
     }
 
     /**
+     * Get the set of closed days from the database.
+     *
+     * @param {import('mongodb').Db} db - MongoDB database instance.
+     * @param {Date} startDate - Start date for the range.
+     * @returns {Promise<Set<string>>} Set of ISO date strings representing closed days.
+     */
+    async getClosedSet(db, startDate) {
+        const closedColl = db.collection('closedDay');
+        const closedDocs = await closedColl.find({
+            day: { $gte: startDate }
+        }).toArray();
+
+        return new Set(
+            closedDocs.map(d => new Date(d.day).toISOString().slice(0, 10))
+        );
+    }
+
+    /**
+     * Check if a date is a closed day.
+     *
+     * @param {Date|string} date - Date to check (ISO string or Date object).
+     * @param {Set<string>} closedSet - Set of ISO date strings representing closed days.
+     * @returns {boolean} True if the date is closed, false otherwise.
+     */
+    isClosed(date, closedSet) {
+        const isoDay = date instanceof Date
+            ? date.toISOString().slice(0, 10)
+            : date;
+        return closedSet.has(isoDay);
+    }
+
+    /**
      * Convert a working-day index into a calendar date.
      * Weekends and closed days are skipped when advancing from inception.
      *
@@ -118,17 +153,8 @@ class Scheduler {
 
         if (nowsi <= 0) return start;
 
-        // Get all closed days from inception onward (you can widen range if needed)
-        const closedColl = db.collection('closedDay');
-
-        const closedDocs = await closedColl.find({
-            day: { $gte: start }
-        }).toArray();
-
-        // Put closed days into a Set for fast lookup
-        const closedSet = new Set(
-            closedDocs.map(d => new Date(d.day).toISOString().slice(0, 10))
-        );
+        // Get all closed days from inception onward
+        const closedSet = await this.getClosedSet(db, start);
 
         let current = new Date(start);
         let remaining = nowsi;
@@ -136,13 +162,11 @@ class Scheduler {
         while (remaining > 0) {
             current.setUTCDate(current.getUTCDate() + 1);
 
-            const isoDay = current.toISOString().slice(0, 10);
             const dow = current.getUTCDay();
 
             const isWeekend = dow === 0 || dow === 6;
-            const isClosed = closedSet.has(isoDay);
 
-            if (!isWeekend && !isClosed) {
+            if (!isWeekend && !this.isClosed(current, closedSet)) {
             remaining--;
             }
         }
@@ -157,7 +181,7 @@ class Scheduler {
      * @returns {Array<string>} Shuffled array of person IDs.
      */
     generatePersonBlock(index) {
-        const rng = seedrandom(`Seed${index}`);
+        const rng = seedrandom(`${process.env.SEED}${index}`);
 
         const arr = [...this.people];
 
@@ -175,11 +199,21 @@ class Scheduler {
      * @param {number} index - Overall assignment index.
      * @returns {string} Assigned person ID.
      */
-    getPersonFromIndex(index) {
+    async getPersonFromIndex(db, index) {
+        const doc = await db.collection("scheduleOverride").findOne(
+            { personNum: index},
+            { projection: { personId: 1 } }
+        );
+
+        if (doc) {
+            return doc.personId;
+        }
+
         const blockIndex = Math.floor(index/this.people.length);
         const posInBlock = index%this.people.length;
 
         const person = this.generatePersonBlock(blockIndex)[posInBlock];
+
         return person;
     }
 
@@ -198,7 +232,7 @@ class Scheduler {
         const totalPeople = nowsi * this.cpd;
         const people = [];
         for (let i=0; i<this.cpd; i++) {
-            people.push(this.getPersonFromIndex(totalPeople+i));
+            people.push(await this.getPersonFromIndex(db, totalPeople+i));
         }
         return people;
     }
@@ -234,6 +268,81 @@ class Scheduler {
             clusters.push(this.getClusterFromIndex(totalClusters+i));
         }
         return clusters;
+    }
+
+    /**
+     * Build the schedule for a specific calendar date.
+     *
+     * @param {import('mongodb').Db} db - MongoDB database instance.
+     * @param {Date|string|number} date - Date to build the schedule for.
+     * @returns {Promise<Record<string, string[]>>} Dictionary mapping person IDs to cluster IDs.
+     */
+    async getScheduleForDay(db, date) {
+        const people = await this.getPeopleForDay(db, date);
+        const clusters = await this.getClustersForDay(db, date);
+        const scheduleDict = {}
+
+        for (let i=0; i<people.length; i++) {
+            const person = people[i];
+            const cluster = clusters[i];
+
+            (scheduleDict[person] ??= []).push(cluster);
+        }
+
+        return scheduleDict;
+    }
+
+    /**
+     * Get the Monday through Friday dates for the week containing the provided date.
+     *
+     * @param {Date|string|number} date - Reference date for the week.
+     * @returns {Array<Date>} Array of weekday Date objects for that week.
+     */
+    getWeekDays(date) {
+        const result = [];
+
+        const d = new Date(date);
+
+        const day = d.getDay();
+
+        const diffToMonday = (day + 6) % 7;
+
+        d.setDate(d.getDate() - diffToMonday);
+
+        for (let i = 0; i < 5; i++) {
+            const dayCopy = new Date(d);
+            dayCopy.setDate(d.getDate() + i);
+            result.push(dayCopy);
+        }
+
+        return result;
+    }
+
+    /**
+     * Build the schedule for a full work week containing the given date.
+     * Closed days are represented by empty schedules for the affected weekday.
+     *
+     * @param {import('mongodb').Db} db - MongoDB database instance.
+     * @param {Date|string|number} date - Reference date within the week.
+     * @returns {Promise<Record<string, Record<string, string[]>>>} Weekly schedule keyed by weekday abbreviation.
+     */
+    async getScheduleForWeek(db, date) {
+        const weekDays = this.getWeekDays(date);
+
+        const closedSet = await this.getClosedSet(db, weekDays[0]);
+
+        const weekSchedule = {};
+
+        for (let i=0; i<weekDays.length; i++) {
+            if (!this.isClosed(weekDays[i], closedSet)) {
+                const schedule = await this.getScheduleForDay(db, weekDays[i]);
+                weekSchedule[days[i]] = schedule;
+            } else {
+                weekSchedule[days[i]] = {};
+            }
+        }
+
+        return weekSchedule;
     }
 }
 

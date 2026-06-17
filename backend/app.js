@@ -30,8 +30,7 @@ const Scheduler = require('./schedule/scheduler');
 
    const scheduler = new Scheduler(["Oscar", "Alex", "Calum", "Arun"], ["Cognition", "DMOG", "Cluster", "Mars", "Jupiter", "Saturn"], 5, new Date("2026-06-15"));
 
-   console.log(await scheduler.getPeopleForDay(databaseConnection, 5));
-   console.log(await scheduler.getClustersForDay(databaseConnection, 5));
+   console.log(await scheduler.getScheduleForWeek(databaseConnection, new Date("2026-06-17")));
 
    console.log("Connected to database");
 
