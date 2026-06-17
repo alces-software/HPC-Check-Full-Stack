@@ -28,6 +28,10 @@ const Scheduler = require('./schedule/scheduler');
 
    await Scheduler.populateClosedDays(databaseConnection);
 
+   const scheduler = new Scheduler([], [], 3, new Date("2026-06-15"));
+
+   console.log(await scheduler.nowsiToDate(databaseConnection, 20))
+
    console.log("Connected to database");
 
    // Register rota routes
