@@ -9,10 +9,10 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { name } = req.body || {};
+         const { name } = req.params || {};
 
          if (!name) {
-            return res.status(400).json({ success: false, error: 'Missing hpc name' });
+            return res.status(400).json({ success: false, error: 'Missing persons name' });
          }
 
          const sanitizedName = String(name).trim();
@@ -21,21 +21,25 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "The name provided is empty" });
          }
 
-         const existingPerson = await db.collection('cluster')
+         const results = await db.collection('person')
             .findOne({
-               name: sanitizedName
+               name: {
+                  $regex: `^${sanitizedName}$`,
+                  $options: "i"
+               }
             });
 
-         if (existingPerson) {
-            return res.status(409).json({ success: false, error: 'HPC already exits' });
+         if (!results) {
+            return res.status(404).json({ success: false, error: "Person doesn't exist" });
          }
 
-         await db.collection('cluster')
-            .insertOne({
-               name: sanitizedName
-            });
-
-         return res.status(200).json({ success: true });
+         return res.status(200).json({
+            success: true, body: {
+               id: results._id.toString(),
+               name: results.name,
+               teamId: results.teamId
+            }
+         });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }

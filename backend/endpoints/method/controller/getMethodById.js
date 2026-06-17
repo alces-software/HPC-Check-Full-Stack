@@ -14,31 +14,28 @@ module.exports = (db) => {
          const { id } = req.params || {};
 
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing cluster id' });
+            return res.status(400).json({ success: false, error: 'Missing method id' });
          }
 
          if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            return res.status(400).json({ success: false, error: "Invalid method id provided" });
          }
 
-         const results = await db.collection('cluster')
+         const response = await db.collection('method')
             .findOne({
                _id: new ObjectId(id)
             });
 
-         if (!results) {
-            return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
+         if (!response) {
+            return res.status(409).json({ success: false, error: 'Method does\'t exist' });
          }
 
-         return res.status(200).json({
-            success: true, body: {
-               id: id,
-               name: results.name,
-               teamId: results.teamId
-            }
-         });
+         response.id = id;
+         delete response._id;
+
+         return res.status(200).json({ success: true, body: response });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
-   }
+   };
 };

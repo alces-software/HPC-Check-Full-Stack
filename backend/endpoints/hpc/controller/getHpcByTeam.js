@@ -9,7 +9,7 @@ module.exports = (db) => {
     * @param {import('express').Response} res
     * @returns {Promise<void>}
     */
-   async function getHpcByTeam(req, res) {
+   return async (req, res) => {
       try {
          const { id } = req.params || {};
 
@@ -21,23 +21,21 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
          }
 
-         const results = await db.collection('cluster').find({
-            teamId: id
-         });
+         const data = await db.collection('cluster')
+            .find({
+               teamId: id
+            })
+            .toArray()
+            .then(results => results
+               .map(({ _id, ...rest }) => ({
+                  id: _id.toString(),
+                  ...rest,
+               }))
+            );
 
-         const data = await results.toArray().then(results => results.map((result) => {
-            result._id = result._id.toString();
-            return result;
-         }))
-
-         return res.status(200).json({
-            success: true, body: data
-         });
-
+         return res.status(200).json({ success: true, body: data });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
-   }
-
-   return getHpcByTeam;
+   };
 };
