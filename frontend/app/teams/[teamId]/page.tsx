@@ -1,4 +1,3 @@
-import teams from "../../data/teams.json";
 import TeamSettingsPage from "../../components/TeamsSettingsPage";
 
 type Team = {
@@ -27,8 +26,7 @@ export default async function TeamPage({ params }: TeamPageProps) {
   const teams: Team[] = data.body ?? [];
 
   const team = teams.find((team) => team.id === teamId);
-
-
+  
   return (
     <TeamSettingsPage
       team={team}
