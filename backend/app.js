@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { startWeeklySchedule } = require('./services/cron/weekly-schedule');
-const { generateSchedule } = require('./services/cron/methods/schedule');
 const { Database } = require('./db/db');
 const { seedData } = require('./scripts/testData');
 const Scheduler = require('./schedule/scheduler');

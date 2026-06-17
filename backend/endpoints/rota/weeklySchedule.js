@@ -49,7 +49,7 @@ async function getDaily(db, day) {
     return schedules;
 }
 
-async function getWeekly(db) {
+async function getWeekly(db, date=new Date()) {
      
 
     const teams = await getTeams(db);
@@ -59,7 +59,7 @@ async function getWeekly(db) {
     for (const team of teams) {
         const {nameScheduler} = await initialiseSchedulers(db, team);
 
-        schedules.push(await nameScheduler.getScheduleForWeek(db, new Date()));
+        schedules.push(await nameScheduler.getScheduleForWeek(db, date));
     }
 
 
