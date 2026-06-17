@@ -97,5 +97,11 @@ module.exports.Database = class {
 
          console.log(`Created collection "${collectionDef.name}"`);
       }
+
+      db.closedDay.createIndex({ day: 1 }, { unique: true });
+      await db.collection("closedDay").createIndex(
+         { day: 1 },
+         { unique: true }
+      );
    }
 };

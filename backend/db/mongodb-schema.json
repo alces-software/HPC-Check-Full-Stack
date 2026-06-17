@@ -1,8 +1,80 @@
 [
   {
-    "name": "schedule",
-    "validator": null,
-    "validationLevel": "strict",
+    "name": "scheduleHistory",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+          "_id",
+          "clusterId",
+          "personId",
+          "day"
+        ],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "clusterId": {
+            "bsonType": "string"
+          },
+          "personId": {
+            "bsonType": "string"
+          },
+          "day": {
+            "bsonType": "int"
+          }
+        }
+      }
+    },
+    "validationLevel": "moderate",
+    "validationAction": "error"
+  },
+  {
+    "name": "closedDay",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+          "_id",
+          "day"
+        ],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "day": {
+            "bsonType": "date"
+          }
+        }
+      }
+    },
+    "validationLevel": "moderate",
+    "validationAction": "error"
+  },
+  {
+    "name": "scheduleOverride",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+          "_id",
+          "personNum",
+          "personId"
+        ],
+        "properties": {
+          "_id": {
+            "bsonType": "objectId"
+          },
+          "personNum": {
+            "bsonType": "int"
+          },
+          "personId": {
+            "bsonType": "string"
+          }
+        }
+      }
+    },
+    "validationLevel": "moderate",
     "validationAction": "error"
   },
   {
