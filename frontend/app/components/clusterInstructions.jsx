@@ -65,7 +65,7 @@ export default function Results() {
   }, []);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
+    <main className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-6xl">
         <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
           <div className="mb-8">

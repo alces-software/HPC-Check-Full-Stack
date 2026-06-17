@@ -51,7 +51,7 @@ export default function TeamSettingsPage({ team, teamId }) {
 
     useEffect(() => {
         async function getUsers() {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/notteam/${teamId}`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/not/${teamId}`);
             const data = await res.json();
             console.log("Users", data.body)
             setUsers(data.body)
@@ -64,7 +64,7 @@ export default function TeamSettingsPage({ team, teamId }) {
 
     useEffect(() => {
         async function getClusters() {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/notteam/${teamId}`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/not/${teamId}`);
             const data = await res.json();
             setClusters(data.body)
         }
@@ -138,8 +138,8 @@ export default function TeamSettingsPage({ team, teamId }) {
                 throw new Error(data.message || "Failed to add user to team.");
             }
 
-           setUsers((previousUsers) =>
-                previousUsers.filter((user) => user._id !== selectedUserId)
+            setUsers((previousUsers) =>
+                previousUsers.filter((user) => user.id !== selectedUserId)
             );
 
             setSelectedUserId("");
@@ -182,7 +182,7 @@ export default function TeamSettingsPage({ team, teamId }) {
             }
 
             setUsers((previousClusters) =>
-                previousClusters.filter((cluster) => cluster._id !== selectedClusterId)
+                previousClusters.filter((cluster) => cluster.id !== selectedClusterId)
             );
 
             setSelectedClusterId("");
@@ -254,7 +254,7 @@ export default function TeamSettingsPage({ team, teamId }) {
                                 <Listbox as="div" value={selectedUserId} onChange={setSelectedUserId} className="w-full">
                                     <div className="relative">
                                         <ListboxButton className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-3 py-3 text-left cursor-pointer text-white outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
-                                            {users.find((user) => user._id === selectedUserId)?.name || "Select user"}
+                                            {users.find((user) => user.id === selectedUserId)?.name || "Select user"}
 
                                             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                                                 ▼
@@ -264,8 +264,8 @@ export default function TeamSettingsPage({ team, teamId }) {
                                         <ListboxOptions className="absolute z-50 mt-2 max-h-40 w-full overflow-y-auto rounded-xl border border-white/10 bg-slate-900/95 shadow-2xl backdrop-blur-xl">
                                             {users.map((user) => (
                                                 <ListboxOption
-                                                    key={user._id}
-                                                    value={user._id}
+                                                    key={user.id}
+                                                    value={user.id}
                                                     className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
                                                 >
                                                     {user.name}
@@ -298,7 +298,7 @@ export default function TeamSettingsPage({ team, teamId }) {
                                     ) : (
                                         teamUsers.map((user) => (
                                             <div
-                                                key={user._id}
+                                                key={user.id}
                                                 className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
                                             >
                                                 <div>
@@ -307,7 +307,7 @@ export default function TeamSettingsPage({ team, teamId }) {
                                                     </p>
 
                                                     <p className="text-xs text-slate-400">
-                                                        {user._id}
+                                                        {user.id}
                                                     </p>
                                                 </div>
 
@@ -350,7 +350,7 @@ export default function TeamSettingsPage({ team, teamId }) {
                                 <Listbox as="div" value={selectedClusterId} onChange={setSelectedClusterId} className={"w-full"}>
                                     <div className="relative">
                                         <ListboxButton className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-3 py-3 text-left cursor-pointer text-white outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
-                                            {clusters.find((cluster) => cluster._id === selectedClusterId)?.name ||
+                                            {clusters.find((cluster) => cluster.id === selectedClusterId)?.name ||
                                                 "Select cluster"}
 
                                             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
@@ -361,8 +361,8 @@ export default function TeamSettingsPage({ team, teamId }) {
                                         <ListboxOptions className="absolute z-50 mt-2 max-h-40 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 shadow-2xl backdrop-blur-xl">
                                             {clusters.map((user) => (
                                                 <ListboxOption
-                                                    key={user._id}
-                                                    value={user._id}
+                                                    key={user.id}
+                                                    value={user.id}
                                                     className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
                                                 >
                                                     {user.name}
@@ -395,7 +395,7 @@ export default function TeamSettingsPage({ team, teamId }) {
                                     ) : (
                                         teamClusters.map((cluster) => (
                                             <div
-                                                key={cluster._id}
+                                                key={cluster.id}
                                                 className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
                                             >
                                                 <div>
@@ -404,7 +404,7 @@ export default function TeamSettingsPage({ team, teamId }) {
                                                     </p>
 
                                                     <p className="text-xs text-slate-400">
-                                                        {cluster._id}
+                                                        {cluster.id}
                                                     </p>
                                                 </div>
 

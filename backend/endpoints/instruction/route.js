@@ -1,19 +1,9 @@
 /**
  * @param {import('mongodb').Db} db
  */
-module.exports = (db) => {
-   const router = require('express').Router();
-   const {
-      getAllInstructionsData,
-      getAllInstructionsOnly,
-      getInstructionsAllById,
-      getInstructionsOnlyById
-   } = require('./controller')(db);
-
-   router.get('/instruction/all/:id', getAllInstructionsData);
-   router.get('/instruction/:id', getAllInstructionsOnly);
-   router.get('/instruction/specific/all/:id', getInstructionsAllById);
-   router.get('/instruction/specific/:id', getInstructionsOnlyById);
-
-   return router;
-}
+module.exports = (db) => require('express').Router()
+   // GET
+   .get('/instruction/all/:id', require('./controller/getAllInstructionsData')(db))
+   .get('/instruction/:id', require('./controller/getAllInstructionsOnly')(db))
+   .get('/instruction/specific/all/:id', require('./controller/getInstructionsAllById')(db))
+   .get('/instruction/specific/:id', require('./controller/getInstructionsOnlyById')(db));
