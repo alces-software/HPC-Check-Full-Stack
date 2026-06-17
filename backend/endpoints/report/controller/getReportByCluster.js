@@ -32,6 +32,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
          }
 
+         // Get people
          const people = await db.collection('person')
             .find({})
             .toArray()
@@ -42,6 +43,7 @@ module.exports = (db) => {
                }))
             );
 
+         // Get clusters
          const cluster = await db.collection('cluster')
             .find({})
             .toArray()
@@ -54,7 +56,7 @@ module.exports = (db) => {
 
          const query = { clusterId: sanitizedClusterId };
 
-         // run count + data in parallel
+         // Get report count while also getting the data
          const [total, data] = await Promise.all([
             db.collection('report').countDocuments(query),
             db.collection('report')
