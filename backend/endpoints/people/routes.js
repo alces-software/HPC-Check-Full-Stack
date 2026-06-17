@@ -9,8 +9,8 @@ module.exports = (db) => require('express').Router()
    .get('/people/team/:id', require('./controller/getPeopleByTeam')(db))
    .get('/people/team/not/:id', require('./controller/getPeopleNotInTeam')(db))
    // POST
-   .post('/people/add', require('./controller/addPeople')(db))
+   .post('/people', require('./controller/addPeople')(db))
    // DELETE
-   .delete('/people/delete', require('./controller/deletePeople')(db))
+   .delete('/people', require('./controller/deletePeople')(db))
    // UPDATE
    .patch('/people/team/:id', require('./controller/addPeopleToTeam')(db));

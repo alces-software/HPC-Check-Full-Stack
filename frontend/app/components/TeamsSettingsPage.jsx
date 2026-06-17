@@ -9,16 +9,9 @@ import {
     ListboxOption,
 } from "@headlessui/react";
 
-
-
-
-
 export default function TeamSettingsPage({ team, teamId }) {
     const [selectedUserId, setSelectedUserId] = useState("");
     const [selectedClusterId, setSelectedClusterId] = useState("");
-
-    const [teamUserIds, setTeamUserIds] = useState(team?.userIds ?? []);
-    const [teamClusterIds, setTeamClusterIds] = useState(team?.clusterIds ?? []);
 
     const [teamUsers, setTeamUsers] = useState([])
     const [users, setUsers] = useState([])
@@ -29,10 +22,6 @@ export default function TeamSettingsPage({ team, teamId }) {
     const [statusMessage, setStatusMessage] = useState("");
     const [statusType, setStatusType] = useState("success");
 
-
-
-
-
     async function getTeamUsers() {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${teamId}`);
         const data = await res.json();
@@ -41,13 +30,8 @@ export default function TeamSettingsPage({ team, teamId }) {
     }
 
     useEffect(() => {
-
         getTeamUsers();
     }, []);
-
-
-
-
 
     useEffect(() => {
         async function getUsers() {
@@ -57,10 +41,7 @@ export default function TeamSettingsPage({ team, teamId }) {
             setUsers(data.body)
         }
         getUsers();
-    }, []);
-
-
-
+    }, [teamId]);
 
     useEffect(() => {
         async function getClusters() {
@@ -69,7 +50,7 @@ export default function TeamSettingsPage({ team, teamId }) {
             setClusters(data.body)
         }
         getClusters();
-    }, []);
+    }, [teamId]);
 
     async function getTeamClusters() {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${teamId}`);
@@ -77,13 +58,9 @@ export default function TeamSettingsPage({ team, teamId }) {
         setTeamClusters(data.body)
     }
 
-
     useEffect(() => {
-
         getTeamClusters();
     }, []);
-
-
 
     if (!team) {
         return (
@@ -102,15 +79,6 @@ export default function TeamSettingsPage({ team, teamId }) {
             </main>
         );
     }
-
-
-
-    // const showStatus = (message, type = "success") => {
-    //     setStatusMessage(message);
-    //     setStatusType(type);
-    // };
-
-
 
     const handleAddUser = async () => {
         if (!selectedUserId) {
@@ -145,15 +113,12 @@ export default function TeamSettingsPage({ team, teamId }) {
             setSelectedUserId("");
             getTeamUsers()
 
-
             // showStatus("User added to team.", "success");
         } catch (err) {
             console.error(err);
             // showStatus("Failed to add user to team.", "error");
         }
     };
-
-
 
     const handleAddCluster = async () => {
         if (!selectedClusterId) {
@@ -181,13 +146,12 @@ export default function TeamSettingsPage({ team, teamId }) {
                 throw new Error(data.message || "Failed to add user to team.");
             }
 
-            setUsers((previousClusters) =>
+            setClusters((previousClusters) =>
                 previousClusters.filter((cluster) => cluster.id !== selectedClusterId)
             );
 
             setSelectedClusterId("");
             getTeamClusters()
-
 
             // showStatus("User added to team.", "success");
         } catch (err) {
@@ -248,8 +212,6 @@ export default function TeamSettingsPage({ team, teamId }) {
                             </p>
 
                             <div className="mb-6 flex gap-3">
-
-
 
                                 <Listbox as="div" value={selectedUserId} onChange={setSelectedUserId} className="w-full">
                                     <div className="relative">
@@ -331,21 +293,6 @@ export default function TeamSettingsPage({ team, teamId }) {
                             </p>
 
                             <div className="mb-6 flex gap-3">
-                                {/* <select
-                                    value={selectedClusterId}
-                                    onChange={(event) =>
-                                        setSelectedClusterId(event.target.value)
-                                    }
-                                    className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
-                                >
-                                    <option value="">Select cluster</option>
-
-                                    {availableClusters.map((cluster) => (
-                                        <option key={cluster.id} value={cluster.id}>
-                                            {cluster.name}
-                                        </option>
-                                    ))}
-                                </select> */}
 
                                 <Listbox as="div" value={selectedClusterId} onChange={setSelectedClusterId} className={"w-full"}>
                                     <div className="relative">
@@ -359,13 +306,13 @@ export default function TeamSettingsPage({ team, teamId }) {
                                         </ListboxButton>
 
                                         <ListboxOptions className="absolute z-50 mt-2 max-h-40 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 shadow-2xl backdrop-blur-xl">
-                                            {clusters.map((user) => (
+                                            {clusters.map((cluster) => (
                                                 <ListboxOption
-                                                    key={user.id}
-                                                    value={user.id}
+                                                    key={cluster.id}
+                                                    value={cluster.id}
                                                     className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
                                                 >
-                                                    {user.name}
+                                                    {cluster.name}
                                                 </ListboxOption>
                                             ))}
                                         </ListboxOptions>
@@ -408,7 +355,6 @@ export default function TeamSettingsPage({ team, teamId }) {
                                                     </p>
                                                 </div>
 
-
                                             </div>
                                         ))
                                     )}
@@ -416,7 +362,6 @@ export default function TeamSettingsPage({ team, teamId }) {
                             </div>
                         </div>
                     </div>
-
 
                 </div>
             </div>

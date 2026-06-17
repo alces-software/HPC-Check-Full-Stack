@@ -21,12 +21,12 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "The name provided is empty" });
          }
 
-         const existingPerson = await db.collection('cluster')
+         const existingHpc = await db.collection('cluster')
             .findOne({
                name: sanitizedName
             });
 
-         if (existingPerson) {
+         if (existingHpc) {
             return res.status(409).json({ success: false, error: 'HPC already exits' });
          }
 

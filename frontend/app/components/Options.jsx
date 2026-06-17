@@ -131,7 +131,7 @@ export default function Options() {
   const confirmAddUser = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/people/add`,
+        `${process.env.NEXT_PUBLIC_API_URL}/people`,
         {
           method: "POST",
           headers: {
@@ -190,6 +190,7 @@ export default function Options() {
     });
 
     const data = await res.json();
+    
 
     if (!res.ok || !data.success) {
       setTeamError(data.message ?? data.error ?? "Could not add this team.");
@@ -200,6 +201,7 @@ export default function Options() {
     setTeamName("");
     await loadTeams();
     showStatus(`Added team "${nameToAdd}" successfully.`, "success");
+    window.dispatchEvent(new Event("header-data-updated"));
   } catch (err) {
     console.error(err);
     setTeamError("Failed to communicate with the server.");
@@ -211,7 +213,7 @@ export default function Options() {
   const confirmAddCluster = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/hpc/add`,
+        `${process.env.NEXT_PUBLIC_API_URL}/hpc`,
         {
           method: "POST",
           headers: {
@@ -233,6 +235,8 @@ export default function Options() {
       setClusterName("");
       await loadClusters();
       showStatus(`Added cluster "${clusterName}" successfully.`, "success");
+      window.dispatchEvent(new Event("header-data-updated"));
+      
     } catch (err) {
       console.error(err);
       setClusterError("Failed to communicate with the server.");
@@ -252,7 +256,10 @@ export default function Options() {
     requestConfirmation(
       `Are you sure you want to add the cluster "${clusterName}"?`,
       confirmAddCluster
+      
+
     );
+    
   };
 
   const handleDeleteUser = (id, name) => {
@@ -261,7 +268,7 @@ export default function Options() {
     requestConfirmation(`Are you sure you want to delete ${name}?`, async () => {
       try {
         await deleteItem(
-          `${process.env.NEXT_PUBLIC_API_URL}/people/delete/`,
+          `${process.env.NEXT_PUBLIC_API_URL}/people`,
           id
         );
 
@@ -279,11 +286,12 @@ export default function Options() {
     requestConfirmation(`Are you sure you want to delete ${name}?`, async () => {
       try {
         await deleteItem(
-          `${process.env.NEXT_PUBLIC_API_URL}/hpc/delete/`,
+          `${process.env.NEXT_PUBLIC_API_URL}/hpc`,
           id
         );
 
         await loadClusters();
+        window.dispatchEvent(new Event("header-data-updated"));
         showStatus(`Deleted cluster "${name}" successfully.`, "success");
       } catch {
         showStatus(`Failed to delete cluster "${name}".`, "error");
@@ -305,6 +313,8 @@ export default function Options() {
 
 
         await loadTeams()
+        window.dispatchEvent(new Event("header-data-updated"));
+
       
 
       showStatus(`Deleted team "${name}" successfully.`, "success");
@@ -344,6 +354,8 @@ export default function Options() {
     setTeamError("");
     clearStatus();
 
+    
+
     if (!teamName.trim()) {
       setTeamError("Please enter a team name.");
       return;
@@ -352,6 +364,7 @@ export default function Options() {
     requestConfirmation(
       `Are you sure you want to add the team "${teamName}"?`,
       confirmAddTeam
+      
     );
   };
 
@@ -541,13 +554,19 @@ export default function Options() {
                         className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                       >
                         <div>
-                          <p className="font-medium text-white">
+                          <Link href={`/clusters/${cluster.id}`} className="flex-1 curso-pointer">
+                          <p className="font-medium text-white transition hover:text-emerald-400">
                             {cluster.name}
                           </p>
 
                           <p className="text-xs text-slate-400">
                             {cluster.id}
                           </p>
+
+                           <p className="mt-1 text-xs text-emerald-400">
+                            View cluster settings
+                          </p>
+                          </Link>
                         </div>
 
                         <button
