@@ -1,3 +1,5 @@
+const { ObjectId } = require('mongodb');
+
 /**
  * @param {import('mongodb').Db} db
  */
@@ -9,16 +11,15 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const response = await db.collection('cluster')
+         const response = await db.collection('team')
             .find({})
             .toArray()
-            .then(results => {
-               return results.map(data => ({
+            .then(res => res
+               .map(data => ({
                   id: data._id.toString(),
-                  name: data.name,
-                  teamId: data.teamId
-               }));
-            });
+                  name: data.name
+               }))
+            );
 
          return res.status(200).json({ success: true, body: response });
       } catch (error) {

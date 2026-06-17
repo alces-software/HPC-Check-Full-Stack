@@ -1,27 +1,16 @@
 /**
  * @param {import('mongodb').Db} db
  */
-module.exports = (db) => {
-   const router = require('express').Router();
-   const {
-      addPeople,
-      getAllPeople,
-      getPeopleById,
-      getPeopleByName,
-      getPeopleByTeam,
-      getPeopleNotInTeam,
-      deletePeople,
-      assignToTeam
-   } = require('./controller')(db);
-
-   router.post('/people/add', addPeople);
-   router.get('/people', getAllPeople);
-   router.get('/people/id/:id', getPeopleById);
-   router.get('/people/name/:name', getPeopleByName);
-   router.get('/people/team/:id', getPeopleByTeam);
-   router.get('/people/notteam/:id', getPeopleNotInTeam);
-   router.delete('/people/delete', deletePeople);
-   router.patch('/people/team/:id', assignToTeam);
-
-   return router;
-}
+module.exports = (db) => require('express').Router()
+   // GET
+   .get('/people', require('./controller/getAllPeople')(db))
+   .get('/people/id/:id', require('./controller/getPeopleById')(db))
+   .get('/people/name/:name', require('./controller/getPeopleByName')(db))
+   .get('/people/team/:id', require('./controller/getPeopleByTeam')(db))
+   .get('/people/team/not/:id', require('./controller/getPeopleNotInTeam')(db))
+   // POST
+   .post('/people/add', require('./controller/addPeople')(db))
+   // DELETE
+   .delete('/people/delete', require('./controller/deletePeople')(db))
+   // UPDATE
+   .patch('/people/team/:id', require('./controller/addPeopleToTeam')(db));

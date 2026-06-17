@@ -35,32 +35,25 @@ const Scheduler = require('./schedule/scheduler');
    console.log("Connected to database");
 
    // Register rota routes
-   const rotaRoutes = require('./endpoints/rota/routes')(databaseConnection);
-   app.use('/', rotaRoutes);
+   app.use('/', require('./endpoints/rota/routes')(databaseConnection));
 
    // Register people routes
-   const peopleRoutes = require('./endpoints/people/routes')(databaseConnection);
-   app.use('/', peopleRoutes);
+   app.use('/', require('./endpoints/people/routes')(databaseConnection));
 
    // Register hpc routes
-   const hpcRoutes = require('./endpoints/hpc/routes')(databaseConnection);
-   app.use('/', hpcRoutes);
+   app.use('/', require('./endpoints/hpc/routes')(databaseConnection));
 
    // Register instruction routes
-   const instructionRoutes = require('./endpoints/instruction/route')(databaseConnection);
-   app.use('/', instructionRoutes);
+   app.use('/', require('./endpoints/instruction/route')(databaseConnection));
 
    // Register report routes
-   const reportRoutes = require('./endpoints/report/routes')(databaseConnection);
-   app.use('/', reportRoutes);
+   app.use('/', require('./endpoints/report/routes')(databaseConnection));
 
    // Register method routes
-   const methodRoutes = require('./endpoints/method/route')(databaseConnection);
-   app.use('/', methodRoutes);
+   app.use('/', require('./endpoints/method/route')(databaseConnection));
 
    // Register team routes
-   const teamRoutes = require('./endpoints/team/routes')(databaseConnection);
-   app.use('/', teamRoutes);
+   app.use('/', require('./endpoints/team/routes')(databaseConnection));
 
    // Start new weekly schedule cron job
    startWeeklySchedule(databaseConnection);
