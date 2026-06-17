@@ -181,7 +181,7 @@ export default function TeamSettingsPage({ team, teamId }) {
                 throw new Error(data.message || "Failed to add user to team.");
             }
 
-            setUsers((previousClusters) =>
+            setClusters((previousClusters) =>
                 previousClusters.filter((cluster) => cluster._id !== selectedClusterId)
             );
 
