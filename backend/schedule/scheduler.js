@@ -1,11 +1,18 @@
 const seedrandom = require("seedrandom");
 
+/**
+ * Scheduler handles the generation of assignment sequences across working days.
+ * It converts calendar dates to working-day indices and generates deterministic
+ * person and cluster assignments for each day.
+ */
 class Scheduler {
     /**
-     * @param {Array<string>} people - Array of person IDs
-     * @param {Array<string>} clusters - Array of cluster IDs
-     * @param {number} cpd - Number of clusters per day
-     * @param {Date} inception - Date that scheduler starts counting from
+     * Create a new Scheduler.
+     *
+     * @param {Array<string>} people - Array of person IDs.
+     * @param {Array<string>} clusters - Array of cluster IDs.
+     * @param {number} cpd - Number of clusters per day.
+     * @param {Date|string|number} inception - Date that scheduler starts counting from.
      */
     constructor(people, clusters, cpd, inception) {
         this.people = people;
@@ -19,7 +26,10 @@ class Scheduler {
     }
 
     /**
-     * @param {import('mongodb').Db} db
+     * Fetch UK bank holidays and persist them as closed days in MongoDB.
+     *
+     * @param {import('mongodb').Db} db - MongoDB database instance.
+     * @returns {Promise<void>}
      */
     static async populateClosedDays(db) {
         const response = await fetch('https://www.gov.uk/bank-holidays.json');
@@ -55,8 +65,12 @@ class Scheduler {
     }
 
     /**
-     * @param {import('mongodb').Db} db
-     * @param {Date} date
+     * Convert a calendar date into the number of working days since inception.
+     * Weekends and closed days are excluded from the count.
+     *
+     * @param {import('mongodb').Db} db - MongoDB database instance.
+     * @param {Date|string|number} date - Target date to convert.
+     * @returns {Promise<number>} Number of working days since inception.
      */
     async dateToNowsi(db, date) {
         // Normalize inception and target date
@@ -91,8 +105,12 @@ class Scheduler {
     }
 
     /**
-     * @param {import('mongodb').Db} db
-     * @param {int} nowsi
+     * Convert a working-day index into a calendar date.
+     * Weekends and closed days are skipped when advancing from inception.
+     *
+     * @param {import('mongodb').Db} db - MongoDB database instance.
+     * @param {number} nowsi - Working-day index since inception.
+     * @returns {Promise<Date>} Date corresponding to the working-day index.
      */
     async nowsiToDate(db, nowsi) {
         const start = new Date(this.inception);
@@ -132,6 +150,12 @@ class Scheduler {
         return current;
     }
 
+    /**
+     * Generate a deterministic person assignment block from the given seed index.
+     *
+     * @param {number} index - Block index used to seed the shuffle.
+     * @returns {Array<string>} Shuffled array of person IDs.
+     */
     generatePersonBlock(index) {
         const rng = seedrandom(`Seed${index}`);
 
@@ -145,14 +169,27 @@ class Scheduler {
         return arr;
     }
 
-    getPersonFromPersonNum(num) {
-        const blockIndex = Math.floor(num/this.people.length);
-        const posInBlock = num%this.people.length;
+    /**
+     * Get the person assigned at the specified overall assignment index.
+     *
+     * @param {number} index - Overall assignment index.
+     * @returns {string} Assigned person ID.
+     */
+    getPersonFromIndex(index) {
+        const blockIndex = Math.floor(index/this.people.length);
+        const posInBlock = index%this.people.length;
 
         const person = this.generatePersonBlock(blockIndex)[posInBlock];
         return person;
     }
 
+    /**
+     * Get the people assigned for a particular working day.
+     *
+     * @param {import('mongodb').Db} db - MongoDB database instance.
+     * @param {number|Date|string|number} nowsi - Working-day index or a calendar date.
+     * @returns {Promise<Array<string>>} Assigned person IDs for that day.
+     */
     async getPeopleForDay(db, nowsi) {
         if (nowsi instanceof Date) {
             nowsi = await this.dateToNowsi(db, nowsi);
@@ -161,9 +198,42 @@ class Scheduler {
         const totalPeople = nowsi * this.cpd;
         const people = [];
         for (let i=0; i<this.cpd; i++) {
-            people.push(this.getPersonFromPersonNum(totalPeople+i));
+            people.push(this.getPersonFromIndex(totalPeople+i));
         }
         return people;
+    }
+
+    /**
+     * Get the cluster assigned at the specified overall assignment index.
+     *
+     * @param {number} index - Overall assignment index.
+     * @returns {string} Assigned cluster ID.
+     */
+    getClusterFromIndex(index) {
+        const posInBlock = index%this.clusters.length;
+
+        const cluster = this.clusters[posInBlock];
+        return cluster;
+    }
+
+    /**
+     * Get the clusters assigned for a particular working day.
+     *
+     * @param {import('mongodb').Db} db - MongoDB database instance.
+     * @param {number|Date|string|number} nowsi - Working-day index or a calendar date.
+     * @returns {Promise<Array<string>>} Assigned cluster IDs for that day.
+     */
+    async getClustersForDay(db, nowsi) {
+        if (nowsi instanceof Date) {
+            nowsi = await this.dateToNowsi(db, nowsi);
+        }
+
+        const totalClusters = nowsi * this.cpd;
+        const clusters = [];
+        for (let i=0; i<this.cpd; i++) {
+            clusters.push(this.getClusterFromIndex(totalClusters+i));
+        }
+        return clusters;
     }
 }
 
