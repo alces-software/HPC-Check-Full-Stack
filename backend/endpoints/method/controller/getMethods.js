@@ -13,29 +13,38 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
+         // check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing instruction id' });
          }
 
-         if (!ObjectId.isValid(id)) {
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The instruction id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
             return res.status(400).json({ success: false, error: "Invalid instruction id provided" });
          }
 
+         // Check if instruction exists
          const instructionExists = await db.collection('instruction')
             .findOne({
-               _id: new ObjectId(id)
+               _id: new ObjectId(sanitizedId)
             });
 
          if (!instructionExists) {
             return res.status(409).json({ success: false, error: 'Instruction does\'t exist' });
          }
 
+         // Get methods
          const response = await db.collection('method')
             .find({
-               instructionId: id
+               instructionId: sanitizedId
             })
             .toArray()
-            .then(result => result
+            .then(res => res
                .map(({ _id, ...rest }) => ({
                   id: _id.toString(),
                   ...rest

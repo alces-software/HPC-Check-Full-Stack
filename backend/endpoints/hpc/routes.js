@@ -9,8 +9,8 @@ module.exports = (db) => require('express').Router()
    .get('/hpc/team/:id', require('./controller/getHpcByTeam')(db))
    .get('/hpc/notteam/:id', require('./controller/getHpcNotInTeam')(db))
    // POST
-   .post('/hpc/add', require('./controller/addHpc')(db))
+   .post('/hpc', require('./controller/addHpc')(db))
    // DELETE
-   .delete('/hpc/delete', require('./controller/deleteHpc')(db))
+   .delete('/hpc', require('./controller/deleteHpc')(db))
    // UPDATE
-   .patch('/hpc/team/:id', require('./controller/assignToTeam')(db));
+   .patch('/hpc/team/:id', require('./controller/addHpcToTeam')(db));

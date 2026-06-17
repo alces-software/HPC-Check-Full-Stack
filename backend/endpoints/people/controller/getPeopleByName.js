@@ -11,6 +11,7 @@ module.exports = (db) => {
       try {
          const { name } = req.params || {};
 
+         // Check name
          if (!name) {
             return res.status(400).json({ success: false, error: 'Missing persons name' });
          }
@@ -21,6 +22,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "The name provided is empty" });
          }
 
+         // Check is someone exists
          const results = await db.collection('person')
             .findOne({
                name: {

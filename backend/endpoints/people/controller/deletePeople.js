@@ -13,6 +13,7 @@ module.exports = (db) => {
       try {
          const { id } = req.body || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing persons id' });
          }
@@ -21,6 +22,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "Invalid person id provided" });
          }
 
+         // Check if person exits
          const existingPerson = await db.collection('person')
             .findOne({
                _id: new ObjectId(id)
@@ -32,16 +34,17 @@ module.exports = (db) => {
             });
          }
 
+         // Check if person has reports
          const hasReports = await db.collection('report')
-            .find({
+            .findOne({
                personId: id
-            })
-            .toArray();
+            });
 
-         if (hasReports.length > 0) {
+         if (hasReports) {
             return res.status(409).json({ success: false, error: "This person has reports" });
          }
 
+         // Delete the person from the database
          await db.collection('person')
             .deleteOne({
                _id: new ObjectId(id)

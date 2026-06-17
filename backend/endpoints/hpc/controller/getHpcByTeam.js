@@ -17,16 +17,22 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }
 
-         if (!ObjectId.isValid(id)) {
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
             return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
          }
 
          const data = await db.collection('cluster')
             .find({
-               teamId: id
+               teamId: sanitizedId
             })
             .toArray()
-            .then(results => results
+            .then(res => res
                .map(({ _id, ...rest }) => ({
                   id: _id.toString(),
                   ...rest,

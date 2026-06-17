@@ -11,16 +11,18 @@ module.exports = (db) => {
       try {
          const { name } = req.body || {};
 
+         // Check name
          if (!name) {
             return res.status(400).json({ success: false, error: 'Missing persons name' });
          }
 
          const sanitizedName = String(name).trim();
 
-         if (sanitizedName.length == 0) {
+         if (sanitizedName.length === 0) {
             return res.status(400).json({ success: false, error: "The name provided is empty" });
          }
 
+         // Make sure the person exists
          const existingPerson = await db.collection('person')
             .findOne({
                name: sanitizedName
@@ -30,6 +32,7 @@ module.exports = (db) => {
             return res.status(409).json({ success: false, error: 'Person already exits' });
          }
 
+         // Add person to the database
          await db.collection('person')
             .insertOne({
                name: sanitizedName
