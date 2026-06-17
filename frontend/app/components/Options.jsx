@@ -190,6 +190,7 @@ export default function Options() {
     });
 
     const data = await res.json();
+    
 
     if (!res.ok || !data.success) {
       setTeamError(data.message ?? data.error ?? "Could not add this team.");
@@ -200,6 +201,7 @@ export default function Options() {
     setTeamName("");
     await loadTeams();
     showStatus(`Added team "${nameToAdd}" successfully.`, "success");
+    window.dispatchEvent(new Event("header-data-updated"));
   } catch (err) {
     console.error(err);
     setTeamError("Failed to communicate with the server.");
@@ -233,6 +235,8 @@ export default function Options() {
       setClusterName("");
       await loadClusters();
       showStatus(`Added cluster "${clusterName}" successfully.`, "success");
+      window.dispatchEvent(new Event("header-data-updated"));
+      
     } catch (err) {
       console.error(err);
       setClusterError("Failed to communicate with the server.");
@@ -252,7 +256,10 @@ export default function Options() {
     requestConfirmation(
       `Are you sure you want to add the cluster "${clusterName}"?`,
       confirmAddCluster
+      
+
     );
+    
   };
 
   const handleDeleteUser = (id, name) => {
@@ -284,6 +291,7 @@ export default function Options() {
         );
 
         await loadClusters();
+        window.dispatchEvent(new Event("header-data-updated"));
         showStatus(`Deleted cluster "${name}" successfully.`, "success");
       } catch {
         showStatus(`Failed to delete cluster "${name}".`, "error");
@@ -305,6 +313,8 @@ export default function Options() {
 
 
         await loadTeams()
+        window.dispatchEvent(new Event("header-data-updated"));
+
       
 
       showStatus(`Deleted team "${name}" successfully.`, "success");
@@ -344,6 +354,8 @@ export default function Options() {
     setTeamError("");
     clearStatus();
 
+    
+
     if (!teamName.trim()) {
       setTeamError("Please enter a team name.");
       return;
@@ -352,6 +364,7 @@ export default function Options() {
     requestConfirmation(
       `Are you sure you want to add the team "${teamName}"?`,
       confirmAddTeam
+      
     );
   };
 
