@@ -7,7 +7,7 @@ module.exports = (db) => require('express').Router()
    .get('/hpc/id/:id', require('./controller/getHpcById')(db))
    .get('/hpc/name/:name', require('./controller/getHpcByName')(db))
    .get('/hpc/team/:id', require('./controller/getHpcByTeam')(db))
-   .get('/hpc/notteam/:id', require('./controller/getHpcNotInTeam')(db))
+   .get('/hpc/team/not/:id', require('./controller/getHpcNotInTeam')(db))
    // POST
    .post('/hpc', require('./controller/addHpc')(db))
    // DELETE

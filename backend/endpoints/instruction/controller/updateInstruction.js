@@ -43,8 +43,8 @@ module.exports = (db) => {
          }
 
          // Updates values in the
-         const results = await db.collection('instruction')
-            .Update(
+         await db.collection('instruction')
+            .updateOne(
                { _id: new ObjectId(sanitizedId) },
                { $set: updates }
             );
