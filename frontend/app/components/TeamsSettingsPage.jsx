@@ -64,7 +64,7 @@ export default function TeamSettingsPage({ team, teamId }) {
 
     useEffect(() => {
         async function getClusters() {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/not/${teamId}`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/notteam/${teamId}`);
             const data = await res.json();
             setClusters(data.body)
         }
@@ -181,7 +181,7 @@ export default function TeamSettingsPage({ team, teamId }) {
                 throw new Error(data.message || "Failed to add user to team.");
             }
 
-            setUsers((previousClusters) =>
+            setClusters((previousClusters) =>
                 previousClusters.filter((cluster) => cluster.id !== selectedClusterId)
             );
 

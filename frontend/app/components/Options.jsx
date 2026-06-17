@@ -542,12 +542,16 @@ export default function Options() {
                       >
                         <div>
                           <Link href={`/clusters/${cluster.id}`} className="flex-1 curso-pointer">
-                          <p className="font-medium text-white">
+                          <p className="font-medium text-white transition hover:text-emerald-400">
                             {cluster.name}
                           </p>
 
                           <p className="text-xs text-slate-400">
                             {cluster.id}
+                          </p>
+
+                           <p className="mt-1 text-xs text-emerald-400">
+                            View cluster settings
                           </p>
                           </Link>
                         </div>

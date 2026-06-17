@@ -241,6 +241,9 @@ export default function Form() {
 
   async function updateMethod(methodId, content) {
     try {
+      console.log(methodId)
+      console.log(content)
+      
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const url = `${apiUrl}/method/update`;
 
@@ -248,13 +251,13 @@ export default function Form() {
       console.log("Update URL:", url);
 
       const res = await fetch(url, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           id: methodId,
-          content,
+          content: content,
         }),
       });
 
