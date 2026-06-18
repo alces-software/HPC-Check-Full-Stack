@@ -32,27 +32,24 @@ export default function TeamSettingsPage() {
         }
     }, [teamId]);
 
-
     const [allClusters, setAllClusters] = useState([])
 
- const loadAllClusters = useCallback(async () => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc`);
-    const data = await res.json();
+    const loadAllClusters = useCallback(async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc`);
+            const data = await res.json();
 
-    setAllClusters(data.body ?? []);
-  } catch (err) {
-    console.error("Failed to fetch clusters:", err);
-    setAllClusters([]);
-  }
-}, []);
+            setAllClusters(data.body ?? []);
+        } catch (err) {
+            console.error("Failed to fetch clusters:", err);
+            setAllClusters([]);
+        }
+    }, []);
 
     useEffect(() => {
-        loadTeams();
+        loadTeam();
         loadAllClusters();
-    }, [loadTeams, loadAllClusters]);
-
-    const team = teams.find((team) => team.id === teamId);
+    }, [loadAllClusters, loadTeam]);
 
     const [selectedUserId, setSelectedUserId] = useState("");
     const [selectedClusterId, setSelectedClusterId] = useState("");
@@ -67,12 +64,10 @@ export default function TeamSettingsPage() {
     const [statusType, setStatusType] = useState("success");
     const [savingSettings, setSavingSettings] = useState(false);
 
-
-
     const getTeamUsers = useCallback(async () => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${teamId}`);
         const data = await res.json();
-        setTeamUsers(data.body)
+        setTeamUsers(data.body);
     }, [teamId]);
 
     useEffect(() => {
@@ -87,7 +82,6 @@ export default function TeamSettingsPage() {
         }
         getUsers();
     }, [teamId]);
-
 
     const getClusters = useCallback(async () => {
         try {
@@ -104,7 +98,6 @@ export default function TeamSettingsPage() {
     }, [teamId]);
 
     useEffect(() => {
-
         getClusters();
     }, [getClusters]);
 
@@ -129,8 +122,6 @@ export default function TeamSettingsPage() {
                     <p className="mb-6 text-slate-300">
                         No team exists with ID: {teamId}
                     </p>
-
-
                 </div>
             </main>
         );
@@ -142,22 +133,15 @@ export default function TeamSettingsPage() {
             return;
         }
 
-
-        const userToAdd = users.find(user => user.id === selectedUserId)
-        const userTeamId = userToAdd.teamId
-        const userTeamName = teams.find(t => t.id === userTeamId)?.name
-        console.log(teams)
+        const userToAdd = users.find(user => user.id === selectedUserId);
+        const userTeamId = userToAdd.teamId;
 
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${userTeamId}`);
         const data = await res.json();
 
-        console.log("User to add: ", userToAdd)
-
-        console.log(data.body)
-
         if (data.body.length === 1) {
-            alert(`You cannot add ${userToAdd.name} as they are the only remaining member in ${userTeamName}.`)
-            return
+            alert(`You cannot add ${userToAdd.name} as they are the only remaining member in their team.`);
+            return;
         }
 
         try {
@@ -180,13 +164,12 @@ export default function TeamSettingsPage() {
                 throw new Error(data.message || "Failed to add user to team.");
             }
 
-            setUsers((previousUsers) =>
-                previousUsers.filter((user) => user.id !== selectedUserId)
+            setUsers((previousUsers) => previousUsers
+                .filter((user) => user.id !== selectedUserId)
             );
 
             setSelectedUserId("");
-            getTeamUsers()
-            
+            getTeamUsers();
 
             setStatusMessage("User added to team.");
             setStatusType("success");
@@ -203,24 +186,16 @@ export default function TeamSettingsPage() {
             return;
         }
 
-        const clusterToAdd = allClusters.find(cluster => cluster.id === selectedClusterId)
-        const clusterTeamId = clusterToAdd.teamId
-        const clusterTeamName = teams.find(t => t.id === clusterTeamId)?.name
-        console.log(teams)
+        const clusterToAdd = allClusters.find(cluster => cluster.id === selectedClusterId);
+        const clusterTeamId = clusterToAdd.teamId;
 
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${clusterTeamId}`);
         const data = await res.json();
 
         if (data.body.length === 1) {
-            alert(`You cannot add ${clusterToAdd.name} as it is the only remaining cluster in ${clusterTeamName}.`)
-            return
+            alert(`You cannot add ${clusterToAdd.name} as it is the only remaining cluster in their team.`);
+            return;
         }
-
-        console.log(selectedClusterId);
-        console.log("TEAMS ", data.body);
-        console.log("Cluster to add is ", clusterToAdd)
-
-
 
         try {
             const res = await fetch(
