@@ -1,7 +1,7 @@
 const Scheduler = require('../../schedule/scheduler');
 
 async function getTeams(db) {
-    const teams = await db.collection("team").find({}, {projection: { _id: 1 }}).toArray()
+    const teams = await db.collection("team").find({}, { projection: { _id: 1 } }).toArray()
         .then(results =>
             results.map(data => data._id.toString())
         );
@@ -19,8 +19,8 @@ async function initialiseSchedulers(db, team) {
     const peopleIds = peopleDocs.map(p => p._id.toString());
 
     const clusterDocs = await db.collection("cluster")
-    .find({ teamId: team })
-    .toArray();
+        .find({ teamId: team })
+        .toArray();
 
     const clusterNames = clusterDocs.map(c => c.name);
     const clusterIds = clusterDocs.map(c => c._id.toString());
@@ -37,7 +37,7 @@ async function getDaily(db, day) {
     const teams = await getTeams(db);
 
     const schedules = [];
-    
+
     for (const team of teams) {
         const { nameScheduler, idScheduler } = await initialiseSchedulers(db, team);
         const nameSchedule = await nameScheduler.getScheduleForDay(db, new Date(day));
@@ -49,15 +49,15 @@ async function getDaily(db, day) {
     return schedules;
 }
 
-async function getWeekly(db, date=new Date()) {
-     
+async function getWeekly(db, date = new Date()) {
+
 
     const teams = await getTeams(db);
 
     const schedules = [];
-    
+
     for (const team of teams) {
-        const {nameScheduler} = await initialiseSchedulers(db, team);
+        const { nameScheduler } = await initialiseSchedulers(db, team);
 
         schedules.push(await nameScheduler.getScheduleForWeek(db, date));
     }
@@ -81,7 +81,7 @@ async function getWeekly(db, date=new Date()) {
     return response
 }
 
-module.exports ={
-  getWeekly,
-  getDaily
+module.exports = {
+    getWeekly,
+    getDaily
 }
