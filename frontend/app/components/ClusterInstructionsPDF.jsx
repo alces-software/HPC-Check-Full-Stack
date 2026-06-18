@@ -8,6 +8,8 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 
+import { marked } from "marked";
+
 const styles = StyleSheet.create({
   page: {
     padding: 36,
@@ -182,7 +184,101 @@ const styles = StyleSheet.create({
     color: "#64748b",
     textAlign: "center",
   },
+
+  markdownParagraph: {
+    color: "#cbd5e1",
+    lineHeight: 1.5,
+    fontSize: 10,
+    marginBottom: 6,
+  },
+
+  markdownBold: {
+    fontWeight: "bold",
+    color: "#ffffff",
+  },
+
+  markdownCode: {
+    fontFamily: "Courier",
+    backgroundColor: "#020617",
+    color: "#e2e8f0",
+    padding: 8,
+    borderRadius: 4,
+    
+    fontSize: 10,
+    marginLeft: 30,
+     marginTop: 8,
+  marginBottom: 10,
+
+
+    lineHeight: 1.5,
+
+  },
+
+  markdownListItem: {
+    color: "#cbd5e1",
+    lineHeight: 1.5,
+    fontSize: 10,
+    marginBottom: 4,
+  },
 });
+
+
+function MarkdownText({ children }) {
+  const tokens = marked.lexer(children || "");
+
+  return (
+    <View>
+      {tokens.map((token, index) => {
+        if (token.type === "paragraph") {
+          return (
+            <Text key={index} style={styles.markdownParagraph}>
+              {token.text}
+            </Text>
+          );
+        }
+
+        if (token.type === "heading") {
+          return (
+            <Text key={index} style={styles.sectionLabel}>
+              {token.text}
+            </Text>
+          );
+        }
+
+        if (token.type === "code") {
+          return (
+            <Text key={index} style={styles.markdownCode}>
+               {`\n${token.text}\n`}
+            </Text>
+          );
+        }
+
+        if (token.type === "list") {
+          return (
+            <View key={index}>
+              {token.items.map((item, itemIndex) => (
+                <Text key={itemIndex} style={styles.markdownListItem}>
+                  • {item.text}
+                </Text>
+              ))}
+            </View>
+          );
+        }
+
+        if (token.type === "space") {
+          return null;
+        }
+
+        return (
+          <Text key={index} style={styles.markdownParagraph}>
+            {token.raw}
+          </Text>
+        );
+      })}
+    </View>
+  );
+}
+
 
 export default function ClusterInstructionsPDF({
   cluster,
@@ -205,9 +301,6 @@ export default function ClusterInstructionsPDF({
             Daily cluster checks and methods
           </Text>
 
-          <View style={styles.statusRow}>
-            <Text style={styles.pill}>Healthy</Text>
-          </View>
         </View>
 
         {steps.length === 0 && (
@@ -250,7 +343,7 @@ export default function ClusterInstructionsPDF({
                   </Text>
 
                   <Text style={styles.methodContent}>
-                    {method.content}
+                    <MarkdownText>{method.content}</MarkdownText>
                   </Text>
                 </View>
               ))
