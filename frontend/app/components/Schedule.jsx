@@ -30,49 +30,8 @@ export default function Schedule() {
                 );
                 const data = await res.json();
 
-                const rota = data.body;
-
-                // Cache names so we don't request the same ID repeatedly
-                const peopleCache = {};
-                const hpcCache = {};
-
-                const transformed = {};
-
-                for (const [day, assignments] of Object.entries(rota)) {
-                    transformed[day] = {};
-
-                    for (const [personId, clusterIds] of Object.entries(assignments)) {
-                        // Get person's name
-                        if (!peopleCache[personId]) {
-                            const res = await fetch(
-                                `${process.env.NEXT_PUBLIC_API_URL}/people/id/${personId}`
-                            );
-                            const person = await res.json();
-                            peopleCache[personId] = person.body.name;
-                        }
-
-                        const personName = peopleCache[personId];
-
-                        // Get cluster names
-                        const clusterNames = await Promise.all(
-                            clusterIds.map(async clusterId => {
-                                if (!hpcCache[clusterId]) {
-                                    const res = await fetch(
-                                        `${process.env.NEXT_PUBLIC_API_URL}/hpc/id/${clusterId}`
-                                    );
-                                    const hpc = await res.json();
-                                    hpcCache[clusterId] = hpc.body.name;
-                                }
-
-                                return hpcCache[clusterId];
-                            })
-                        );
-
-                        transformed[day][personName] = clusterNames;
-                    }
-                }
-
-                setSchedule(transformed);
+                // Backend already returns fully enriched data
+                setSchedule(data.body);
             } catch (error) {
                 console.error("Failed to fetch rota:", error);
             }
@@ -101,9 +60,8 @@ export default function Schedule() {
 
     return (
         <main className="space-y-8">
-            {/* Page container handled by layout.tsx */}
-
             <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
+                
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-4xl font-bold text-white">
@@ -123,22 +81,26 @@ export default function Schedule() {
                         return (
                             <div
                                 key={dayKey}
-                                className={`overflow-hidden rounded-2xl border transition-all ${isToday
-                                    ? "border-green-400/40 bg-green-500/10"
-                                    : "border-white/10 bg-white/5"
-                                    }`}
+                                className={`overflow-hidden rounded-2xl border transition-all ${
+                                    isToday
+                                        ? "border-green-400/40 bg-green-500/10"
+                                        : "border-white/10 bg-white/5"
+                                }`}
                             >
+                                {/* Day header */}
                                 <div
-                                    className={`flex items-center justify-between px-6 py-4 ${isToday
-                                        ? "bg-green-500/20"
-                                        : "bg-slate-800/50"
-                                        }`}
+                                    className={`flex items-center justify-between px-6 py-4 ${
+                                        isToday
+                                            ? "bg-green-500/20"
+                                            : "bg-slate-800/50"
+                                    }`}
                                 >
                                     <h2
-                                        className={`text-lg font-semibold ${isToday
-                                            ? "text-green-300"
-                                            : "text-white"
-                                            }`}
+                                        className={`text-lg font-semibold ${
+                                            isToday
+                                                ? "text-green-300"
+                                                : "text-white"
+                                        }`}
                                     >
                                         {dayLabel}
                                     </h2>
@@ -150,36 +112,39 @@ export default function Schedule() {
                                     )}
                                 </div>
 
+                                {/* People rows */}
                                 <div>
-                                    {Object.entries(schedule[dayKey]).map(
-                                        ([name, clusters], index) => (
+                                    {Object.entries(schedule?.[dayKey] || {}).map(
+                                        ([name, person], index, arr) => (
                                             <div
-                                                key={name}
-                                                className={`grid gap-4 px-6 py-4 md:grid-cols-[200px_1fr] ${index !==
-                                                    Object.entries(
-                                                        schedule[dayKey]
-                                                    ).length -
-                                                    1
-                                                    ? "border-b border-white/10"
-                                                    : ""
-                                                    }`}
+                                                key={person.id}
+                                                className={`grid gap-4 px-6 py-4 md:grid-cols-[200px_1fr] ${
+                                                    index !== arr.length - 1
+                                                        ? "border-b border-white/10"
+                                                        : ""
+                                                }`}
                                             >
+                                                {/* Person name */}
                                                 <div className="font-semibold text-white">
                                                     {name}
                                                 </div>
 
+                                                {/* Clusters */}
                                                 <div className="flex flex-wrap gap-2">
-                                                    {clusters.map((cluster) => (
-                                                        <span
-                                                            key={cluster}
-                                                            className={`rounded-full px-3 py-1 text-sm font-medium ${isToday
-                                                                ? "bg-green-500/20 text-green-200"
-                                                                : "bg-blue-500/20 text-blue-200"
+                                                    {person.clusters.map(
+                                                        (cluster) => (
+                                                            <span
+                                                                key={cluster.id}
+                                                                className={`rounded-full px-3 py-1 text-sm font-medium ${
+                                                                    isToday
+                                                                        ? "bg-green-500/20 text-green-200"
+                                                                        : "bg-blue-500/20 text-blue-200"
                                                                 }`}
-                                                        >
-                                                            {cluster}
-                                                        </span>
-                                                    ))}
+                                                            >
+                                                                {cluster.name}
+                                                            </span>
+                                                        )
+                                                    )}
                                                 </div>
                                             </div>
                                         )

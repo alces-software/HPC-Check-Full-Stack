@@ -15,14 +15,14 @@ export default function PersonalSchedule() {
     useEffect(() => {
         if (!userId && !redirected.current) {
             redirected.current = true;
-            router.replace('/name');
+            router.replace("/name");
         }
     }, [userId, router]);
 
     useEffect(() => {
         async function init() {
             try {
-
+                // Get person name
                 const nameRes = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL}/people/id/${userId}`
                 );
@@ -33,50 +33,63 @@ export default function PersonalSchedule() {
                     setName(nameData.body.name);
                 }
 
+                // Get today's rota (NEW FORMAT: object, not array)
                 const rotaRes = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL}/rota/person/${userId}`
                 );
 
                 const rotaData = await rotaRes.json();
 
-                if (!rotaData?.success) {
+                if (!rotaData?.success || !rotaData?.body) {
                     setClusters([]);
                     setLoading(false);
                     return;
                 }
 
-                const today = new Date().getDay();
-                const dayIndex = today - 1;
+                // NEW SHAPE:
+                // {
+                //   "Oscar": {
+                //     id,
+                //     clusters: [{ id, name }]
+                //   }
+                // }
 
-                if (dayIndex < 0 || dayIndex > 4) {
-                    setClusters([]);
-                    setLoading(false);
-                    return;
-                }
+                const personEntry = Object.values(rotaData.body)[0];
 
-                const todaysClusters = rotaData.body;
+                const todaysClusters = personEntry?.clusters || [];
 
+                // Check completion status
                 const completedClusterIds = await Promise.all(
-                    todaysClusters.map(async (item) => {
+                    todaysClusters.map(async (cluster) => {
                         try {
                             const response = await fetch(
-                                `${process.env.NEXT_PUBLIC_API_URL}/report/today/cluster/${item.clusterId}`
+                                `${process.env.NEXT_PUBLIC_API_URL}/report/today/cluster/${cluster.id}`
                             );
+
                             const json = await response.json();
-                            return json?.success && Array.isArray(json.body) && json.body.length > 0
-                                ? item.clusterId
+
+                            return json?.success &&
+                                Array.isArray(json.body) &&
+                                json.body.length > 0
+                                ? cluster.id
                                 : null;
                         } catch (error) {
-                            console.error('Failed to load completed report for cluster', item.clusterId, error);
+                            console.error(
+                                "Failed to load completed report for cluster",
+                                cluster.id,
+                                error
+                            );
                             return null;
                         }
                     })
                 );
 
-                const completedIdsSet = new Set(completedClusterIds.filter(Boolean));
+                const completedIdsSet = new Set(
+                    completedClusterIds.filter(Boolean)
+                );
 
                 const filteredClusters = todaysClusters.filter(
-                    (item) => !completedIdsSet.has(item.clusterId)
+                    (cluster) => !completedIdsSet.has(cluster.id)
                 );
 
                 setClusters(filteredClusters);
@@ -88,7 +101,7 @@ export default function PersonalSchedule() {
             }
         }
 
-        init();
+        if (userId) init();
     }, [router, userId]);
 
     if (loading) {
@@ -102,15 +115,15 @@ export default function PersonalSchedule() {
     }
 
     const handleClusterClick = (cluster) => {
-        Cookies.set("currentCluster", cluster);
+        Cookies.set("currentCluster", cluster.id);
         router.push("/form");
     };
 
     return (
         <main className="flex justify-center space-y-8">
-
             <div className="relative z-10 mx-auto max-w-5xl">
                 <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
+
                     {/* Header */}
                     <div className="mb-10 text-center">
                         <div className="mb-4 flex justify-center">
@@ -131,10 +144,10 @@ export default function PersonalSchedule() {
                     {/* Clusters */}
                     {clusters.length > 0 ? (
                         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {clusters.map((item, index) => (
+                            {clusters.map((cluster) => (
                                 <button
-                                    key={`${item.cluster}-${index}`}
-                                    onClick={() => handleClusterClick(item.cluster)}
+                                    key={cluster.id}
+                                    onClick={() => handleClusterClick(cluster)}
                                     className="
                                         group
                                         cursor-pointer
@@ -150,18 +163,16 @@ export default function PersonalSchedule() {
                                         hover:border-blue-400/50
                                         hover:bg-blue-500/20
                                         hover:shadow-2xl
-                                        "
+                                    "
                                 >
-                                    <div className="mb-4 text-4xl">
-                                        📂
-                                    </div>
+                                    <div className="mb-4 text-4xl">📂</div>
 
                                     <div className="text-xs font-semibold uppercase tracking-widest text-blue-300">
                                         Cluster
                                     </div>
 
                                     <div className="mt-2 text-xl font-bold text-white">
-                                        {item.cluster}
+                                        {cluster.name}
                                     </div>
 
                                     <div className="mt-4 font-medium text-blue-300 transition-transform group-hover:translate-x-2">
