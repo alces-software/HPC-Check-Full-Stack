@@ -32,9 +32,27 @@ export default function TeamSettingsPage() {
         }
     }, [teamId]);
 
+
+    const [allClusters, setAllClusters] = useState([])
+
+ const loadAllClusters = useCallback(async () => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc`);
+    const data = await res.json();
+
+    setAllClusters(data.body ?? []);
+  } catch (err) {
+    console.error("Failed to fetch clusters:", err);
+    setAllClusters([]);
+  }
+}, []);
+
     useEffect(() => {
-        loadTeam();
-    }, [loadTeam]);
+        loadTeams();
+        loadAllClusters();
+    }, [loadTeams, loadAllClusters]);
+
+    const team = teams.find((team) => team.id === teamId);
 
     const [selectedUserId, setSelectedUserId] = useState("");
     const [selectedClusterId, setSelectedClusterId] = useState("");
@@ -48,6 +66,8 @@ export default function TeamSettingsPage() {
     const [statusMessage, setStatusMessage] = useState("");
     const [statusType, setStatusType] = useState("success");
     const [savingSettings, setSavingSettings] = useState(false);
+
+
 
     const getTeamUsers = useCallback(async () => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${teamId}`);
@@ -68,14 +88,25 @@ export default function TeamSettingsPage() {
         getUsers();
     }, [teamId]);
 
-    useEffect(() => {
-        async function getClusters() {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/not/${teamId}`);
+
+    const getClusters = useCallback(async () => {
+        try {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/hpc/team/not/${teamId}`
+            );
             const data = await res.json();
-            setClusters(data.body)
+
+            setClusters(data.body ?? []);
+        } catch (err) {
+            console.error("Failed to fetch available clusters:", err);
+            setClusters([]);
         }
-        getClusters();
     }, [teamId]);
+
+    useEffect(() => {
+
+        getClusters();
+    }, [getClusters]);
 
     const getTeamClusters = useCallback(async () => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${teamId}`);
@@ -111,6 +142,24 @@ export default function TeamSettingsPage() {
             return;
         }
 
+
+        const userToAdd = users.find(user => user.id === selectedUserId)
+        const userTeamId = userToAdd.teamId
+        const userTeamName = teams.find(t => t.id === userTeamId)?.name
+        console.log(teams)
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${userTeamId}`);
+        const data = await res.json();
+
+        console.log("User to add: ", userToAdd)
+
+        console.log(data.body)
+
+        if (data.body.length === 1) {
+            alert(`You cannot add ${userToAdd.name} as they are the only remaining member in ${userTeamName}.`)
+            return
+        }
+
         try {
             const res = await fetch(
                 `${process.env.NEXT_PUBLIC_API_URL}/people/team/${selectedUserId}`,
@@ -137,6 +186,7 @@ export default function TeamSettingsPage() {
 
             setSelectedUserId("");
             getTeamUsers()
+            
 
             setStatusMessage("User added to team.");
             setStatusType("success");
@@ -152,6 +202,25 @@ export default function TeamSettingsPage() {
             showStatus("Please select a user.", "error");
             return;
         }
+
+        const clusterToAdd = allClusters.find(cluster => cluster.id === selectedClusterId)
+        const clusterTeamId = clusterToAdd.teamId
+        const clusterTeamName = teams.find(t => t.id === clusterTeamId)?.name
+        console.log(teams)
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${clusterTeamId}`);
+        const data = await res.json();
+
+        if (data.body.length === 1) {
+            alert(`You cannot add ${clusterToAdd.name} as it is the only remaining cluster in ${clusterTeamName}.`)
+            return
+        }
+
+        console.log(selectedClusterId);
+        console.log("TEAMS ", data.body);
+        console.log("Cluster to add is ", clusterToAdd)
+
+
 
         try {
             const res = await fetch(
@@ -178,7 +247,6 @@ export default function TeamSettingsPage() {
             );
 
             setSelectedClusterId("");
-            getTeamClusters()
 
             setStatusMessage("Cluster added to team.");
             setStatusType("success");
