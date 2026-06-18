@@ -63,15 +63,10 @@ export default function PersonalSchedule() {
                     todaysClusters.map(async (cluster) => {
                         try {
                             const response = await fetch(
-<<<<<<< HEAD
                                 `${process.env.NEXT_PUBLIC_API_URL}/report/today/cluster/${cluster.id}`
-=======
-                                `${process.env.NEXT_PUBLIC_API_URL}/report/today/cluster/${item.id}`
->>>>>>> main
                             );
 
                             const json = await response.json();
-<<<<<<< HEAD
 
                             return json?.success &&
                                 Array.isArray(json.body) &&
@@ -84,13 +79,6 @@ export default function PersonalSchedule() {
                                 cluster.id,
                                 error
                             );
-=======
-                            return json?.success && Array.isArray(json.body) && json.body.length > 0
-                                ? item.id
-                                : null;
-                        } catch (error) {
-                            console.error('Failed to load completed report for cluster', item.id, error);
->>>>>>> main
                             return null;
                         }
                     })
@@ -101,11 +89,7 @@ export default function PersonalSchedule() {
                 );
 
                 const filteredClusters = todaysClusters.filter(
-<<<<<<< HEAD
                     (cluster) => !completedIdsSet.has(cluster.id)
-=======
-                    (item) => !completedIdsSet.has(item.id)
->>>>>>> main
                 );
 
                 setClusters(filteredClusters);
@@ -162,13 +146,8 @@ export default function PersonalSchedule() {
                         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                             {clusters.map((cluster) => (
                                 <button
-<<<<<<< HEAD
                                     key={cluster.id}
                                     onClick={() => handleClusterClick(cluster)}
-=======
-                                    key={`${item.cluster}-${index}`}
-                                    onClick={() => handleClusterClick(item.name)}
->>>>>>> main
                                     className="
                                         group
                                         cursor-pointer
@@ -193,11 +172,7 @@ export default function PersonalSchedule() {
                                     </div>
 
                                     <div className="mt-2 text-xl font-bold text-white">
-<<<<<<< HEAD
                                         {cluster.name}
-=======
-                                        {item.name}
->>>>>>> main
                                     </div>
 
                                     <div className="mt-4 font-medium text-blue-300 transition-transform group-hover:translate-x-2">
