@@ -4,51 +4,35 @@
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import ReactMarkdown from "react-markdown";
 import ClusterInstructionsPDF from "./ClusterInstructionsPDF.jsx";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ClusterSettingsPage() {
-
   const searchParams = useSearchParams();
-     const clusterId = searchParams.get("id");
+  const clusterId = searchParams.get("id");
 
+  const [clusters, setClusters] = useState([]);
+  const [loadingClusters, setLoadingClusters] = useState(true);
 
-     const [clusters, setClusters] = useState([]);
-const [loadingClusters, setLoadingClusters] = useState(true);
+  const loadClusters = useCallback(async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc`);
+      const data = await res.json();
 
-const loadClusters = async () => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc`);
-    const data = await res.json();
+      setClusters(data.body ?? []);
+    } catch (err) {
+      console.error("Failed to fetch clusters:", err);
+      setClusters([]);
+    } finally {
+      setLoadingClusters(false);
+    }
+  }, []);
 
-    console.log(data.body);
+  useEffect(() => {
+    loadClusters();
+  }, [loadClusters]);
 
-    setClusters(data.body ?? []);
-  } catch (err) {
-    console.error("Failed to fetch clusters:", err);
-    setClusters([]);
-  } finally {
-    setLoadingClusters(false);
-  }
-};
-
-useEffect(() => {
-  loadClusters();
-}, []);
-
-const cluster = clusters.find((cluster) => cluster.id === clusterId);
-
-
-
-
-
-
-
-
-
-
-
-
+  const cluster = clusters.find((cluster) => cluster.id === clusterId);
   const [activeTab, setActiveTab] = useState("instructions");
   const [steps, setSteps] = useState([]);
   const [loadingSteps, setLoadingSteps] = useState(false);
@@ -235,8 +219,6 @@ const cluster = clusters.find((cluster) => cluster.id === clusterId);
   }
 
   async function updateMethod(methodId, content) {
-    console.log(methodId)
-    console.log(content)
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method/update`, {
         method: "PATCH",
@@ -360,16 +342,16 @@ const cluster = clusters.find((cluster) => cluster.id === clusterId);
   }
 
   if (loadingClusters) {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-white">Loading cluster...</p>
-    </main>
-  );
-}
+    return (
+      <main className="flex min-h-screen items-center justify-center">
+        <p className="text-white">Loading cluster...</p>
+      </main>
+    );
+  }
 
 
   return (
-    
+
     <main className="relative flex min-h-screen justify-center overflow-hidden px-6 py-8">
       <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
       <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl" />

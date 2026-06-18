@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect} from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import {
     Listbox,
     ListboxButton,
@@ -10,37 +9,32 @@ import {
     ListboxOption,
 } from "@headlessui/react";
 
-export default function Test() {
-    
+export default function TeamSettingsPage() {
     const searchParams = useSearchParams();
-   const teamId = searchParams.get("id");
+    const teamId = searchParams.get("id");
 
+    const [teams, setTeams] = useState([]);
+    const [loadingTeams, setLoadingTeams] = useState(true);
 
- const [teams, setTeams] = useState([]);
-const [loadingTeams, setLoadingTeams] = useState(true);
+    const loadTeams = useCallback(async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`);
+            const data = await res.json();
 
-const loadTeams = async () => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`);
-    const data = await res.json();
+            setTeams(data.body ?? []);
+        } catch (err) {
+            console.error("Failed to fetch teams:", err);
+            setTeams([]);
+        } finally {
+            setLoadingTeams(false);
+        }
+    }, []);
 
-    setTeams(data.body ?? []);
-  } catch (err) {
-    console.error("Failed to fetch teams:", err);
-    setTeams([]);
-  } finally {
-    setLoadingTeams(false);
-  }
-};
+    useEffect(() => {
+        loadTeams();
+    }, [loadTeams]);
 
-useEffect(() => {
-  loadTeams();
-}, []);
-
-const team = teams.find((team) => team.id === teamId);
-
-
-//    onClick={() => router.push(`/report?id=${r.id}`)}
+    const team = teams.find((team) => team.id === teamId);
 
     const [selectedUserId, setSelectedUserId] = useState("");
     const [selectedClusterId, setSelectedClusterId] = useState("");
@@ -54,23 +48,21 @@ const team = teams.find((team) => team.id === teamId);
     const [statusMessage, setStatusMessage] = useState("");
     const [statusType, setStatusType] = useState("success");
 
-    async function getTeamUsers() {
+    const getTeamUsers = useCallback(async () => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${teamId}`);
         const data = await res.json();
-        console.log("Users", data.body)
-        setTeamUsers(data.body)
-    }
+        setTeamUsers(data.body);
+    }, [teamId]);
 
     useEffect(() => {
         getTeamUsers();
-    }, []);
+    }, [getTeamUsers]);
 
     useEffect(() => {
         async function getUsers() {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/not/${teamId}`);
             const data = await res.json();
-            console.log("Users", data.body)
-            setUsers(data.body)
+            setUsers(data.body);
         }
         getUsers();
     }, [teamId]);
@@ -84,15 +76,15 @@ const team = teams.find((team) => team.id === teamId);
         getClusters();
     }, [teamId]);
 
-    async function getTeamClusters() {
+    const getTeamClusters = useCallback(async () => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${teamId}`);
         const data = await res.json();
-        setTeamClusters(data.body)
-    }
+        setTeamClusters(data.body);
+    }, [teamId]);
 
     useEffect(() => {
         getTeamClusters();
-    }, []);
+    }, [getTeamClusters]);
 
     if (!team) {
         return (
@@ -193,20 +185,20 @@ const team = teams.find((team) => team.id === teamId);
     };
 
     if (loadingTeams) {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-white">Loading team...</p>
-    </main>
-  );
-}
+        return (
+            <main className="flex min-h-screen items-center justify-center">
+                <p className="text-white">Loading team...</p>
+            </main>
+        );
+    }
 
-if (!team) {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-white">Team not found: {teamId}</p>
-    </main>
-  );
-}
+    if (!team) {
+        return (
+            <main className="flex min-h-screen items-center justify-center">
+                <p className="text-white">Team not found: {teamId}</p>
+            </main>
+        );
+    }
 
     return (
         <main className="flex min-h-screen items-center justify-center">

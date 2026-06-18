@@ -35,7 +35,6 @@ export default function Schedule() {
                 console.error("Failed to fetch rota:", error);
             }
         }
-
         getRota();
     }, []);
 

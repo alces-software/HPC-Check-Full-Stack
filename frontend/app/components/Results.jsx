@@ -58,7 +58,11 @@ export default function ResultsPage() {
 
       if (mode === "week") {
          setSelectedClusterId(null);
-      } else {
+         setStartDate("");
+         setEndDate("");
+      }
+
+      if (mode === "cluster") {
          setStartDate("");
          setEndDate("");
       }
@@ -72,6 +76,8 @@ export default function ResultsPage() {
          setPage(1);
          setReports([]);
          setPagination(null);
+         setStartDate("");
+         setEndDate("");
       }
    }, [mode, selectedClusterId]);
 
@@ -79,9 +85,7 @@ export default function ResultsPage() {
    // Reset page when date changes
    // ----------------------------
    useEffect(() => {
-      if (mode === "week") {
-         setPage(1);
-      }
+      setPage(1);
    }, [startDate, endDate, mode]);
 
    // ----------------------------
@@ -109,9 +113,19 @@ export default function ResultsPage() {
 
                url = `${process.env.NEXT_PUBLIC_API_URL}/report/week?${params.toString()}`;
             } else {
+               const params = new URLSearchParams({
+                  page: String(page),
+                  limit: "20",
+               });
+
+               if (startDate && endDate) {
+                  params.append("start", startDate);
+                  params.append("end", endDate);
+               }
+
                url =
                   `${process.env.NEXT_PUBLIC_API_URL}/report/cluster/${selectedClusterId}` +
-                  `?page=${page}&limit=20`;
+                  `?${params.toString()}`;
             }
 
             const res = await fetch(url);
@@ -129,13 +143,7 @@ export default function ResultsPage() {
       }
 
       loadReports();
-   }, [
-      selectedClusterId,
-      page,
-      mode,
-      startDate,
-      endDate,
-   ]);
+   }, [selectedClusterId, page, mode, startDate, endDate]);
 
    // ----------------------------
    // Group by date
@@ -213,7 +221,7 @@ export default function ResultsPage() {
                </div>
             </div>
 
-            {/* DATE RANGE */}
+            {/* WEEK DATE RANGE */}
             {mode === "week" && (
                <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
                   <div className="mb-4 flex items-center justify-between">
@@ -221,7 +229,6 @@ export default function ResultsPage() {
                         <h3 className="text-white font-medium">
                            Custom Date Range
                         </h3>
-
                         <p className="text-xs text-slate-400 mt-1">
                            Leave empty to use the current week.
                         </p>
@@ -235,38 +242,57 @@ export default function ResultsPage() {
                            }}
                            className="rounded-lg border border-white/10 px-3 py-1 text-xs text-slate-300 hover:bg-white/5 hover:text-white transition"
                         >
-                           Reset to This Week
+                           Reset
                         </button>
                      )}
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
-                     <div>
-                        <label className="mb-2 block text-sm text-slate-300">
-                           Start Date
-                        </label>
+                     <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
+                     />
 
-                        <input
-                           type="date"
-                           value={startDate}
-                           onChange={(e) => setStartDate(e.target.value)}
-                           className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white outline-none transition focus:border-blue-500"
-                        />
-                     </div>
+                     <input
+                        type="date"
+                        value={endDate}
+                        min={startDate || undefined}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
+                     />
+                  </div>
+               </div>
+            )}
 
-                     <div>
-                        <label className="mb-2 block text-sm text-slate-300">
-                           End Date
-                        </label>
+            {/* CLUSTER DATE RANGE (NEW BUT MATCHING STYLE) */}
+            {mode === "cluster" && (
+               <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
+                  <div className="mb-4">
+                     <h3 className="text-white font-medium">
+                        Cluster Date Range (optional)
+                     </h3>
+                     <p className="text-xs text-slate-400 mt-1">
+                        Filter cluster reports by date range
+                     </p>
+                  </div>
 
-                        <input
-                           type="date"
-                           value={endDate}
-                           min={startDate || undefined}
-                           onChange={(e) => setEndDate(e.target.value)}
-                           className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white outline-none transition focus:border-blue-500"
-                        />
-                     </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                     <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
+                     />
+
+                     <input
+                        type="date"
+                        value={endDate}
+                        min={startDate || undefined}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
+                     />
                   </div>
                </div>
             )}
@@ -278,12 +304,8 @@ export default function ResultsPage() {
                </label>
 
                <div className={mode === "week" ? "opacity-40 pointer-events-none" : ""}>
-                  <Listbox
-                     value={selectedClusterId}
-                     onChange={setSelectedClusterId}
-                  >
+                  <Listbox value={selectedClusterId} onChange={setSelectedClusterId}>
                      <div className="relative">
-
                         <ListboxButton className="w-full cursor-pointer rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-left text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
                            {selectedCluster?.name || "Select a cluster..."}
 
@@ -303,24 +325,26 @@ export default function ResultsPage() {
                               </ListboxOption>
                            ))}
                         </ListboxOptions>
-
                      </div>
                   </Listbox>
                </div>
             </div>
 
+            {/* LOADING */}
             {loading && (
                <p className="text-center text-slate-300">
                   Loading reports...
                </p>
             )}
 
+            {/* EMPTY STATE */}
             {!loading && reports.length === 0 && (
                <p className="text-center text-slate-400">
                   No reports found
                </p>
             )}
 
+            {/* RESULTS (UNCHANGED STYLING) */}
             <div className="space-y-6">
                {Object.entries(grouped).map(([date, items]) => (
                   <div
@@ -416,6 +440,7 @@ export default function ResultsPage() {
                ))}
             </div>
 
+            {/* PAGINATION */}
             {pagination && (
                <div className="flex items-center justify-between mt-10 text-white">
                   <button
@@ -439,6 +464,7 @@ export default function ResultsPage() {
                   </button>
                </div>
             )}
+
          </div>
       </main>
    );

@@ -45,18 +45,18 @@ export default function Header() {
     loadTeams();
   }, [loadClusters, loadTeams]);
 
-useEffect(() => {
-  function handleDataUpdated() {
-    loadClusters();
-    loadTeams();
-  }
+  useEffect(() => {
+    function handleDataUpdated() {
+      loadClusters();
+      loadTeams();
+    }
 
-  window.addEventListener("header-data-updated", handleDataUpdated);
+    window.addEventListener("header-data-updated", handleDataUpdated);
 
     return () => {
       window.removeEventListener("header-data-updated", handleDataUpdated);
     };
-  }, []);
+  }, [loadClusters, loadTeams]);
 
   const navItems = [
     { href: "/", label: "Home" },

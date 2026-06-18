@@ -1,4 +1,4 @@
-const { ObjectId, Long } = require('mongodb');
+const { ObjectId } = require('mongodb');
 
 /**
  * @param {import('mongodb').Db} db
@@ -54,7 +54,25 @@ module.exports = (db) => {
                }))
             );
 
-         const query = { clusterId: sanitizedClusterId };
+         let query;
+
+         if (req.query.start && req.query.end) {
+            const start = new Date(req.query.start);
+            start.setUTCHours(0, 0, 0, 0);
+
+            const end = new Date(req.query.end);
+            end.setUTCHours(23, 59, 59, 999);
+
+            query = {
+               startDate: {
+                  $gte: start.getTime(),
+                  $lte: end.getTime()
+               },
+               clusterId: sanitizedClusterId
+            }
+         } else {
+            query = { clusterId: sanitizedClusterId };
+         }
 
          // Get report count while also getting the data
          const [total, data] = await Promise.all([
