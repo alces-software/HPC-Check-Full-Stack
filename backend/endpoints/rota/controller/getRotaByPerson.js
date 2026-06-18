@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb");
-const { getDaily } = require("../weeklySchedule");
+const { getDaily } = require("../scheduleLogic");
 
 /**
  * @param {import('mongodb').Db} db

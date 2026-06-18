@@ -1,5 +1,5 @@
 require('dotenv').config();
-const {getWeekly} = require('../weeklySchedule');
+const {getWeekly} = require('../scheduleLogic');
 
 /**
  * @param {import('mongodb').Db} db

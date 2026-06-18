@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { ObjectId } = require("mongodb");
-const { getWeekly } = require("../weeklySchedule");
+const { getWeekly } = require("../scheduleLogic");
 
 module.exports = (db) => {
 return async (req, res) => {

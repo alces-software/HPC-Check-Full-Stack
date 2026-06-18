@@ -37,11 +37,37 @@ async function getDaily(db, day) {
 
     const schedule = {};
 
+    const start = new Date(day);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(day);
+    end.setHours(23, 59, 59, 999);
+
+    const overrides = await db.collection("scheduleOverride").find({
+        date: {
+            $gte: start,
+            $lte: end
+        }
+    }).toArray();
+
+    const overrideMap = new Map(
+        overrides.map(o => [o.personId, o.newPersonId])
+    );
+
     for (const team of teams) {
         const { idScheduler } = await initialiseSchedulers(db, team);
         const idSchedule = await idScheduler.getScheduleForDay(db, new Date(day));
 
-        Object.assign(schedule, idSchedule);
+        for (const [personId, clusters] of Object.entries(idSchedule)) {
+            const finalPersonId =
+                overrideMap.get(personId) ?? personId;
+
+            if (!schedule[finalPersonId]) {
+                schedule[finalPersonId] = [];
+            }
+
+            schedule[finalPersonId].push(...clusters);
+        }
     }
 
     return schedule;
@@ -51,13 +77,10 @@ async function getWeekly(db, date = new Date()) {
     const days = ["mon", "tue", "wed", "thu", "fri"];
     const weekly = {};
 
-    // Copy the date so we don't modify the original
     const monday = new Date(date);
 
-    // getDay(): Sun=0, Mon=1, ..., Sat=6
     const dayOfWeek = monday.getDay();
 
-    // Number of days to subtract to get back to Monday
     const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 
     monday.setDate(monday.getDate() + diff);
