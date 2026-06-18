@@ -116,7 +116,7 @@ export default function Schedule() {
         <main className="space-y-8">
             <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
                 {/* Header */}
-                <div className="mb-8 space-y-4">
+                <div className="mb-8 flex items-center justify-between">
                     <div>
                         <h1 className="text-4xl font-bold text-white">
                             Weekly Schedule
@@ -126,7 +126,7 @@ export default function Schedule() {
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex gap-3">
                         <button
                             onClick={() => setWeekOffset((w) => w - 1)}
                             className="rounded-lg bg-white/10 px-4 py-2 text-white hover:bg-white/20"
@@ -276,6 +276,9 @@ export default function Schedule() {
                 </div>
             </div>
 
+            {/* ========================= */}
+            {/* FANCY SWAP MODAL */}
+            {/* ========================= */}
             {swapTarget && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
                     <div className="w-full max-w-[min(520px,calc(100vw-2rem))] max-h-[calc(100vh-4rem)] overflow-hidden rounded-3xl border border-white/10 bg-slate-900/90 p-6 shadow-2xl">

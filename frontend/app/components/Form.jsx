@@ -55,7 +55,7 @@ export default function Form() {
   }, []);
 
   const clusterId = allClusters.find(
-    (c) => c.name === cookieCluster
+    (c) => c.id === cookieCluster
   )?.id;
 
   // NEW CODE - REVIEW
