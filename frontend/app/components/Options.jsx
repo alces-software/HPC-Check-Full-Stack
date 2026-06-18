@@ -564,7 +564,7 @@ export default function Options() {
                           </p>
 
                            <p className="mt-1 text-xs text-emerald-400">
-                            View cluster settings
+                            View cluster information
                           </p>
                           </Link>
                         </div>
