@@ -15,7 +15,8 @@ module.exports = (db) => {
             .then(res => res
                .map(data => ({
                   id: data._id.toString(),
-                  name: data.name
+                  name: data.name,
+                  clusters_per_day: data.clusters_per_day
                }))
             );
 

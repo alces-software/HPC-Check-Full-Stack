@@ -39,7 +39,8 @@ module.exports = (db) => {
          return res.status(200).json({
             success: true, body: {
                id: results._id.toString(),
-               name: results.name
+               name: results.name,
+               clusters_per_day: results.clusters_per_day
             }
          });
       } catch (error) {
