@@ -166,7 +166,7 @@ export default function ClusterSettingsPage() {
   async function deleteMethod(methodId) {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/method/delete/`,
+        `${process.env.NEXT_PUBLIC_API_URL}/method/`,
         {
           method: "DELETE",
           headers: {
@@ -191,7 +191,7 @@ export default function ClusterSettingsPage() {
 
   async function addNewMethod(instructionId, content) {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method/add`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -220,7 +220,7 @@ export default function ClusterSettingsPage() {
 
   async function updateMethod(methodId, content) {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method/update`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
