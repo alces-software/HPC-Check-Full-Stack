@@ -2,9 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { startWeeklySchedule } = require('./services/cron/weekly-schedule');
-const { generateSchedule } = require('./services/cron/methods/schedule');
 const { Database } = require('./db/db');
 const { seedData } = require('./scripts/testData');
+const Scheduler = require('./schedule/scheduler');
+
 
 (async () => {
    const app = express();
@@ -22,13 +23,14 @@ const { seedData } = require('./scripts/testData');
    if (!await databaseObject.validate()) {
       await databaseObject.generateDb();
       await seedData(databaseConnection);
-      await generateSchedule(databaseConnection);
    }
+
+   await Scheduler.populateClosedDays(databaseConnection);
 
    console.log("Connected to database");
 
    // Register rota routes
-   app.use('/', require('./endpoints/rota/routes')(databaseConnection));
+   app.use('/', await require('./endpoints/rota/routes')(databaseConnection));
 
    // Register people routes
    app.use('/', require('./endpoints/people/routes')(databaseConnection));

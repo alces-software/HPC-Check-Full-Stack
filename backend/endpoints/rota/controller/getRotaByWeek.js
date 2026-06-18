@@ -12,7 +12,17 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const response = await getWeekly(db);
+         const { date } = req.params || {};
+
+        const dateObj = new Date(date);
+
+         if (!date || isNaN(dateObj.getTime())) {
+            return res.status(400).json({
+               error: "Invalid date"
+            });
+         } 
+
+         const response = await getWeekly(db, dateObj);
          return res.status(200).json({ success: true, body: response });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
