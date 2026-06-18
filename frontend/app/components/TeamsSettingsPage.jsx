@@ -196,6 +196,16 @@ export default function TeamSettingsPage() {
             setSavingSettings(true);
             setStatusMessage("");
 
+            if (clustersPerDay < 0) {
+                setStatusMessage("Can't set clusters per day to zero.");
+                setStatusType("error");
+                return;
+            } else if (clustersPerDay === team.clusters_per_day) {
+                setStatusMessage("There's no changes made to settings to save.");
+                setStatusType("error");
+                return;
+            }
+
             const res = await fetch(
                 `${process.env.NEXT_PUBLIC_API_URL}/teams`,
                 {
@@ -216,7 +226,6 @@ export default function TeamSettingsPage() {
                 throw new Error(data.message || "Failed to update settings");
             }
 
-            // optionally update local team state so UI stays in sync
             setTeam((prev) => ({
                 ...prev,
                 clusters_per_day: clustersPerDay,
@@ -473,6 +482,7 @@ export default function TeamSettingsPage() {
                                 type="number"
                                 value={clustersPerDay}
                                 onChange={(e) => setClustersPerDay(Number(e.target.value))}
+                                min={1}
                                 className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-3 py-3 text-white outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
                             />
                         </div>
