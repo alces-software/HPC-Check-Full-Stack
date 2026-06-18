@@ -9,4 +9,4 @@ module.exports = (db) => require('express').Router()
    .get('/report/cluster/:id', require('./controller/getReportByCluster')(db))
    .get('/report/id/:id', require('./controller/getReportById')(db))
    // POST
-   .post('/report/add', require('./controller/addReport')(db));
+   .post('/report', require('./controller/addReport')(db));

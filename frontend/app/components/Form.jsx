@@ -241,6 +241,9 @@ export default function Form() {
 
   async function updateMethod(methodId, content) {
     try {
+      console.log(methodId)
+      console.log(content)
+      
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const url = `${apiUrl}/method/update`;
 
@@ -248,13 +251,13 @@ export default function Form() {
       console.log("Update URL:", url);
 
       const res = await fetch(url, {
-        method: "PUT",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           id: methodId,
-          content,
+          content: content,
         }),
       });
 
@@ -507,10 +510,36 @@ export default function Form() {
                     </ul>
                   </details>
 
+                   <div className="grid gap-4 md:grid-cols-2">
+                        {step.good && (
+                          <div className="rounded-xl border border-green-400/20 bg-green-500/10 p-4">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-green-300">
+                              Good
+                            </p>
+
+                            <p className="mt-2 text-md leading-relaxed text-slate-100">
+                              {step.good}
+                            </p>
+                          </div>
+                        )}
+
+                        {step.bad && (
+                          <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-4">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-red-300">
+                              Bad
+                            </p>
+
+                            <p className="mt-2 text-md leading-relaxed text-slate-100">
+                              {step.bad}
+                            </p>
+                          </div>
+                          )}
+                          </div>
+
                   {/* toggle */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex mt-5 items-center justify-between">
                     <span className="font-medium text-white">
-                      Completed Successfully
+                      <strong>Completed Successfully</strong>
                     </span>
 
                     <label className="relative inline-flex cursor-pointer items-center">

@@ -13,17 +13,24 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
+         // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing id' });
+            return res.status(400).json({ success: false, error: 'Missing the report id' });
          }
 
-         if (!ObjectId.isValid(id)) {
+         const sanitisedId = String(id).trim();
+
+         if (sanitisedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The report id provided is empty' })
+         }
+
+         if (!ObjectId.isValid(sanitisedId)) {
             return res.status(400).json({ success: false, error: 'Invalid report id' });
          }
 
          const report = await db.collection('report')
             .findOne({
-               _id: new ObjectId(id)
+               _id: new ObjectId(sanitisedId)
             });
 
          if (!report) {
@@ -32,7 +39,7 @@ module.exports = (db) => {
 
          const results = await db.collection('result')
             .find({
-               reportId: id
+               reportId: sanitisedId
             })
             .toArray();
 
@@ -59,7 +66,7 @@ module.exports = (db) => {
          return res.status(200).json({
             success: true,
             body: {
-               id,
+               id: sanitisedId,
                clusterId: report.clusterId,
                cluster: cluster.find(c => c.id === report.clusterId)?.name,
                personId: report.personId,

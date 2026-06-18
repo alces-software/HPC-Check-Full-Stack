@@ -1,5 +1,3 @@
-const { ObjectId } = require('mongodb');
-
 /**
  * @param {import('mongodb').Db} db
  */

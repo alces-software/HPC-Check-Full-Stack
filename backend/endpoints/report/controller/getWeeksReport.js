@@ -13,6 +13,7 @@ module.exports = (db) => {
          const limit = parseInt(req.query.limit, 10) || 20;
          const skip = (page - 1) * limit;
 
+         // Get people
          const people = await db.collection('person')
             .find({})
             .toArray()
@@ -23,6 +24,7 @@ module.exports = (db) => {
                }))
             );
 
+         // Get clusters
          const cluster = await db.collection('cluster')
             .find({})
             .toArray()

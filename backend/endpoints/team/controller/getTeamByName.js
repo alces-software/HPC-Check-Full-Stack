@@ -42,5 +42,5 @@ module.exports = (db) => {
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
-   }
+   };
 };
