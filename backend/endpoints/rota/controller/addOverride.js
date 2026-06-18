@@ -41,9 +41,7 @@ module.exports = (db) => {
             }
 
             const scheduleOnDate = await getDaily(db, overrideDate);
-            const scheduledForPerson = scheduleOnDate.some((teamSchedule) =>
-                Object.prototype.hasOwnProperty.call(teamSchedule, personId)
-            );
+            const scheduledForPerson = personId in scheduleOnDate;
 
             if (!scheduledForPerson) {
                 return res.status(404).json({ success: false, error: 'Person is not scheduled on that date' });
@@ -54,6 +52,16 @@ module.exports = (db) => {
                 newPersonId,
                 date: overrideDate
             };
+
+            await db.collection('scheduleOverride').deleteMany({
+                date: overrideDate,
+                $or: [
+                    { personId },
+                    { newPersonId },
+                    { personId: newPersonId },
+                    { newPersonId: personId }
+                ]
+            });
 
             await db.collection('scheduleOverride').insertOne(overrideDoc);
 

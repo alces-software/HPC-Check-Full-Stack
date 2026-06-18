@@ -17,7 +17,7 @@ class Scheduler {
      * @param {number} cpd - Number of clusters per day.
      * @param {Date|string|number} inception - Date that scheduler starts counting from.
      */
-    constructor(people, clusters, cpd, inception) {
+    constructor(people, clusters, cpd, inception, seed) {
         this.people = people;
         this.clusters = clusters;
         this.cpd = cpd;
@@ -26,6 +26,7 @@ class Scheduler {
             throw new Error("Invalid inception date");
         }
         this.inception.setUTCHours(0, 0, 0, 0);
+        this.seed = seed;
     }
 
     /**
@@ -181,7 +182,7 @@ class Scheduler {
      * @returns {Array<string>} Shuffled array of person IDs.
      */
     generatePersonBlock(index) {
-        const rng = seedrandom(`${process.env.SEED}${index}`);
+        const rng = seedrandom(`${this.seed}${index}`);
 
         const arr = [...this.people];
 

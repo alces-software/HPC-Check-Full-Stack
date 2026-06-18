@@ -1,13 +1,12 @@
 require("dotenv").config();
 const { ObjectId } = require("mongodb");
-const { getWeekly } = require("../scheduleLogic");
+const { getWeekly, getDaily } = require("../scheduleLogic");
 
 module.exports = (db) => {
 return async (req, res) => {
    try {
       const weekly = await getWeekly(db);
 
-      // 1. Flatten IDs in one pass
       const personIds = new Set();
       const clusterIds = new Set();
 
@@ -24,7 +23,6 @@ return async (req, res) => {
       const personObjectIds = [...personIds].map(id => new ObjectId(id));
       const clusterObjectIds = [...clusterIds].map(id => new ObjectId(id));
 
-      // 2. Fetch in parallel (faster + cleaner)
       const [people, clusters] = await Promise.all([
          personObjectIds.length
             ? db.collection("person").find({ _id: { $in: personObjectIds } }).toArray()
@@ -34,7 +32,6 @@ return async (req, res) => {
             : []
       ]);
 
-      // 3. Build lookup maps
       const peopleMap = new Map(
       people.map(p => [p._id.toString(), p.name])
       );
@@ -43,7 +40,6 @@ return async (req, res) => {
       clusters.map(c => [c._id.toString(), c.name])
       );
 
-      // 4. Build response (no mutation of original structure)
       const enriched = Object.fromEntries(
       Object.entries(weekly).map(([day, assignments]) => [
          day,

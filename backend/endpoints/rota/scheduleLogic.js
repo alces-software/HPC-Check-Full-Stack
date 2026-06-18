@@ -25,8 +25,8 @@ async function initialiseSchedulers(db, team) {
     const clusterIds = clusterDocs.map(c => c._id.toString());
 
     schedulers = {
-        idScheduler: new Scheduler(peopleIds, clusterIds, Number(process.env.CLUSTERS_PER_DAY) || 1, new Date("2026-06-08")),
-        nameScheduler: new Scheduler(peopleNames, clusterNames, Number(process.env.CLUSTERS_PER_DAY) || 1, new Date("2026-06-08"))
+        idScheduler: new Scheduler(peopleIds, clusterIds, Number(process.env.CLUSTERS_PER_DAY) || 1, new Date("2026-06-08"), team),
+        nameScheduler: new Scheduler(peopleNames, clusterNames, Number(process.env.CLUSTERS_PER_DAY) || 1, new Date("2026-06-08"), team)
     };
 
     return schedulers;

@@ -51,7 +51,10 @@ module.exports = (db) => {
          ]);
 
          const peopleMap = new Map(
-         people.map(p => [p._id.toString(), p.name])
+            people.map(p => [
+               p._id.toString(),
+               { name: p.name, teamId: p.teamId }
+            ])
          );
 
          const clusterMap = new Map(
@@ -59,26 +62,30 @@ module.exports = (db) => {
          );
 
          const enriched = Object.fromEntries(
-         Object.entries(weekly).map(([day, assignments]) => [
-            day,
-            Object.fromEntries(
-               Object.entries(assignments).map(([personId, cIds]) => {
-               const personName = peopleMap.get(personId) ?? personId;
+            Object.entries(weekly).map(([day, assignments]) => [
+               day,
+               Object.fromEntries(
+                  Object.entries(assignments).map(([personId, cIds]) => {
+                  const person = peopleMap.get(personId);
 
-               return [
-                  personName,
-                  {
-                     id: personId,
-                     clusters: (cIds || []).map(id => ({
-                     id,
-                     name: clusterMap.get(id) ?? id
-                     }))
-                  }
-               ];
-               })
-            )
-         ])
+                  const personName = person?.name ?? personId;
+
+                  return [
+                     personName,
+                     {
+                        id: personId,
+                        teamId: person?.teamId ?? null,
+                        clusters: (cIds || []).map(id => ({
+                        id,
+                        name: clusterMap.get(id) ?? id
+                        }))
+                     }
+                  ];
+                  })
+               )
+            ])
          );
+
          return res.status(200).json({
          success: true,
          body: enriched
