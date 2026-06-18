@@ -278,6 +278,9 @@ class Scheduler {
      * @returns {Promise<Record<string, string[]>>} Dictionary mapping person IDs to cluster IDs.
      */
     async getScheduleForDay(db, date) {
+
+        //TODO: Add override logic
+
         const people = await this.getPeopleForDay(db, date);
         const clusters = await this.getClustersForDay(db, date);
         const scheduleDict = {}

@@ -9,7 +9,6 @@ async function getTeams(db) {
 }
 
 async function initialiseSchedulers(db, team) {
-
     let schedulers;
     const peopleDocs = await db.collection("person")
         .find({ teamId: team })
@@ -36,49 +35,41 @@ async function initialiseSchedulers(db, team) {
 async function getDaily(db, day) {
     const teams = await getTeams(db);
 
-    const schedules = [];
-    
+    const schedule = {};
+
     for (const team of teams) {
-        const { nameScheduler, idScheduler } = await initialiseSchedulers(db, team);
-        const nameSchedule = await nameScheduler.getScheduleForDay(db, new Date(day));
+        const { idScheduler } = await initialiseSchedulers(db, team);
         const idSchedule = await idScheduler.getScheduleForDay(db, new Date(day));
-        console.log(nameSchedule)
-        console.log(idSchedule)
-        schedules.push();
+
+        Object.assign(schedule, idSchedule);
     }
-    return schedules;
+
+    return schedule;
 }
 
-async function getWeekly(db, date=new Date()) {
-     
+async function getWeekly(db, date = new Date()) {
+    const days = ["mon", "tue", "wed", "thu", "fri"];
+    const weekly = {};
 
-    const teams = await getTeams(db);
+    // Copy the date so we don't modify the original
+    const monday = new Date(date);
 
-    const schedules = [];
-    
-    for (const team of teams) {
-        const {nameScheduler} = await initialiseSchedulers(db, team);
+    // getDay(): Sun=0, Mon=1, ..., Sat=6
+    const dayOfWeek = monday.getDay();
 
-        schedules.push(await nameScheduler.getScheduleForWeek(db, date));
+    // Number of days to subtract to get back to Monday
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+    monday.setDate(monday.getDate() + diff);
+
+    for (let i = 0; i < days.length; i++) {
+        const currentDate = new Date(monday);
+        currentDate.setDate(monday.getDate() + i);
+
+        weekly[days[i]] = await getDaily(db, currentDate);
     }
 
-
-    const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
-
-    const response = schedules.reduce((acc, schedule) => {
-        for (const day of days) {
-            acc[day] ??= {};
-
-            for (const [person, tasks] of Object.entries(schedule[day] || {})) {
-                acc[day][person] ??= [];
-                acc[day][person].push(...tasks);
-            }
-        }
-
-        return acc;
-    }, {});
-
-    return response
+    return weekly;
 }
 
 module.exports ={

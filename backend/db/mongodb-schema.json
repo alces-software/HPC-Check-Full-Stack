@@ -58,18 +58,22 @@
         "bsonType": "object",
         "required": [
           "_id",
-          "personNum",
-          "personId"
+          "personId",
+          "newPersonId",
+          "date"
         ],
         "properties": {
           "_id": {
             "bsonType": "objectId"
           },
-          "personNum": {
-            "bsonType": "int"
-          },
           "personId": {
             "bsonType": "string"
+          },
+          "newPersonId": {
+            "bsonType": "string"
+          },
+          "date": {
+            "bsonType": "date"
           }
         }
       }

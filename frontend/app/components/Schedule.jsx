@@ -30,7 +30,49 @@ export default function Schedule() {
                 );
                 const data = await res.json();
 
-                setSchedule(data.body);
+                const rota = data.body;
+
+                // Cache names so we don't request the same ID repeatedly
+                const peopleCache = {};
+                const hpcCache = {};
+
+                const transformed = {};
+
+                for (const [day, assignments] of Object.entries(rota)) {
+                    transformed[day] = {};
+
+                    for (const [personId, clusterIds] of Object.entries(assignments)) {
+                        // Get person's name
+                        if (!peopleCache[personId]) {
+                            const res = await fetch(
+                                `${process.env.NEXT_PUBLIC_API_URL}/people/id/${personId}`
+                            );
+                            const person = await res.json();
+                            peopleCache[personId] = person.body.name;
+                        }
+
+                        const personName = peopleCache[personId];
+
+                        // Get cluster names
+                        const clusterNames = await Promise.all(
+                            clusterIds.map(async clusterId => {
+                                if (!hpcCache[clusterId]) {
+                                    const res = await fetch(
+                                        `${process.env.NEXT_PUBLIC_API_URL}/hpc/id/${clusterId}`
+                                    );
+                                    const hpc = await res.json();
+                                    hpcCache[clusterId] = hpc.body.name;
+                                }
+
+                                return hpcCache[clusterId];
+                            })
+                        );
+
+                        transformed[day][personName] = clusterNames;
+                    }
+                }
+
+                setSchedule(transformed);
             } catch (error) {
                 console.error("Failed to fetch rota:", error);
             }
