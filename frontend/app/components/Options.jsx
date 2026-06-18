@@ -554,7 +554,7 @@ export default function Options() {
                         className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                       >
                         <div>
-                          <Link href={`/clusters/${cluster.id}`} className="flex-1 curso-pointer">
+                          <Link href={`/clusters?id=${cluster.id}`} className="flex-1 curso-pointer">
                           <p className="font-medium text-white transition hover:text-emerald-400">
                             {cluster.name}
                           </p>
@@ -630,7 +630,7 @@ export default function Options() {
                         key={team.id}
                         className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                       >
-                        <Link href={`/teams/${team.id}`} className="flex-1">
+                        <Link href={`/teams?id=${team.id}`} className="flex-1">
                           <p className="font-medium text-white transition hover:text-amber-300">
                             {team.name}
                           </p>

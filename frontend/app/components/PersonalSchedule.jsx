@@ -60,6 +60,7 @@ export default function PersonalSchedule() {
                     todaysClusters.map(async (item) => {
                         console.log(item.id)
                         try {
+                            console.log("Today is", todaysClusters)
                             const response = await fetch(
                                 `${process.env.NEXT_PUBLIC_API_URL}/report/today/cluster/${item.id}`
                             );
@@ -79,6 +80,8 @@ export default function PersonalSchedule() {
                 const filteredClusters = todaysClusters.filter(
                     (item) => !completedIdsSet.has(item.id)
                 );
+
+                console.log(filteredClusters)
 
                 setClusters(filteredClusters);
             } catch (err) {

@@ -11,34 +11,27 @@ import {
 } from "@headlessui/react";
 
 export default function Test() {
-    
     const searchParams = useSearchParams();
    const teamId = searchParams.get("id");
+   const [teams, setTeams] = useState([])
 
+       const loadTeams = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`)
+      const data = await res.json()
 
- const [teams, setTeams] = useState([]);
-const [loadingTeams, setLoadingTeams] = useState(true);
+      setTeams(data.body ?? []);
+    } catch (err) {
+      console.error("Failed to fetch teams:", err);
+      setTeams([])
+    }
+  };
 
-const loadTeams = async () => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`);
-    const data = await res.json();
+  useEffect(() => {
+    loadTeams()
+  }, [])
 
-    setTeams(data.body ?? []);
-  } catch (err) {
-    console.error("Failed to fetch teams:", err);
-    setTeams([]);
-  } finally {
-    setLoadingTeams(false);
-  }
-};
-
-useEffect(() => {
-  loadTeams();
-}, []);
-
-const team = teams.find((team) => team.id === teamId);
-
+  const team = teams.find(team => team.id === teamId)
 
 //    onClick={() => router.push(`/report?id=${r.id}`)}
 
@@ -192,24 +185,8 @@ const team = teams.find((team) => team.id === teamId);
         }
     };
 
-    if (loadingTeams) {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-white">Loading team...</p>
-    </main>
-  );
-}
-
-if (!team) {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <p className="text-white">Team not found: {teamId}</p>
-    </main>
-  );
-}
-
     return (
-        <main className="flex min-h-screen items-center justify-center">
+        <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
             <div className="absolute h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
 
             <div className="relative z-10 w-full max-w-5xl">
