@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-
-
 export default function Options() {
   const [userName, setUserName] = useState("");
   const [clusterName, setClusterName] = useState("");
@@ -189,7 +187,6 @@ export default function Options() {
 
       const data = await res.json();
 
-
       if (!res.ok || !data.success) {
         setTeamError(data.message ?? data.error ?? "Could not add this team.");
         showStatus("Failed to add team.", "error");
@@ -206,7 +203,6 @@ export default function Options() {
       showStatus("Failed to add team.", "error");
     }
   };
-
 
   const confirmAddCluster = async () => {
     try {
@@ -234,7 +230,6 @@ export default function Options() {
       await loadClusters();
       showStatus(`Added cluster "${clusterName}" successfully.`, "success");
       window.dispatchEvent(new Event("header-data-updated"));
-
     } catch (err) {
       console.error(err);
       setClusterError("Failed to communicate with the server.");
@@ -254,10 +249,7 @@ export default function Options() {
     requestConfirmation(
       `Are you sure you want to add the cluster "${clusterName}"?`,
       confirmAddCluster
-
-
     );
-
   };
 
   const handleDeleteUser = (id, name) => {
@@ -297,8 +289,6 @@ export default function Options() {
     });
   };
 
-
-
   const handleDeleteTeam = (id, name) => {
     clearStatus();
 
@@ -316,7 +306,6 @@ export default function Options() {
         showStatus(`Deleted team "${name}" successfully.`, "success");
       } catch {
         showStatus(`Failed to delete team "${name}".`, "error");
-
       }
     })
   };
@@ -351,8 +340,6 @@ export default function Options() {
     setTeamError("");
     clearStatus();
 
-
-
     if (!teamName.trim()) {
       setTeamError("Please enter a team name.");
       return;
@@ -361,11 +348,8 @@ export default function Options() {
     requestConfirmation(
       `Are you sure you want to add the team "${teamName}"?`,
       confirmAddTeam
-
     );
   };
-
-
 
   return (
     <main className="flex justify-center space-y-8">
@@ -654,18 +638,6 @@ export default function Options() {
                 </div>
               </div>
             </div>
-
-
-
-
-
-
-
-
-
-
-
-
           </div>
           <div className="mt-6 rounded-2xl border border-purple-400/20 bg-purple-500/10 p-6">
             <div className="mb-3 text-4xl">📅</div>

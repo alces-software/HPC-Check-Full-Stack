@@ -9,4 +9,6 @@ module.exports = (db) => require('express').Router()
    // POST
    .post('/teams', require('./controller/addTeam')(db))
    // DELETE
-   .delete('/teams', require('./controller/deleteTeam')(db));
+   .delete('/teams', require('./controller/deleteTeam')(db))
+   // UPDATE
+   .patch('/teams', require('./controller/updateTeamSettings')(db));
