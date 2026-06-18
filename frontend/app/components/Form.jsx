@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
-
 
 export default function Form() {
   const [completedSteps, setCompletedSteps] = useState({});
@@ -16,23 +15,10 @@ export default function Form() {
   const [nameID] = useState(() => Cookies.get("selectedPersonId") || "");
   const [cookieCluster] = useState(() => Cookies.get("currentCluster") || "");
 
-
-
-
-  // OLD WAY
-  // const [editing, setEditing] = useState(false)
-  // const [addMethod, setAddMethod] = useState(false)
-
-  // METHOD EDITING
   const [editingMethodId, setEditingMethodId] = useState(null);
   const [editedMethodContent, setEditedMethodContent] = useState("");
-
-
-
   const [newMethod, setNewMethod] = useState("");
 
-
-  // NEW WAY
   const [editingStepID, setEditingStepID] = useState(null);
   const [addMethodStepID, setAddMethodStepID] = useState(null);
 
@@ -73,20 +59,24 @@ export default function Form() {
   )?.id;
 
   // NEW CODE - REVIEW
-  async function getSteps() {
+  const getSteps = useCallback(async () => {
     if (!clusterId) return;
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`
-    );
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`
+      );
 
-    const data = await res.json();
-    setSteps(data.body);
-  }
+      const data = await res.json();
+      setSteps(data.body ?? []);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [clusterId]);
 
   useEffect(() => {
     getSteps();
-  }, [clusterId]);
+  }, [getSteps]);
 
   function toggleStep(stepId) {
     setCompletedSteps((prev) => ({
@@ -140,7 +130,7 @@ export default function Form() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/report/add`,
+        `${process.env.NEXT_PUBLIC_API_URL}/report`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -164,12 +154,9 @@ export default function Form() {
     }
   }
 
-
-
-
   if (!clusterId || !nameID) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900">
+      <main className="flex min-h-screen items-center justify-center">
         <div className="rounded-2xl border border-white/10 bg-white/10 px-8 py-6 text-white backdrop-blur-xl">
           Loading report...
         </div>
@@ -236,19 +223,11 @@ export default function Form() {
     }
   }
 
-
   // UPDATE METHOD
-
   async function updateMethod(methodId, content) {
     try {
-      console.log(methodId)
-      console.log(content)
-      
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const url = `${apiUrl}/method/update`;
-
-      console.log("API URL:", apiUrl);
-      console.log("Update URL:", url);
 
       const res = await fetch(url, {
         method: "PATCH",
@@ -276,6 +255,7 @@ export default function Form() {
       alert(err.message);
     }
   }
+
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden">
       {/* background */}
@@ -510,31 +490,31 @@ export default function Form() {
                     </ul>
                   </details>
 
-                   <div className="grid gap-4 md:grid-cols-2">
-                        {step.good && (
-                          <div className="rounded-xl border border-green-400/20 bg-green-500/10 p-4">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-green-300">
-                              Good
-                            </p>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {step.good && (
+                      <div className="rounded-xl border border-green-400/20 bg-green-500/10 p-4">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-green-300">
+                          Good
+                        </p>
 
-                            <p className="mt-2 text-md leading-relaxed text-slate-100">
-                              {step.good}
-                            </p>
-                          </div>
-                        )}
+                        <p className="mt-2 text-md leading-relaxed text-slate-100">
+                          {step.good}
+                        </p>
+                      </div>
+                    )}
 
-                        {step.bad && (
-                          <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-4">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-red-300">
-                              Bad
-                            </p>
+                    {step.bad && (
+                      <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-4">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-red-300">
+                          Bad
+                        </p>
 
-                            <p className="mt-2 text-md leading-relaxed text-slate-100">
-                              {step.bad}
-                            </p>
-                          </div>
-                          )}
-                          </div>
+                        <p className="mt-2 text-md leading-relaxed text-slate-100">
+                          {step.bad}
+                        </p>
+                      </div>
+                    )}
+                  </div>
 
                   {/* toggle */}
                   <div className="flex mt-5 items-center justify-between">

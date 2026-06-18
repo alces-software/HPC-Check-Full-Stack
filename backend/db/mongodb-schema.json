@@ -286,6 +286,9 @@
           },
           "name": {
             "bsonType": "string"
+          },
+          "clusters_per_day": {
+            "bsonType": "int"
           }
         }
       }

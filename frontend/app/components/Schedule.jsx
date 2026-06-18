@@ -100,9 +100,16 @@ export default function Schedule() {
         } catch (err) {
             console.error("Swap failed:", err);
         }
+<<<<<<< HEAD
     }
 
     if (loading || !schedule) {
+=======
+        getRota();
+    }, []);
+
+    if (!schedule) {
+>>>>>>> main
         return (
             <main className="flex items-center justify-center py-10">
                 <div className="rounded-2xl bg-white/10 px-8 py-6 text-white backdrop-blur-xl">

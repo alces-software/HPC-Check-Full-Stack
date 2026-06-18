@@ -15,7 +15,7 @@ module.exports.seedData = async (db) => {
   ];
 
   // Insert a team and associate people/clusters with it
-  const defaultTeam = { _id: new ObjectId(), name: "HPC Ops" };
+  const defaultTeam = { _id: new ObjectId(), name: "HPC Ops", clusters_per_day: 1 };
   await teamsCollection.insertOne(defaultTeam);
 
   // Attach teamId (as string) to each user to satisfy schema
@@ -204,6 +204,7 @@ module.exports.seedData = async (db) => {
   const aiResearchTeam = {
     _id: new ObjectId(),
     name: "AI Research",
+    clusters_per_day: 1
   };
 
   await teamsCollection.insertOne(aiResearchTeam);

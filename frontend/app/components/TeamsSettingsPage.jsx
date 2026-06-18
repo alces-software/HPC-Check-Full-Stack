@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import {
     Listbox,
     ListboxButton,
@@ -9,58 +9,107 @@ import {
     ListboxOption,
 } from "@headlessui/react";
 
-export default function TeamSettingsPage({ team, teamId }) {
+export default function TeamSettingsPage() {
+    const searchParams = useSearchParams();
+    const teamId = searchParams.get("id");
+
+    const [team, setTeam] = useState([]);
+    const [clustersPerDay, setClustersPerDay] = useState(0);
+    const [loadingTeams, setLoadingTeams] = useState(true);
+
+    const loadTeam = useCallback(async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/id/${teamId}`);
+            const data = await res.json();
+
+            setTeam(data.body);
+            setClustersPerDay(data.body.clusters_per_day);
+        } catch (err) {
+            console.error("Failed to fetch teams:", err);
+            setTeam([]);
+        } finally {
+            setLoadingTeams(false);
+        }
+    }, [teamId]);
+
+    const [allClusters, setAllClusters] = useState([])
+
+    const loadAllClusters = useCallback(async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc`);
+            const data = await res.json();
+
+            setAllClusters(data.body ?? []);
+        } catch (err) {
+            console.error("Failed to fetch clusters:", err);
+            setAllClusters([]);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadTeam();
+        loadAllClusters();
+    }, [loadAllClusters, loadTeam]);
+
     const [selectedUserId, setSelectedUserId] = useState("");
     const [selectedClusterId, setSelectedClusterId] = useState("");
 
-    const [teamUsers, setTeamUsers] = useState([])
-    const [users, setUsers] = useState([])
+    const [teamUsers, setTeamUsers] = useState([]);
+    const [users, setUsers] = useState([]);
 
-    const [clusters, setClusters] = useState([])
-    const [teamClusters, setTeamClusters] = useState([])
+    const [clusters, setClusters] = useState([]);
+    const [teamClusters, setTeamClusters] = useState([]);
 
     const [statusMessage, setStatusMessage] = useState("");
     const [statusType, setStatusType] = useState("success");
+    const [savingSettings, setSavingSettings] = useState(false);
 
-    async function getTeamUsers() {
+    const getTeamUsers = useCallback(async () => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${teamId}`);
         const data = await res.json();
-        console.log("Users", data.body)
-        setTeamUsers(data.body)
-    }
+        setTeamUsers(data.body);
+    }, [teamId]);
 
     useEffect(() => {
         getTeamUsers();
-    }, []);
+    }, [getTeamUsers]);
 
     useEffect(() => {
         async function getUsers() {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/not/${teamId}`);
             const data = await res.json();
-            console.log("Users", data.body)
-            setUsers(data.body)
+            setUsers(data.body);
         }
         getUsers();
     }, [teamId]);
 
-    useEffect(() => {
-        async function getClusters() {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/not/${teamId}`);
+    const getClusters = useCallback(async () => {
+        try {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/hpc/team/not/${teamId}`
+            );
             const data = await res.json();
-            setClusters(data.body)
+
+            setClusters(data.body ?? []);
+        } catch (err) {
+            console.error("Failed to fetch available clusters:", err);
+            setClusters([]);
         }
-        getClusters();
     }, [teamId]);
 
-    async function getTeamClusters() {
+    useEffect(() => {
+        getClusters();
+    }, [getClusters]);
+
+    const getTeamClusters = useCallback(async () => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${teamId}`);
         const data = await res.json();
-        setTeamClusters(data.body)
-    }
+        setTeamClusters(data.body);
+    }, [teamId]);
 
     useEffect(() => {
         getTeamClusters();
-    }, []);
+    }, [getTeamClusters]);
 
     if (!team) {
         return (
@@ -73,8 +122,6 @@ export default function TeamSettingsPage({ team, teamId }) {
                     <p className="mb-6 text-slate-300">
                         No team exists with ID: {teamId}
                     </p>
-
-
                 </div>
             </main>
         );
@@ -83,6 +130,17 @@ export default function TeamSettingsPage({ team, teamId }) {
     const handleAddUser = async () => {
         if (!selectedUserId) {
             showStatus("Please select a user.", "error");
+            return;
+        }
+
+        const userToAdd = users.find(user => user.id === selectedUserId);
+        const userTeamId = userToAdd.teamId;
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${userTeamId}`);
+        const data = await res.json();
+
+        if (data.body && data.body.length === 1) {
+            alert(`You cannot add ${userToAdd.name} as they are the only remaining member in their team.`);
             return;
         }
 
@@ -106,23 +164,36 @@ export default function TeamSettingsPage({ team, teamId }) {
                 throw new Error(data.message || "Failed to add user to team.");
             }
 
-            setUsers((previousUsers) =>
-                previousUsers.filter((user) => user.id !== selectedUserId)
+            setUsers((previousUsers) => previousUsers
+                .filter((user) => user.id !== selectedUserId)
             );
 
             setSelectedUserId("");
-            getTeamUsers()
+            getTeamUsers();
 
-            // showStatus("User added to team.", "success");
+            setStatusMessage("User added to team.");
+            setStatusType("success");
         } catch (err) {
             console.error(err);
-            // showStatus("Failed to add user to team.", "error");
+            setStatusMessage("Failed to add user to team.");
+            setStatusType("error");
         }
     };
 
     const handleAddCluster = async () => {
         if (!selectedClusterId) {
             showStatus("Please select a user.", "error");
+            return;
+        }
+
+        const clusterToAdd = allClusters.find(cluster => cluster.id === selectedClusterId);
+        const clusterTeamId = clusterToAdd.teamId;
+
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${clusterTeamId}`);
+        const data = await res.json();
+
+        if (data.body && data.body.length === 1) {
+            alert(`You cannot add ${clusterToAdd.name} as it is the only remaining cluster in their team.`);
             return;
         }
 
@@ -151,17 +222,88 @@ export default function TeamSettingsPage({ team, teamId }) {
             );
 
             setSelectedClusterId("");
-            getTeamClusters()
+            getTeamClusters();
 
-            // showStatus("User added to team.", "success");
+            setStatusMessage("Cluster added to team.");
+            setStatusType("success");
         } catch (err) {
             console.error(err);
-            // showStatus("Failed to add user to team.", "error");
+            setStatusMessage("Failed to add cluster to team.");
+            setStatusType("error");
         }
     };
 
+    const handleSaveSettings = async () => {
+        if (!teamId) return;
+
+        try {
+            setSavingSettings(true);
+            setStatusMessage("");
+
+            if (clustersPerDay < 0) {
+                setStatusMessage("Can't set clusters per day to zero.");
+                setStatusType("error");
+                return;
+            } else if (clustersPerDay === team.clusters_per_day) {
+                setStatusMessage("There's no changes made to settings to save.");
+                setStatusType("error");
+                return;
+            }
+
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/teams`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        id: teamId,
+                        clusters_per_day: clustersPerDay,
+                    }),
+                }
+            );
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.message || "Failed to update settings");
+            }
+
+            setTeam((prev) => ({
+                ...prev,
+                clusters_per_day: clustersPerDay,
+            }));
+
+            setStatusMessage("Settings updated successfully.");
+            setStatusType("success");
+        } catch (err) {
+            console.error(err);
+            setStatusMessage("Failed to save settings.");
+            setStatusType("error");
+        } finally {
+            setSavingSettings(false);
+        }
+    };
+
+    if (loadingTeams) {
+        return (
+            <main className="flex min-h-screen items-center justify-center">
+                <p className="text-white">Loading team...</p>
+            </main>
+        );
+    }
+
+    if (!team) {
+        return (
+            <main className="flex min-h-screen items-center justify-center">
+                <p className="text-white">Team not found: {teamId}</p>
+            </main>
+        );
+    }
+
     return (
-        <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
+        <main className="flex min-h-screen items-center justify-center">
             <div className="absolute h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
 
             <div className="relative z-10 w-full max-w-5xl">
@@ -360,6 +502,45 @@ export default function TeamSettingsPage({ team, teamId }) {
                                     )}
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* SETTINGS SECTION */}
+                    <div className="mt-6 rounded-2xl border border-purple-400/20 bg-purple-500/10 p-6">
+                        <div className="mb-3 text-4xl">⚙️</div>
+
+                        <h2 className="mb-2 text-2xl font-bold text-white">
+                            Settings
+                        </h2>
+
+                        <p className="mb-4 text-sm text-slate-300">
+                            Team configuration options.
+                        </p>
+
+                        <div className="flex flex-col gap-3">
+                            <label className="text-sm text-slate-300">
+                                Clusters per day
+                            </label>
+
+                            <input
+                                type="number"
+                                value={clustersPerDay}
+                                onChange={(e) => setClustersPerDay(Number(e.target.value))}
+                                min={1}
+                                className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-3 py-3 text-white outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
+                            />
+                        </div>
+
+                        {/* optional future button hook */}
+                        <div className="mt-5 flex justify-end">
+                            <button
+                                type="button"
+                                onClick={handleSaveSettings}
+                                disabled={savingSettings}
+                                className="rounded-xl bg-purple-600 px-5 py-3 font-semibold text-white transition hover:bg-purple-500 disabled:opacity-50"
+                            >
+                                {savingSettings ? "Saving..." : "Save"}
+                            </button>
                         </div>
                     </div>
 

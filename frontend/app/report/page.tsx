@@ -1,6 +1,10 @@
 import Report from "../components/Report";
 import { Suspense } from "react";
 
+export const metadata = {
+   title: "Report"
+};
+
 export default function Page() {
    return (
       <Suspense fallback={<ReportSkeleton />}>

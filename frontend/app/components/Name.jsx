@@ -10,19 +10,10 @@ import {
     ListboxOption,
 } from "@headlessui/react";
 
-
 export default function Name() {
     const [people, setPeople] = useState([]);
     const [selectedId, setSelectedId] = useState("");
-    const [mounted, setMounted] = useState(false);
     const router = useRouter();
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setMounted(true);
-    }, []);
-
-    console.log(router);
 
     useEffect(() => {
         async function getName() {
@@ -30,16 +21,10 @@ export default function Name() {
                 `${process.env.NEXT_PUBLIC_API_URL}/people`
             );
             const data = await res.json();
-
             setPeople(data.body);
         }
-
         getName();
     }, []);
-
-    if (!mounted) {
-        return null;
-    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
