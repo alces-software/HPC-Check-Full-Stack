@@ -36,16 +36,20 @@ module.exports = (db) => {
             );
 
          const d = new Date();
-         const day = d.getDay();
 
+         const day = d.getDay();
          const diffToMonday = day === 0 ? -6 : 1 - day;
 
-         const start = new Date(d);
-         start.setDate(d.getDate() + diffToMonday);
+         const start = new Date(req.query.start) || new Date(d);
+         if (!req.query.start) {
+            start.setDate(start.getDate() + diffToMonday);
+         }
          start.setUTCHours(0, 0, 0, 0);
 
-         const end = new Date(start);
-         end.setDate(start.getDate() + 6);
+         const end = new Date(req.query.end) || new Date(defaultStart);
+         if (!req.query.end) {
+            end.setDate(end.getDate() + 6);
+         }
          end.setUTCHours(23, 59, 59, 999);
 
          const query = {

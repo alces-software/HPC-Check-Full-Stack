@@ -34,7 +34,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'Missing team\'s id' });
          }
 
-         const sanitizedTeamId = String(id).trim();
+         const sanitizedTeamId = String(teamId).trim();
 
          if (sanitizedTeamId.length === 0) {
             return res.status(400).json({ success: false, error: 'The team\'s id provided is empty' });

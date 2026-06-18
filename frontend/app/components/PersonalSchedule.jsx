@@ -58,16 +58,17 @@ export default function PersonalSchedule() {
 
                 const completedClusterIds = await Promise.all(
                     todaysClusters.map(async (item) => {
+                        console.log(item.id)
                         try {
                             const response = await fetch(
-                                `${process.env.NEXT_PUBLIC_API_URL}/report/today/cluster/${item.clusterId}`
+                                `${process.env.NEXT_PUBLIC_API_URL}/report/today/cluster/${item.id}`
                             );
                             const json = await response.json();
                             return json?.success && Array.isArray(json.body) && json.body.length > 0
-                                ? item.clusterId
+                                ? item.id
                                 : null;
                         } catch (error) {
-                            console.error('Failed to load completed report for cluster', item.clusterId, error);
+                            console.error('Failed to load completed report for cluster', item.id, error);
                             return null;
                         }
                     })
@@ -76,7 +77,7 @@ export default function PersonalSchedule() {
                 const completedIdsSet = new Set(completedClusterIds.filter(Boolean));
 
                 const filteredClusters = todaysClusters.filter(
-                    (item) => !completedIdsSet.has(item.clusterId)
+                    (item) => !completedIdsSet.has(item.id)
                 );
 
                 setClusters(filteredClusters);
@@ -134,7 +135,7 @@ export default function PersonalSchedule() {
                             {clusters.map((item, index) => (
                                 <button
                                     key={`${item.cluster}-${index}`}
-                                    onClick={() => handleClusterClick(item.cluster)}
+                                    onClick={() => handleClusterClick(item.name)}
                                     className="
                                         group
                                         cursor-pointer
@@ -161,7 +162,7 @@ export default function PersonalSchedule() {
                                     </div>
 
                                     <div className="mt-2 text-xl font-bold text-white">
-                                        {item.cluster}
+                                        {item.name}
                                     </div>
 
                                     <div className="mt-4 font-medium text-blue-300 transition-transform group-hover:translate-x-2">
