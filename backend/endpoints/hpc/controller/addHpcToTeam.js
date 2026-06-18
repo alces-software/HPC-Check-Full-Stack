@@ -14,40 +14,61 @@ module.exports = (db) => {
          const { id } = req.params || {};
          const { teamId } = req.body || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing cluster\'s id' });
          }
 
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
+            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+         }
+
+         // Check team id
          if (!teamId) {
             return res.status(400).json({ success: false, error: 'Missing team\'s id' });
          }
 
-         if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+         const sanitizedTeamId = String(teamId).trim();
+
+         if (sanitizedTeamId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
          }
 
-         const person = await db.collection('cluster')
+         if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, error: "Invalid team id provided" });
+         }
+
+         // Check cluster exists
+         const clusterExists = await db.collection('cluster')
             .findOne({
-               _id: new ObjectId(id)
+               _id: new ObjectId(sanitizedId)
             });
 
-         if (!person) {
+         if (!clusterExists) {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
          }
 
+         // Check that team exists
          const teamExists = await db.collection('team')
             .findOne({
-               _id: new ObjectId(teamId)
+               _id: new ObjectId(sanitizedTeamId)
             });
 
          if (!teamExists) {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
          }
 
+         // Add the cluster to the team in the database
          await db.collection('cluster')
             .updateOne(
-               { _id: new ObjectId(id) },
-               { $set: { teamId: teamId } }
+               { _id: new ObjectId(sanitizedId) },
+               { $set: { teamId: sanitizedTeamId } }
             );
 
          return res.status(200).json({ success: true });

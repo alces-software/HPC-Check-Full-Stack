@@ -13,24 +13,32 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing method id' });
          }
 
-         if (!ObjectId.isValid(id)) {
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The method id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
             return res.status(400).json({ success: false, error: "Invalid method id provided" });
          }
 
+         // Get methods
          const response = await db.collection('method')
             .findOne({
-               _id: new ObjectId(id)
+               _id: new ObjectId(sanitizedId)
             });
 
          if (!response) {
             return res.status(409).json({ success: false, error: 'Method does\'t exist' });
          }
 
-         response.id = id;
+         response.id = sanitizedId;
          delete response._id;
 
          return res.status(200).json({ success: true, body: response });

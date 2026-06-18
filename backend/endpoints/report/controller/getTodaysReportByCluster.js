@@ -13,20 +13,22 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: "Missing cluster id" });
          }
 
-         if (!ObjectId.isValid(id)) {
+         const sanitisedId = String(id).trim();
+
+         if (sanitisedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitisedId)) {
             return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
          }
 
-         const startOfDay = new Date();
-         startOfDay.setHours(0, 0, 0, 0);
-
-         const endOfDay = new Date();
-         endOfDay.setHours(23, 59, 59, 999);
-
+         // Gets people
          const people = await db.collection('person')
             .find({})
             .toArray()
@@ -37,6 +39,7 @@ module.exports = (db) => {
                }))
             );
 
+         // Gets clusters
          const cluster = await db.collection('cluster')
             .find({})
             .toArray()
@@ -47,9 +50,16 @@ module.exports = (db) => {
                }))
             );
 
+         // Gets all the reports for the cluster from today
+         const startOfDay = new Date();
+         startOfDay.setHours(0, 0, 0, 0);
+
+         const endOfDay = new Date();
+         endOfDay.setHours(23, 59, 59, 999);
+
          const response = await db.collection('report')
             .find({
-               clusterId: id,
+               clusterId: sanitisedId,
                startDate: {
                   $gte: startOfDay.getTime(),
                   $lte: endOfDay.getTime()

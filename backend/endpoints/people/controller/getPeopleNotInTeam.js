@@ -13,20 +13,28 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing team id' });
          }
 
-         if (!ObjectId.isValid(id)) {
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
             return res.status(400).json({ success: false, error: "Invalid team id provided" });
          }
 
+         // Get the people
          const response = await db.collection('person')
             .find({
-               teamId: { $ne: id }
+               teamId: { $ne: sanitizedId }
             })
             .toArray()
-            .then(result => result
+            .then(res => res
                .map(({ _id, ...rest }) => ({
                   id: _id.toString(),
                   ...rest

@@ -12,13 +12,13 @@ module.exports = (db) => {
          const response = await db.collection('cluster')
             .find({})
             .toArray()
-            .then(results => {
-               return results.map(data => ({
+            .then(res => res
+               .map(data => ({
                   id: data._id.toString(),
                   name: data.name,
                   teamId: data.teamId
-               }));
-            });
+               }))
+            );
 
          return res.status(200).json({ success: true, body: response });
       } catch (error) {

@@ -14,7 +14,7 @@ module.exports = (db) => {
          const response = await db.collection('person')
             .find({})
             .toArray()
-            .then(results => results
+            .then(res => res
                .map(data => ({
                   id: data._id.toString(),
                   name: data.name,

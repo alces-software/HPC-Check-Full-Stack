@@ -11,6 +11,7 @@ module.exports = (db) => {
       try {
          const { name } = req.params || {};
 
+         // Check name
          if (!name) {
             return res.status(400).json({ success: false, error: 'Missing teams name' });
          }
@@ -21,15 +22,20 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "The name provided is empty" });
          }
 
+         // Get team
          const results = await db.collection('team')
             .findOne({
-               name: { $regex: `^${sanitizedName}$`, $options: "i" }
+               name: {
+                  $regex: `^${sanitizedName}$`,
+                  $options: "i"
+               }
             });
 
          if (!results) {
             return res.status(404).json({ success: false, error: "Team doesn't exist" });
          }
 
+         // Return team information
          return res.status(200).json({
             success: true, body: {
                id: results._id.toString(),
@@ -39,5 +45,5 @@ module.exports = (db) => {
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
-   }
+   };
 };

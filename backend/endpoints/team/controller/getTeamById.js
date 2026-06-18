@@ -13,26 +13,35 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing teams id' });
          }
 
-         if (!ObjectId.isValid(id)) {
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
             return res.status(400).json({ success: false, error: "Invalid team id provided" });
          }
 
+         // Get the team
          const results = await db.collection('team')
             .findOne({
-               _id: new ObjectId(id)
+               _id: new ObjectId(sanitizedId)
             });
 
          if (!results) {
             return res.status(404).json({ success: false, error: "Team doesn't exist" });
          }
 
+         // Return the team information
          return res.status(200).json({
             success: true, body: {
-               id: id,
+               id: sanitizedId,
                name: results.name
             }
          });
