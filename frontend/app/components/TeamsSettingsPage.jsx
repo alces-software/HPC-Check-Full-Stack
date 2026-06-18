@@ -139,7 +139,7 @@ export default function TeamSettingsPage() {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${userTeamId}`);
         const data = await res.json();
 
-        if (data.body.length === 1) {
+        if (data.body && data.body.length === 1) {
             alert(`You cannot add ${userToAdd.name} as they are the only remaining member in their team.`);
             return;
         }
@@ -192,7 +192,7 @@ export default function TeamSettingsPage() {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${clusterTeamId}`);
         const data = await res.json();
 
-        if (data.body.length === 1) {
+        if (data.body && data.body.length === 1) {
             alert(`You cannot add ${clusterToAdd.name} as it is the only remaining cluster in their team.`);
             return;
         }
@@ -222,6 +222,7 @@ export default function TeamSettingsPage() {
             );
 
             setSelectedClusterId("");
+            getTeamClusters();
 
             setStatusMessage("Cluster added to team.");
             setStatusType("success");
