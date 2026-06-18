@@ -140,7 +140,7 @@ export default function Form() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/report/add`,
+        `${process.env.NEXT_PUBLIC_API_URL}/report`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

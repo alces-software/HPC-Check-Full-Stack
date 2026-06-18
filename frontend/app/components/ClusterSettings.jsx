@@ -908,7 +908,7 @@ export default function ClusterSettingsPage({ cluster, clusterId }) {
                               "group w-full text-left",
                               "rounded-xl border px-4 py-4",
                               "transition-all duration-200",
-                              "hover:-translate-y-[1px] hover:shadow-lg",
+                              "hover:-translate-y-[1px] hover:shadow-lg cursor-pointer",
                               "active:scale-[0.99]",
                               passed
                                 ? "border-green-400/30 bg-green-500/20"

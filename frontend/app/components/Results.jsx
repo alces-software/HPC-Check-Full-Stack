@@ -155,7 +155,7 @@ export default function ResultsPage() {
                   <button
                      onClick={() => setMode("cluster")}
                      className={[
-                        "px-4 py-2 rounded-xl text-sm transition",
+                        "px-4 py-2 rounded-xl text-sm transition cursor-pointer",
                         mode === "cluster"
                            ? "bg-white/10 text-white"
                            : "text-slate-400 hover:text-white hover:bg-white/5",
@@ -167,7 +167,7 @@ export default function ResultsPage() {
                   <button
                      onClick={() => setMode("week")}
                      className={[
-                        "px-4 py-2 rounded-xl text-sm transition",
+                        "px-4 py-2 rounded-xl text-sm transition cursor-pointer",
                         mode === "week"
                            ? "bg-white/10 text-white"
                            : "text-slate-400 hover:text-white hover:bg-white/5",
@@ -264,7 +264,7 @@ export default function ResultsPage() {
                                     "w-full group text-left",
                                     "rounded-xl border px-4 py-4",
                                     "transition-all duration-200",
-                                    "hover:shadow-lg hover:-translate-y-[1px]",
+                                    "hover:shadow-lg hover:-translate-y-[1px] cursor-pointer",
                                     "active:scale-[0.99]",
                                     passed
                                        ? "border-green-400/30 bg-green-500/20"
