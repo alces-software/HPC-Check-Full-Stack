@@ -218,6 +218,19 @@ class Scheduler {
     }
 
     /**
+     * Get the cluster assigned at the specified overall assignment index.
+     *
+     * @param {number} index - Overall assignment index.
+     * @returns {string} Assigned cluster ID.
+     */
+    getClusterFromIndex(index) {
+        const posInBlock = index%this.clusters.length;
+
+        const cluster = this.clusters[posInBlock];
+        return cluster;
+    }
+
+    /**
      * Get the people assigned for a particular working day.
      *
      * @param {import('mongodb').Db} db - MongoDB database instance.
@@ -235,19 +248,6 @@ class Scheduler {
             people.push(await this.getPersonFromIndex(db, totalPeople+i));
         }
         return people;
-    }
-
-    /**
-     * Get the cluster assigned at the specified overall assignment index.
-     *
-     * @param {number} index - Overall assignment index.
-     * @returns {string} Assigned cluster ID.
-     */
-    getClusterFromIndex(index) {
-        const posInBlock = index%this.clusters.length;
-
-        const cluster = this.clusters[posInBlock];
-        return cluster;
     }
 
     /**
@@ -278,8 +278,6 @@ class Scheduler {
      * @returns {Promise<Record<string, string[]>>} Dictionary mapping person IDs to cluster IDs.
      */
     async getScheduleForDay(db, date) {
-
-        //TODO: Add override logic
 
         const people = await this.getPeopleForDay(db, date);
         const clusters = await this.getClustersForDay(db, date);

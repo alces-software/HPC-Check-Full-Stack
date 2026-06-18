@@ -114,25 +114,29 @@ export default function Schedule() {
 
                                 {/* People rows */}
                                 <div>
-                                    {Object.entries(schedule?.[dayKey] || {}).map(
-                                        ([name, person], index, arr) => (
-                                            <div
-                                                key={person.id}
-                                                className={`grid gap-4 px-6 py-4 md:grid-cols-[200px_1fr] ${
-                                                    index !== arr.length - 1
-                                                        ? "border-b border-white/10"
-                                                        : ""
-                                                }`}
-                                            >
-                                                {/* Person name */}
-                                                <div className="font-semibold text-white">
-                                                    {name}
-                                                </div>
+                                    {Object.keys(schedule?.[dayKey] || {}).length === 0 ? (
+                                        <div className="px-6 py-4 text-white/70 italic">
+                                            OFFICE CLOSED
+                                        </div>
+                                    ) : (
+                                        Object.entries(schedule?.[dayKey] || {}).map(
+                                            ([name, person], index, arr) => (
+                                                <div
+                                                    key={person.id}
+                                                    className={`grid gap-4 px-6 py-4 md:grid-cols-[200px_1fr] ${
+                                                        index !== arr.length - 1
+                                                            ? "border-b border-white/10"
+                                                            : ""
+                                                    }`}
+                                                >
+                                                    {/* Person name */}
+                                                    <div className="font-semibold text-white">
+                                                        {name}
+                                                    </div>
 
-                                                {/* Clusters */}
-                                                <div className="flex flex-wrap gap-2">
-                                                    {person.clusters.map(
-                                                        (cluster) => (
+                                                    {/* Clusters */}
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {person.clusters.map((cluster) => (
                                                             <span
                                                                 key={cluster.id}
                                                                 className={`rounded-full px-3 py-1 text-sm font-medium ${
@@ -143,10 +147,10 @@ export default function Schedule() {
                                                             >
                                                                 {cluster.name}
                                                             </span>
-                                                        )
-                                                    )}
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )
                                         )
                                     )}
                                 </div>

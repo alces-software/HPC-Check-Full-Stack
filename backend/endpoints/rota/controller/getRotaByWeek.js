@@ -23,7 +23,7 @@ module.exports = (db) => {
             });
          } 
 
-        const weekly = await getWeekly(db);
+        const weekly = await getWeekly(db, date);
 
          const personIds = new Set();
          const clusterIds = new Set();

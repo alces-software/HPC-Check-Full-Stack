@@ -37,16 +37,24 @@ async function getDaily(db, day) {
 
     const schedule = {};
 
-    const start = new Date(day);
-    start.setHours(0, 0, 0, 0);
+    const targetDate = new Date(day);
+    targetDate.setHours(0, 0, 0, 0);
 
-    const end = new Date(day);
-    end.setHours(23, 59, 59, 999);
+    const endOfDay = new Date(day);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const isClosed = await db.collection("closedDay").findOne({
+        day: targetDate
+    });
+
+    if (isClosed) {
+        return {};
+    }
 
     const overrides = await db.collection("scheduleOverride").find({
         date: {
-            $gte: start,
-            $lte: end
+            $gte: targetDate,
+            $lte: endOfDay
         }
     }).toArray();
 
