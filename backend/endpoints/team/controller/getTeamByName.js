@@ -25,7 +25,10 @@ module.exports = (db) => {
          // Get team
          const results = await db.collection('team')
             .findOne({
-               name: { $regex: `^${sanitizedName}$`, $options: "i" }
+               name: {
+                  $regex: `^${sanitizedName}$`,
+                  $options: "i"
+               }
             });
 
          if (!results) {

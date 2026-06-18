@@ -25,7 +25,10 @@ module.exports = (db) => {
          // Make sure the person exists
          const existingPerson = await db.collection('person')
             .findOne({
-               name: sanitizedName
+               name: {
+                  $regex: `^${sanitizedName}$`,
+                  $options: 'i'
+               }
             });
 
          if (existingPerson) {

@@ -11,6 +11,7 @@ module.exports = (db) => {
       try {
          const { name } = req.body || {};
 
+         // Check name
          if (!name) {
             return res.status(400).json({ success: false, error: 'Missing hpc name' });
          }
@@ -21,15 +22,20 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "The name provided is empty" });
          }
 
+         // Check if hpc already exists
          const existingHpc = await db.collection('cluster')
             .findOne({
-               name: sanitizedName
+               name: {
+                  $regex: `^${sanitizedName}$`,
+                  $options: 'i'
+               }
             });
 
          if (existingHpc) {
             return res.status(409).json({ success: false, error: 'HPC already exits' });
          }
 
+         // Add it to the database
          await db.collection('cluster')
             .insertOne({
                name: sanitizedName

@@ -13,6 +13,7 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing team id' });
          }
@@ -27,6 +28,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "Invalid team id provided" });
          }
 
+         // Get the cluster
          const data = await db.collection('cluster')
             .find({
                teamId: { $ne: sanitizedId }

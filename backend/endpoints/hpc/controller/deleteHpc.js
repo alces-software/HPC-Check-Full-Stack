@@ -13,6 +13,7 @@ module.exports = (db) => {
       try {
          const { id } = req.body || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing hpc id' });
          }
@@ -27,6 +28,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
          }
 
+         // Check cluster exists
          const existingCluster = await db.collection('cluster')
             .findOneAndDelete({
                _id: new ObjectId(sanitizedId)
@@ -38,6 +40,7 @@ module.exports = (db) => {
             });
          }
 
+         // Check if cluster has reports
          const reports = await db.collection('report').
             find({
                clusterId: sanitizedId
@@ -53,6 +56,7 @@ module.exports = (db) => {
             return res.status(200).json({ success: true });
          }
 
+         // Delete each report associated with the cluster
          reports.forEach(async report => {
             await db.collection('result')
                .deleteMany({
@@ -65,6 +69,7 @@ module.exports = (db) => {
                _id: { $in: reports.map(r => r._id) }
             });
 
+         // Delete each instruction and method linked to the cluster
          const instructions = await db.collection('instruction')
             .find({
                clusterId: new ObjectId(sanitizedId)

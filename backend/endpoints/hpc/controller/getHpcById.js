@@ -13,6 +13,7 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }
@@ -27,6 +28,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
          }
 
+         // Get the cluster
          const results = await db.collection('cluster')
             .findOne({
                _id: new ObjectId(sanitizedId)

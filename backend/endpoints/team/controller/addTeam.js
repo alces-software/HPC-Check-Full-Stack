@@ -22,14 +22,18 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "The name provided is empty" });
          }
 
-         const existingTeam = await db.collection('team').findOne({
-            name: sanitizedName
-         });
+         const existingTeam = await db.collection('team')
+            .findOne({
+               name: {
+                  $regex: `^${sanitizedName}$`,
+                  $options: 'i'
+               }
+            });
 
          if (existingTeam) {
             return res.status(409).json({ success: false, error: 'Team already exits' });
          }
-         
+
          // Add team to database
          await db.collection('team')
             .insertOne({

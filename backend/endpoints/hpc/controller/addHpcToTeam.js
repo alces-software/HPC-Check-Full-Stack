@@ -14,6 +14,7 @@ module.exports = (db) => {
          const { id } = req.params || {};
          const { teamId } = req.body || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing cluster\'s id' });
          }
@@ -28,6 +29,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
          }
 
+         // Check team id
          if (!teamId) {
             return res.status(400).json({ success: false, error: 'Missing team\'s id' });
          }
@@ -42,15 +44,17 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "Invalid team id provided" });
          }
 
-         const person = await db.collection('cluster')
+         // Check cluster exists
+         const clusterExists = await db.collection('cluster')
             .findOne({
                _id: new ObjectId(sanitizedId)
             });
 
-         if (!person) {
+         if (!clusterExists) {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
          }
 
+         // Check that team exists
          const teamExists = await db.collection('team')
             .findOne({
                _id: new ObjectId(sanitizedTeamId)
@@ -60,6 +64,7 @@ module.exports = (db) => {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
          }
 
+         // Add the cluster to the team in the database
          await db.collection('cluster')
             .updateOne(
                { _id: new ObjectId(sanitizedId) },
