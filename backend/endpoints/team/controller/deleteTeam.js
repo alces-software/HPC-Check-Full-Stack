@@ -13,26 +13,35 @@ module.exports = (db) => {
       try {
          const { id } = req.body || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing team\'s id' });
          }
 
-         if (!ObjectId.isValid(id)) {
+         const sanitizedId = String(id).trim();
+
+         if (sanitizedId.length === 0) {
+            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
             return res.status(400).json({ success: false, error: "Invalid team id provided" });
          }
 
-         const existingPerson = await db.collection('team')
+         // Check if team exists
+         const existingTeam = await db.collection('team')
             .findOne({
-               _id: new ObjectId(id)
+               _id: new ObjectId(sanitizedId)
             });
 
-         if (!existingPerson) {
+         if (!existingTeam) {
             return res.status(409).json({ success: false, error: 'Team doesn\'t exists' });
          }
 
+         // Check if people are linked to the team
          const hasPeople = await db.collection('person')
             .find({
-               teamId: id
+               teamId: sanitizedId
             })
             .toArray();
 
@@ -40,9 +49,10 @@ module.exports = (db) => {
             return res.status(409).json({ success: false, error: "This team has people" });
          }
 
+         // Check if clusters are linked to the team
          const hasClusters = await db.collection('cluster')
             .find({
-               teamId: id
+               teamId: sanitizedId
             })
             .toArray();
 
@@ -50,9 +60,10 @@ module.exports = (db) => {
             return res.status(409).json({ success: false, error: "This team has clusters" });
          }
 
+         // Delete the team
          await db.collection('team')
             .deleteOne({
-               _id: new ObjectId(id)
+               _id: new ObjectId(sanitizedId)
             });
 
          return res.status(200).json({ success: true });
