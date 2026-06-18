@@ -168,7 +168,7 @@ export default function Form() {
   async function deleteMethod(methodId) {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/method/delete/`,
+        `${process.env.NEXT_PUBLIC_API_URL}/method`,
         {
           method: "DELETE",
           headers: {
@@ -194,7 +194,7 @@ export default function Form() {
   async function addNewMethod(instructionId, content) {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/method/add`,
+        `${process.env.NEXT_PUBLIC_API_URL}/method`,
         {
           method: "POST",
           headers: {
@@ -227,7 +227,7 @@ export default function Form() {
   async function updateMethod(methodId, content) {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      const url = `${apiUrl}/method/update`;
+      const url = `${apiUrl}/method`;
 
       const res = await fetch(url, {
         method: "PATCH",
@@ -301,13 +301,22 @@ export default function Form() {
                   key={step.id}
                   className="rounded-2xl border border-white/10 bg-white/5 p-6"
                 >
-                  <h2 className="mb-4 text-xl font-semibold text-white">
+                  <h2 className="mb-4 flex items-center justify-between text-xl font-semibold text-white">
                     {step.title}
+
+
+                    {step.expectedTime && (
+                      <span className="shrink-0 rounded-full border border-blue-400/20 bg-blue-500/10 px-3 py-1 text-right text-sm font-semibold text-blue-200">
+                        {step.expectedTime}
+                      </span>
+                    )}
+
                   </h2>
 
                   <p className="mb-4 text-slate-300">
                     {step.description}
                   </p>
+
 
                   <details className="mb-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">
                     <summary className="cursor-pointer font-medium text-blue-300">
@@ -361,9 +370,18 @@ export default function Form() {
                               </div>
                             </div>
                           ) : (
+                            <>
+                            <div className="flex gap-3">
+
+                             <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-xs font-semibold text-blue-300">
+                                    {i + 1}
+                                  </span>
+
                             <div className="prose prose-invert max-w-none">
                               <ReactMarkdown>{method.content}</ReactMarkdown>
                             </div>
+                            </div>
+                            </>
                           )}
 
                           {isEditing && !(editingMethodId === method.id) && (
