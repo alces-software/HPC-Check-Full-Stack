@@ -1,0 +1,175 @@
+{
+   "instructions": [
+      {
+         "title": "Login & Basic Access",
+         "description": "Confirm login nodes and user-facing hosts are reachable.",
+         "expectedTime": "2-3 mins",
+         "good": "Successful login and filesystem access on all tested hosts.",
+         "bad": "Login failures, timeouts, or inaccessible filesystems.",
+         "methods": [
+            {
+               "content": "SSH to SERVER and verify a normal prompt appears."
+            },
+            {
+               "content": "SSH to a random selection of user-facing nodes."
+            },
+            {
+               "content": "Confirm home directories and shared filesystems are accessible."
+            }
+         ]
+      },
+      {
+         "title": "Home Directory & User Quota + Filesystem Experience",
+         "description": "Verify quota system and test home filesystem performance.",
+         "expectedTime": "6-7 mins",
+         "good": "Usage below limits and filesystem tests complete quickly.",
+         "bad": "Quota issues or poor filesystem performance.",
+         "methods": [
+            {
+               "content": "Run:\n```sh\nquota -s\n```"
+            },
+            {
+               "content": "Run:\n```sh\ndf -h ~\n```"
+            },
+            {
+               "content": "Perform block and metadata filesystem tests using dd and touch."
+            },
+            {
+               "content": "Create a large test file and verify quota reporting updates correctly."
+            }
+         ]
+      },
+      {
+         "title": "Scratch / Lustre Storage + Filesystem Experience",
+         "description": "Verify scratch storage quotas and Lustre performance.",
+         "expectedTime": "5-6 mins",
+         "good": "Commands succeed with healthy performance.",
+         "bad": "Filesystem issues, errors, or slow performance.",
+         "methods": [
+            {
+               "content": "Run:\n```sh\nlfs quota PATH TO SCRATCH USERS/$USER\n```"
+            },
+            {
+               "content": "Verify scratch directory contents are accessible."
+            },
+            {
+               "content": "Perform large file write and metadata performance tests."
+            },
+            {
+               "content": "Confirm filesystem performance and quota reporting are acceptable."
+            }
+         ]
+      },
+      {
+         "title": "Slurm Scheduler Status",
+         "description": "Confirm scheduler responsiveness and node availability.",
+         "expectedTime": "4-5 mins",
+         "good": "Nodes visible and scheduler operating normally.",
+         "bad": "Nodes down/drained or scheduler unresponsive.",
+         "methods": [
+            {
+               "content": "Run:\n```sh\nsinfo -Nl\n```"
+            },
+            {
+               "content": "Review partition information using scontrol show partitions."
+            },
+            {
+               "content": "Inspect nodes using scontrol show node."
+            },
+            {
+               "content": "Review running jobs and investigate a sample job where possible."
+            }
+         ]
+      },
+      {
+         "title": "GPU / Compute Node Availability",
+         "description": "Validate GPU node health and availability.",
+         "expectedTime": "3-4 mins",
+         "good": "GPU nodes healthy and accessible.",
+         "bad": "Missing nodes or unhealthy GPU resources.",
+         "methods": [
+            {
+               "content": "Review node status using sinfo."
+            },
+            {
+               "content": "SSH to a selection of GPU nodes and verify responsiveness."
+            },
+            {
+               "content": "Submit an interactive GPU job and run nvidia-smi health checks."
+            },
+            {
+               "content": "Inspect a node currently running a GPU workload."
+            }
+         ]
+      },
+      {
+         "title": "Light Test Job Submission",
+         "description": "Verify jobs can be submitted and completed.",
+         "expectedTime": "5-6 mins",
+         "good": "Jobs execute successfully.",
+         "bad": "Jobs fail or remain pending.",
+         "methods": [
+            {
+               "content": "Run a simple CPU test job with srun."
+            },
+            {
+               "content": "Monitor queue status using squeue -u $USER."
+            },
+            {
+               "content": "Submit a small batch script and confirm successful completion."
+            }
+         ]
+      },
+      {
+         "title": "Services & Environment",
+         "description": "Verify Slurm commands and environment modules.",
+         "expectedTime": "3-4 mins",
+         "good": "Environment commands work normally.",
+         "bad": "Broken environment or unavailable commands.",
+         "methods": [
+            {
+               "content": "Run:\n```sh\nmodule avail\n```"
+            },
+            {
+               "content": "Run:\n```sh\nwhich srun\n```"
+            },
+            {
+               "content": "Run:\n```sh\nsqueue\n```"
+            }
+         ]
+      },
+      {
+         "title": "Cleanup & Verification",
+         "description": "Ensure no test artifacts remain.",
+         "expectedTime": "2 mins",
+         "good": "No jobs or files left behind.",
+         "bad": "Residual jobs, files, or quota usage.",
+         "methods": [
+            {
+               "content": "Check for active jobs using squeue -u $USER."
+            },
+            {
+               "content": "Check for active jobs using squeue -u $USER."
+            },
+            {
+               "content": "Run quota and verify usage has returned to normal."
+            }
+         ]
+      },
+      {
+         "title": "Final Notes / Escalation",
+         "description": "Record outcome and escalate issues if required.",
+         "expectedTime": "1 min",
+         "good": "Daily check completed successfully.",
+         "bad": "Issues require escalation to OPS.",
+         "methods": [
+            {
+               "content": "If all checks pass, log: \"Daily user check complete - no issues\"."
+            },
+            {
+               "content": "For any RED item, escalate to OPS with exact command output."
+            }
+         ]
+      }
+   ]
+}

@@ -1,3 +1,5 @@
+const { templateIt } = require('../../../services/templater/templateIt');
+
 /**
  * @param {import('mongodb').Db} db
  */
@@ -36,10 +38,12 @@ module.exports = (db) => {
          }
 
          // Add it to the database
-         await db.collection('cluster')
+         const clusterId = await db.collection('cluster')
             .insertOne({
                name: sanitizedName
-            });
+            }).then(res => res.insertedId.toString());
+
+         templateIt(clusterId, db);
 
          return res.status(200).json({ success: true });
       } catch (error) {
