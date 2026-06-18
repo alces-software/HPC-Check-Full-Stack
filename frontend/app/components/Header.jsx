@@ -45,18 +45,18 @@ export default function Header() {
     loadTeams();
   }, [loadClusters, loadTeams]);
 
-useEffect(() => {
-  function handleDataUpdated() {
-    loadClusters();
-    loadTeams();
-  }
+  useEffect(() => {
+    function handleDataUpdated() {
+      loadClusters();
+      loadTeams();
+    }
 
-  window.addEventListener("header-data-updated", handleDataUpdated);
+    window.addEventListener("header-data-updated", handleDataUpdated);
 
     return () => {
       window.removeEventListener("header-data-updated", handleDataUpdated);
     };
-  }, []);
+  }, [loadClusters, loadTeams]);
 
   const navItems = [
     { href: "/", label: "Home" },
@@ -135,12 +135,12 @@ useEffect(() => {
                       const clusterId = cluster.id || cluster._id;
 
                       const isClusterItemActive =
-                        pathname === `/clusters/${clusterId}`;
+                        pathname === `/clusters?id=${clusterId}`;
 
                       return (
                         <Link
                           key={clusterId}
-                          href={`/clusters/${clusterId}`}
+                          href={`/clusters?id=${clusterId}`}
                           className={[
                             "block rounded-xl px-4 py-3 text-md transition",
                             isClusterItemActive
@@ -187,12 +187,12 @@ useEffect(() => {
                       const teamId = team.id || team._id;
 
                       const isTeamItemActive =
-                        pathname === `/teams/${teamId}`;
+                        pathname === `/teams?id=${teamId}`;
 
                       return (
                         <Link
                           key={teamId}
-                          href={`/teams/${teamId}`}
+                          href={`/teams?id=${teamId}`}
                           className={[
                             "block rounded-xl px-4 py-3 text-md transition",
                             isTeamItemActive

@@ -16,8 +16,6 @@ export default function Options() {
 
   const [teams, setTeams] = useState([]);
 
-
-
   const [userError, setUserError] = useState("");
   const [clusterError, setClusterError] = useState("");
   const [teamError, setTeamError] = useState("");
@@ -52,7 +50,7 @@ export default function Options() {
     }
   };
 
-    const loadTeams = async () => {
+  const loadTeams = async () => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`)
       const data = await res.json()
@@ -175,39 +173,39 @@ export default function Options() {
     );
   };
 
- const confirmAddTeam = async () => {
-  const nameToAdd = teamName.trim();
+  const confirmAddTeam = async () => {
+    const nameToAdd = teamName.trim();
 
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: nameToAdd,
-      }),
-    });
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: nameToAdd,
+        }),
+      });
 
-    const data = await res.json();
-    
+      const data = await res.json();
 
-    if (!res.ok || !data.success) {
-      setTeamError(data.message ?? data.error ?? "Could not add this team.");
+
+      if (!res.ok || !data.success) {
+        setTeamError(data.message ?? data.error ?? "Could not add this team.");
+        showStatus("Failed to add team.", "error");
+        return;
+      }
+
+      setTeamName("");
+      await loadTeams();
+      showStatus(`Added team "${nameToAdd}" successfully.`, "success");
+      window.dispatchEvent(new Event("header-data-updated"));
+    } catch (err) {
+      console.error(err);
+      setTeamError("Failed to communicate with the server.");
       showStatus("Failed to add team.", "error");
-      return;
     }
-
-    setTeamName("");
-    await loadTeams();
-    showStatus(`Added team "${nameToAdd}" successfully.`, "success");
-    window.dispatchEvent(new Event("header-data-updated"));
-  } catch (err) {
-    console.error(err);
-    setTeamError("Failed to communicate with the server.");
-    showStatus("Failed to add team.", "error");
-  }
-};
+  };
 
 
   const confirmAddCluster = async () => {
@@ -236,7 +234,7 @@ export default function Options() {
       await loadClusters();
       showStatus(`Added cluster "${clusterName}" successfully.`, "success");
       window.dispatchEvent(new Event("header-data-updated"));
-      
+
     } catch (err) {
       console.error(err);
       setClusterError("Failed to communicate with the server.");
@@ -256,10 +254,10 @@ export default function Options() {
     requestConfirmation(
       `Are you sure you want to add the cluster "${clusterName}"?`,
       confirmAddCluster
-      
+
 
     );
-    
+
   };
 
   const handleDeleteUser = (id, name) => {
@@ -315,14 +313,13 @@ export default function Options() {
         await loadTeams()
         window.dispatchEvent(new Event("header-data-updated"));
 
-      
+        showStatus(`Deleted team "${name}" successfully.`, "success");
+      } catch {
+        showStatus(`Failed to delete team "${name}".`, "error");
 
-      showStatus(`Deleted team "${name}" successfully.`, "success");
-    } catch {
-      showStatus(`Failed to delete team "${name}".`, "error");
-      
-    }
-  })};
+      }
+    })
+  };
 
   const handleRegenerateSchedule = () => {
     clearStatus();
@@ -354,7 +351,7 @@ export default function Options() {
     setTeamError("");
     clearStatus();
 
-    
+
 
     if (!teamName.trim()) {
       setTeamError("Please enter a team name.");
@@ -364,12 +361,12 @@ export default function Options() {
     requestConfirmation(
       `Are you sure you want to add the team "${teamName}"?`,
       confirmAddTeam
-      
+
     );
   };
 
 
-  
+
   return (
     <main className="flex justify-center space-y-8">
       <div className="absolute h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
@@ -554,18 +551,18 @@ export default function Options() {
                         className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                       >
                         <div>
-                          <Link href={`/clusters/${cluster.id}`} className="flex-1 curso-pointer">
-                          <p className="font-medium text-white transition hover:text-emerald-400">
-                            {cluster.name}
-                          </p>
+                          <Link href={`/clusters?id=${cluster.id}`} className="flex-1 curso-pointer">
+                            <p className="font-medium text-white transition hover:text-emerald-400">
+                              {cluster.name}
+                            </p>
 
-                          <p className="text-xs text-slate-400">
-                            {cluster.id}
-                          </p>
+                            <p className="text-xs text-slate-400">
+                              {cluster.id}
+                            </p>
 
-                           <p className="mt-1 text-xs text-emerald-400">
-                            View cluster information
-                          </p>
+                            <p className="mt-1 text-xs text-emerald-400">
+                              View cluster information
+                            </p>
                           </Link>
                         </div>
 
@@ -630,7 +627,7 @@ export default function Options() {
                         key={team.id}
                         className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                       >
-                        <Link href={`/teams/${team.id}`} className="flex-1">
+                        <Link href={`/teams?id=${team.id}`} className="flex-1">
                           <p className="font-medium text-white transition hover:text-amber-300">
                             {team.name}
                           </p>

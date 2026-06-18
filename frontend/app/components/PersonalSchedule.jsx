@@ -58,7 +58,6 @@ export default function PersonalSchedule() {
 
                 const completedClusterIds = await Promise.all(
                     todaysClusters.map(async (item) => {
-                        console.log(item.id)
                         try {
                             const response = await fetch(
                                 `${process.env.NEXT_PUBLIC_API_URL}/report/today/cluster/${item.id}`

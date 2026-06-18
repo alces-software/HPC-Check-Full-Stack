@@ -5,7 +5,6 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 
-
 export default function Form() {
   const [completedSteps, setCompletedSteps] = useState({});
   const [allClusters, setAllClusters] = useState([]);
@@ -61,7 +60,6 @@ export default function Form() {
 
   // NEW CODE - REVIEW
   const getSteps = useCallback(async () => {
-    console.log(clusterId);
     if (!clusterId) return;
 
     try {
@@ -225,19 +223,11 @@ export default function Form() {
     }
   }
 
-
   // UPDATE METHOD
-
   async function updateMethod(methodId, content) {
     try {
-      console.log(methodId)
-      console.log(content)
-
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const url = `${apiUrl}/method/update`;
-
-      console.log("API URL:", apiUrl);
-      console.log("Update URL:", url);
 
       const res = await fetch(url, {
         method: "PATCH",
@@ -265,6 +255,7 @@ export default function Form() {
       alert(err.message);
     }
   }
+
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden">
       {/* background */}
