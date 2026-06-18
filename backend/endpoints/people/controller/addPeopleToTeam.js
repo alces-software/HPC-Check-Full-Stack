@@ -45,13 +45,25 @@ module.exports = (db) => {
          }
 
          //  Check if the person exists
-         const person = await db.collection('person')
+         const personExists = await db.collection('person')
             .findOne({
                _id: new ObjectId(sanitizedId)
             });
 
-         if (!person) {
+         if (!personExists) {
             return res.status(404).json({ success: false, error: "Person doesn't exist" });
+         }
+
+         // Check if clusters current team wont be left without clusters
+         if (personExists.teamId) {
+            const cluster_count = await db.collection('cluster')
+               .countDocuments({
+                  teamId: personExists.teamId
+               });
+
+            if (cluster_count <= 1) {
+               return res.status(422).json({ success: false, error: "Can't remove person as the team would be left without a person" });
+            }
          }
 
          // Check if the team exists

@@ -42,7 +42,8 @@ module.exports = (db) => {
          return res.status(200).json({
             success: true, body: {
                id: sanitizedId,
-               name: results.name
+               name: results.name,
+               clusters_per_day: results.clusters_per_day
             }
          });
       } catch (error) {

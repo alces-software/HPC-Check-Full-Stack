@@ -15,17 +15,27 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing instruction id' });
+            return res.status(400).json({ success: false, error: 'Missing team id' });
          }
 
          const sanitizedId = String(id).trim();
 
-         if (sanitizedId.length == 0) {
-            return res.status(400).json({ success: false, error: 'The id provided is empty' });
+         if (sanitizedId.length === 0) {
+            return res.json(400).json({ success: false, error: 'The team id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'The id provided is invalid' });
+            return res.status(400).json({ success: false, error: 'The team id provided was invalid' })
+         }
+
+         // Check team exists 
+         const teamExists = await db.collection('team')
+            .findOne({
+               _id: new ObjectId(sanitizedId)
+            });
+
+         if (!teamExists) {
+            return res.status(404).json({ success: false, error: 'No team exists with that id' });
          }
 
          // Check updates
@@ -43,7 +53,7 @@ module.exports = (db) => {
          }
 
          // Updates values in the database
-         await db.collection('instruction')
+         await db.collection('team')
             .updateOne(
                { _id: new ObjectId(sanitizedId) },
                { $set: updates }

@@ -13,22 +13,24 @@ export default function TeamSettingsPage() {
     const searchParams = useSearchParams();
     const teamId = searchParams.get("id");
 
-    const [teams, setTeams] = useState([]);
+    const [team, setTeam] = useState([]);
+    const [clustersPerDay, setClustersPerDay] = useState(0);
     const [loadingTeams, setLoadingTeams] = useState(true);
 
-    const loadTeams = useCallback(async () => {
+    const loadTeam = useCallback(async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/id/${teamId}`);
             const data = await res.json();
 
-            setTeams(data.body ?? []);
+            setTeam(data.body);
+            setClustersPerDay(data.body.clusters_per_day);
         } catch (err) {
             console.error("Failed to fetch teams:", err);
-            setTeams([]);
+            setTeam([]);
         } finally {
             setLoadingTeams(false);
         }
-    }, []);
+    }, [teamId]);
 
 
     const [allClusters, setAllClusters] = useState([])
@@ -55,21 +57,22 @@ export default function TeamSettingsPage() {
     const [selectedUserId, setSelectedUserId] = useState("");
     const [selectedClusterId, setSelectedClusterId] = useState("");
 
-    const [teamUsers, setTeamUsers] = useState([])
-    const [users, setUsers] = useState([])
+    const [teamUsers, setTeamUsers] = useState([]);
+    const [users, setUsers] = useState([]);
 
-    const [clusters, setClusters] = useState([])
-    const [teamClusters, setTeamClusters] = useState([])
+    const [clusters, setClusters] = useState([]);
+    const [teamClusters, setTeamClusters] = useState([]);
 
     const [statusMessage, setStatusMessage] = useState("");
     const [statusType, setStatusType] = useState("success");
+    const [savingSettings, setSavingSettings] = useState(false);
 
 
 
     const getTeamUsers = useCallback(async () => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${teamId}`);
         const data = await res.json();
-        setTeamUsers(data.body);
+        setTeamUsers(data.body)
     }, [teamId]);
 
     useEffect(() => {
@@ -185,10 +188,12 @@ export default function TeamSettingsPage() {
             getTeamUsers()
             
 
-            // showStatus("User added to team.", "success");
+            setStatusMessage("User added to team.");
+            setStatusType("success");
         } catch (err) {
             console.error(err);
-            // showStatus("Failed to add user to team.", "error");
+            setStatusMessage("Failed to add user to team.");
+            setStatusType("error");
         }
     };
 
@@ -243,15 +248,65 @@ export default function TeamSettingsPage() {
 
             setSelectedClusterId("");
 
-            await Promise.all([
-                getTeamClusters(),
-                getClusters(),
-                loadAllClusters(),
-            ]);
-            // showStatus("User added to team.", "success");
+            setStatusMessage("Cluster added to team.");
+            setStatusType("success");
         } catch (err) {
             console.error(err);
-            // showStatus("Failed to add user to team.", "error");
+            setStatusMessage("Failed to add cluster to team.");
+            setStatusType("error");
+        }
+    };
+
+    const handleSaveSettings = async () => {
+        if (!teamId) return;
+
+        try {
+            setSavingSettings(true);
+            setStatusMessage("");
+
+            if (clustersPerDay < 0) {
+                setStatusMessage("Can't set clusters per day to zero.");
+                setStatusType("error");
+                return;
+            } else if (clustersPerDay === team.clusters_per_day) {
+                setStatusMessage("There's no changes made to settings to save.");
+                setStatusType("error");
+                return;
+            }
+
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/teams`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        id: teamId,
+                        clusters_per_day: clustersPerDay,
+                    }),
+                }
+            );
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.message || "Failed to update settings");
+            }
+
+            setTeam((prev) => ({
+                ...prev,
+                clusters_per_day: clustersPerDay,
+            }));
+
+            setStatusMessage("Settings updated successfully.");
+            setStatusType("success");
+        } catch (err) {
+            console.error(err);
+            setStatusMessage("Failed to save settings.");
+            setStatusType("error");
+        } finally {
+            setSavingSettings(false);
         }
     };
 
@@ -471,6 +526,45 @@ export default function TeamSettingsPage() {
                                     )}
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* SETTINGS SECTION */}
+                    <div className="mt-6 rounded-2xl border border-purple-400/20 bg-purple-500/10 p-6">
+                        <div className="mb-3 text-4xl">⚙️</div>
+
+                        <h2 className="mb-2 text-2xl font-bold text-white">
+                            Settings
+                        </h2>
+
+                        <p className="mb-4 text-sm text-slate-300">
+                            Team configuration options.
+                        </p>
+
+                        <div className="flex flex-col gap-3">
+                            <label className="text-sm text-slate-300">
+                                Clusters per day
+                            </label>
+
+                            <input
+                                type="number"
+                                value={clustersPerDay}
+                                onChange={(e) => setClustersPerDay(Number(e.target.value))}
+                                min={1}
+                                className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-3 py-3 text-white outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
+                            />
+                        </div>
+
+                        {/* optional future button hook */}
+                        <div className="mt-5 flex justify-end">
+                            <button
+                                type="button"
+                                onClick={handleSaveSettings}
+                                disabled={savingSettings}
+                                className="rounded-xl bg-purple-600 px-5 py-3 font-semibold text-white transition hover:bg-purple-500 disabled:opacity-50"
+                            >
+                                {savingSettings ? "Saving..." : "Save"}
+                            </button>
                         </div>
                     </div>
 

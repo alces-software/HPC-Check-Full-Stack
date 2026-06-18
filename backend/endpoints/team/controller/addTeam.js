@@ -37,7 +37,8 @@ module.exports = (db) => {
          // Add team to database
          await db.collection('team')
             .insertOne({
-               name: sanitizedName
+               name: sanitizedName,
+               clusters_per_day: 1
             });
 
          return res.status(200).json({ success: true });
