@@ -314,7 +314,7 @@ export default function Schedule() {
                         </div>
 
                         {/* Options */}
-                        <div className="space-y-2 max-h-56 overflow-auto pr-2">
+                        <div className="space-y-2 max-h-56 overflow-auto p-2">
                             {swapTarget.options
                                 .filter((p) => p.id !== swapTarget.personId)
                                 .map((p) => (
