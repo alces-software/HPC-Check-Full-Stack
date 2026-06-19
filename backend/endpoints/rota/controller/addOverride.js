@@ -40,30 +40,43 @@ module.exports = (db) => {
                 return res.status(400).json({ success: false, error: 'Replacement person must be in the same team' });
             }
 
-            const scheduleOnDate = await getDaily(db, overrideDate);
-            const scheduledForPerson = personId in scheduleOnDate;
+            const overrides = db.collection('scheduleOverride');
 
-            if (!scheduledForPerson) {
-                return res.status(404).json({ success: false, error: 'Person is not scheduled on that date' });
+            const existingOverride = await overrides.findOne({
+                date: overrideDate,
+                newPersonId: personId
+            });
+
+            const originalPersonId = existingOverride
+                ? existingOverride.personId
+                : personId;
+
+            const scheduleOnDate = await getDaily(db, overrideDate);
+
+            if (!(personId in scheduleOnDate)) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Person is not scheduled on that date'
+                });
             }
 
+            await overrides.deleteMany({
+                date: overrideDate,
+                $or: [
+                    { personId: originalPersonId },
+                    { newPersonId: originalPersonId },
+                    { personId: newPersonId },
+                    { newPersonId: newPersonId }
+                ]
+            });
+
             const overrideDoc = {
-                personId,
+                personId: originalPersonId,
                 newPersonId,
                 date: overrideDate
             };
 
-            await db.collection('scheduleOverride').deleteMany({
-                date: overrideDate,
-                $or: [
-                    { personId },
-                    { newPersonId },
-                    { personId: newPersonId },
-                    { newPersonId: personId }
-                ]
-            });
-
-            await db.collection('scheduleOverride').insertOne(overrideDoc);
+            await overrides.insertOne(overrideDoc);
 
             return res.status(200).json({ success: true, body: overrideDoc });
         } catch (error) {
