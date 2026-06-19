@@ -25,14 +25,15 @@ module.exports = (db) => {
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'The team id provided was invalid' })
+            return res
+               .status(400)
+               .json({ success: false, error: 'The team id provided was invalid' });
          }
 
-         // Check team exists 
-         const teamExists = await db.collection('team')
-            .findOne({
-               _id: new ObjectId(sanitizedId)
-            });
+         // Check team exists
+         const teamExists = await db.collection('team').findOne({
+            _id: new ObjectId(sanitizedId),
+         });
 
          if (!teamExists) {
             return res.status(404).json({ success: false, error: 'No team exists with that id' });
@@ -41,11 +42,8 @@ module.exports = (db) => {
          // Check updates
          const updates = Object.fromEntries(
             Object.entries(rest)
-               .filter(([_, v]) => v != null)
-               .map(([k, v]) => [
-                  k,
-                  typeof v === "string" ? v.trim() : v
-               ])
+               .filter(([, v]) => v != null)
+               .map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v]),
          );
 
          if (Object.keys(updates).length === 0) {
@@ -53,11 +51,9 @@ module.exports = (db) => {
          }
 
          // Updates values in the database
-         await db.collection('team')
-            .updateOne(
-               { _id: new ObjectId(sanitizedId) },
-               { $set: updates }
-            );
+         await db
+            .collection('team')
+            .updateOne({ _id: new ObjectId(sanitizedId) }, { $set: updates });
 
          return res.status(200).json({ success: true });
       } catch (error) {

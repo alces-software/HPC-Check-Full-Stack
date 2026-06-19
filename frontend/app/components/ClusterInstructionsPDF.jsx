@@ -203,11 +203,11 @@ const styles = StyleSheet.create({
     color: "#e2e8f0",
     padding: 8,
     borderRadius: 4,
-    
+
     fontSize: 10,
     marginLeft: 30,
-     marginTop: 8,
-  marginBottom: 10,
+    marginTop: 8,
+    marginBottom: 10,
 
 
     lineHeight: 1.5,
@@ -248,7 +248,7 @@ function MarkdownText({ children }) {
         if (token.type === "code") {
           return (
             <Text key={index} style={styles.markdownCode}>
-               {`\n${token.text}\n`}
+              {`\n${token.text}\n`}
             </Text>
           );
         }

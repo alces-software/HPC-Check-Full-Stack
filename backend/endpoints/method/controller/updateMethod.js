@@ -15,46 +15,45 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: "Missing method id" });
+            return res.status(400).json({ success: false, error: 'Missing method id' });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The method id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The method id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid method id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid method id provided' });
          }
 
          // Check content
          if (!content) {
-            return res.status(400).json({ success: false, error: "Missing method content" });
+            return res.status(400).json({ success: false, error: 'Missing method content' });
          }
 
          const sanitizedContent = String(content).trim();
 
          if (sanitizedContent.length == 0) {
-            return res.status(400).json({ success: false, error: "The content provided is empty" });
+            return res.status(400).json({ success: false, error: 'The content provided is empty' });
          }
 
          // Make sure the method is in the database
-         const method = await db.collection('method')
-            .findOne({
-               _id: new ObjectId(sanitizedId)
-            });
+         const method = await db.collection('method').findOne({
+            _id: new ObjectId(sanitizedId),
+         });
 
          if (!method) {
-            return res.status(404).json({ success: false, error: "No method found with that id" });
+            return res.status(404).json({ success: false, error: 'No method found with that id' });
          }
 
          // Update the method in the database
-         await db.collection('method')
-            .updateOne(
-               { _id: new ObjectId(sanitizedId) },
-               { $set: { content: sanitizedContent } }
-            );
+         await db
+            .collection('method')
+            .updateOne({ _id: new ObjectId(sanitizedId) }, { $set: { content: sanitizedContent } });
 
          return res.status(200).json({ success: true });
       } catch (error) {

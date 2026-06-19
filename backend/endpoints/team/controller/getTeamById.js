@@ -25,14 +25,13 @@ module.exports = (db) => {
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid team id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
          }
 
          // Get the team
-         const results = await db.collection('team')
-            .findOne({
-               _id: new ObjectId(sanitizedId)
-            });
+         const results = await db.collection('team').findOne({
+            _id: new ObjectId(sanitizedId),
+         });
 
          if (!results) {
             return res.status(404).json({ success: false, error: "Team doesn't exist" });
@@ -40,11 +39,12 @@ module.exports = (db) => {
 
          // Return the team information
          return res.status(200).json({
-            success: true, body: {
+            success: true,
+            body: {
                id: sanitizedId,
                name: results.name,
-               clusters_per_day: results.clusters_per_day
-            }
+               clusters_per_day: results.clusters_per_day,
+            },
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

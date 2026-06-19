@@ -15,24 +15,27 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: "Missing method id" });
+            return res.status(400).json({ success: false, error: 'Missing method id' });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The method id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The method id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "The method is provided is invalid" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The method is provided is invalid' });
          }
 
          // Delete from the database
-         await db.collection('method')
-            .findOneAndDelete({
-               _id: new ObjectId(sanitizedId)
-            });
+         await db.collection('method').findOneAndDelete({
+            _id: new ObjectId(sanitizedId),
+         });
 
          return res.status(200).json({ success: true });
       } catch (error) {

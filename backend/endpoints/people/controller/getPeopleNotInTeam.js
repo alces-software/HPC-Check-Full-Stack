@@ -25,20 +25,21 @@ module.exports = (db) => {
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid team id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
          }
 
          // Get the people
-         const response = await db.collection('person')
+         const response = await db
+            .collection('person')
             .find({
-               teamId: { $ne: sanitizedId }
+               teamId: { $ne: sanitizedId },
             })
             .toArray()
-            .then(res => res
-               .map(({ _id, ...rest }) => ({
+            .then((res) =>
+               res.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
-                  ...rest
-               }))
+                  ...rest,
+               })),
             );
 
          return res.status(200).json({ success: true, body: response });

@@ -19,39 +19,43 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: "Missing cluster id" });
+            return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }
 
          const sanitizedClusterId = String(id).trim();
 
          if (sanitizedClusterId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedClusterId)) {
-            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
          }
 
          // Get people
-         const people = await db.collection('person')
+         const people = await db
+            .collection('person')
             .find({})
             .toArray()
-            .then(res => res
-               .map(data => ({
+            .then((res) =>
+               res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name
-               }))
+                  name: data.name,
+               })),
             );
 
          // Get clusters
-         const cluster = await db.collection('cluster')
+         const cluster = await db
+            .collection('cluster')
             .find({})
             .toArray()
-            .then(res => res
-               .map(data => ({
+            .then((res) =>
+               res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name
-               }))
+                  name: data.name,
+               })),
             );
 
          let query;
@@ -66,10 +70,10 @@ module.exports = (db) => {
             query = {
                startDate: {
                   $gte: start.getTime(),
-                  $lte: end.getTime()
+                  $lte: end.getTime(),
                },
-               clusterId: sanitizedClusterId
-            }
+               clusterId: sanitizedClusterId,
+            };
          } else {
             query = { clusterId: sanitizedClusterId };
          }
@@ -77,12 +81,13 @@ module.exports = (db) => {
          // Get report count while also getting the data
          const [total, data] = await Promise.all([
             db.collection('report').countDocuments(query),
-            db.collection('report')
+            db
+               .collection('report')
                .find(query)
                .sort({ startDate: -1 })
                .skip(skip)
                .limit(limit)
-               .toArray()
+               .toArray(),
          ]);
 
          const totalPages = Math.ceil(total / limit);
@@ -91,9 +96,9 @@ module.exports = (db) => {
             success: true,
             body: data.map(({ _id, ...rest }) => ({
                id: _id.toString(),
-               person: people.find(p => p.id === rest.personId)?.name,
-               cluster: cluster.find(c => c.id == rest.clusterId)?.name,
-               ...rest
+               person: people.find((p) => p.id === rest.personId)?.name,
+               cluster: cluster.find((c) => c.id == rest.clusterId)?.name,
+               ...rest,
             })),
             pagination: {
                total,
@@ -101,8 +106,8 @@ module.exports = (db) => {
                limit,
                totalPages,
                hasNextPage: page < totalPages,
-               hasPrevPage: page > 1
-            }
+               hasPrevPage: page > 1,
+            },
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

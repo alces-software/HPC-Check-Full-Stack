@@ -15,39 +15,43 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: "Missing cluster id" });
+            return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }
 
          const sanitisedId = String(id).trim();
 
          if (sanitisedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitisedId)) {
-            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
          }
 
          // Gets people
-         const people = await db.collection('person')
+         const people = await db
+            .collection('person')
             .find({})
             .toArray()
-            .then(res => res
-               .map(data => ({
+            .then((res) =>
+               res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name
-               }))
+                  name: data.name,
+               })),
             );
 
          // Gets clusters
-         const cluster = await db.collection('cluster')
+         const cluster = await db
+            .collection('cluster')
             .find({})
             .toArray()
-            .then(res => res
-               .map(data => ({
+            .then((res) =>
+               res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name
-               }))
+                  name: data.name,
+               })),
             );
 
          // Gets all the reports for the cluster from today
@@ -57,22 +61,23 @@ module.exports = (db) => {
          const endOfDay = new Date();
          endOfDay.setHours(23, 59, 59, 999);
 
-         const response = await db.collection('report')
+         const response = await db
+            .collection('report')
             .find({
                clusterId: sanitisedId,
                startDate: {
                   $gte: startOfDay.getTime(),
-                  $lte: endOfDay.getTime()
-               }
+                  $lte: endOfDay.getTime(),
+               },
             })
             .toArray()
-            .then(res => res
-               .map(({ _id, ...rest }) => ({
+            .then((res) =>
+               res.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
-                  person: people.find(p => p.id === rest.personId)?.name,
-                  cluster: cluster.find(c => c.id === rest.clusterId)?.name,
-                  ...rest
-               }))
+                  person: people.find((p) => p.id === rest.personId)?.name,
+                  cluster: cluster.find((c) => c.id === rest.clusterId)?.name,
+                  ...rest,
+               })),
             );
 
          return res.status(200).json({ success: true, body: response });

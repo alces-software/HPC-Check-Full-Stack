@@ -371,16 +371,16 @@ export default function Form() {
                             </div>
                           ) : (
                             <>
-                            <div className="flex gap-3">
+                              <div className="flex gap-3">
 
-                             <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-xs font-semibold text-blue-300">
-                                    {i + 1}
-                                  </span>
+                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-xs font-semibold text-blue-300">
+                                  {i + 1}
+                                </span>
 
-                            <div className="prose prose-invert max-w-none">
-                              <ReactMarkdown>{method.content}</ReactMarkdown>
-                            </div>
-                            </div>
+                                <div className="prose prose-invert max-w-none">
+                                  <ReactMarkdown>{method.content}</ReactMarkdown>
+                                </div>
+                              </div>
                             </>
                           )}
 

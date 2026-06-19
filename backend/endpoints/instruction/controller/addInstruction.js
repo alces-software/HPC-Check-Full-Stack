@@ -32,7 +32,9 @@ module.exports = (db) => {
          const sanitizedExpectedTime = String(expectedTime).trim();
 
          if (sanitizedExpectedTime.length == 0) {
-            return res.status(400).json({ success: false, error: 'The expected time provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The expected time provided is empty' });
          }
 
          // Check description
@@ -43,7 +45,9 @@ module.exports = (db) => {
          const sanitizedDescription = String(description).trim();
 
          if (sanitizedDescription.length == 0) {
-            return res.status(400).json({ success: false, error: 'The descriptions provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The descriptions provided is empty' });
          }
 
          // Check cluster id
@@ -54,7 +58,9 @@ module.exports = (db) => {
          const sanitizedClusterId = String(clusterId).trim();
 
          if (sanitizedClusterId.length == 0) {
-            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedClusterId)) {
@@ -84,25 +90,25 @@ module.exports = (db) => {
          }
 
          // Check if cluster exists
-         const clusterExists = await db.collection('cluster')
-            .findOne({
-               _id: new ObjectId(sanitizedClusterId)
-            });
+         const clusterExists = await db.collection('cluster').findOne({
+            _id: new ObjectId(sanitizedClusterId),
+         });
 
          if (!clusterExists) {
-            return res.status(404).json({ success: false, error: "The cluster specified does not exits" });
+            return res
+               .status(404)
+               .json({ success: false, error: 'The cluster specified does not exits' });
          }
 
          // Add to database
-         await db.collection('instruction')
-            .insertOne({
-               title: sanitizedTitle,
-               expectedTime: sanitizedExpectedTime,
-               description: sanitizedDescription,
-               clusterId: sanitizedClusterId,
-               good: sanitizedGood,
-               bad: sanitizedBad
-            });
+         await db.collection('instruction').insertOne({
+            title: sanitizedTitle,
+            expectedTime: sanitizedExpectedTime,
+            description: sanitizedDescription,
+            clusterId: sanitizedClusterId,
+            good: sanitizedGood,
+            bad: sanitizedBad,
+         });
 
          return res.status(200).json({ success: true });
       } catch (error) {

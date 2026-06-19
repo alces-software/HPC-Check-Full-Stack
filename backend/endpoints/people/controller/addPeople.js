@@ -19,27 +19,25 @@ module.exports = (db) => {
          const sanitizedName = String(name).trim();
 
          if (sanitizedName.length === 0) {
-            return res.status(400).json({ success: false, error: "The name provided is empty" });
+            return res.status(400).json({ success: false, error: 'The name provided is empty' });
          }
 
          // Make sure the person exists
-         const existingPerson = await db.collection('person')
-            .findOne({
-               name: {
-                  $regex: `^${sanitizedName}$`,
-                  $options: 'i'
-               }
-            });
+         const existingPerson = await db.collection('person').findOne({
+            name: {
+               $regex: `^${sanitizedName}$`,
+               $options: 'i',
+            },
+         });
 
          if (existingPerson) {
             return res.status(409).json({ success: false, error: 'Person already exits' });
          }
 
          // Add person to the database
-         await db.collection('person')
-            .insertOne({
-               name: sanitizedName
-            });
+         await db.collection('person').insertOne({
+            name: sanitizedName,
+         });
 
          return res.status(200).json({ success: true });
       } catch (error) {

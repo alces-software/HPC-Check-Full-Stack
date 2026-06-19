@@ -172,27 +172,24 @@ export default function Schedule() {
                         return (
                             <div
                                 key={dayKey}
-                                className={`overflow-hidden rounded-2xl border ${
-                                    isToday
+                                className={`overflow-hidden rounded-2xl border ${isToday
                                         ? "border-green-400/40 bg-green-500/10"
                                         : "border-white/10 bg-white/5"
-                                }`}
+                                    }`}
                             >
                                 {/* Day header */}
                                 <div
-                                    className={`flex items-center justify-between px-6 py-4 ${
-                                        isToday
+                                    className={`flex items-center justify-between px-6 py-4 ${isToday
                                             ? "bg-green-500/20"
                                             : "bg-slate-800/50"
-                                    }`}
+                                        }`}
                                 >
                                     <div>
                                         <h2
-                                            className={`text-lg font-semibold ${
-                                                isToday
+                                            className={`text-lg font-semibold ${isToday
                                                     ? "text-green-300"
                                                     : "text-white"
-                                            }`}
+                                                }`}
                                         >
                                             {dayLabel}
                                         </h2>
@@ -225,11 +222,10 @@ export default function Schedule() {
                                                 return (
                                                     <div
                                                         key={person.id}
-                                                        className={`grid gap-4 px-6 py-4 md:grid-cols-[200px_1fr] ${
-                                                            index !== arr.length - 1
+                                                        className={`grid gap-4 px-6 py-4 md:grid-cols-[200px_1fr] ${index !== arr.length - 1
                                                                 ? "border-b border-white/10"
                                                                 : ""
-                                                        }`}
+                                                            }`}
                                                     >
                                                         <div className="flex items-center justify-between font-semibold text-white">
                                                             {name}
@@ -327,11 +323,10 @@ export default function Schedule() {
                                     <div
                                         key={p.id}
                                         onClick={() => setSelectedSwapPerson(p)}
-                                        className={`cursor-pointer rounded-2xl border px-4 py-3 transition-all duration-200 ${
-                                            selectedSwapPerson?.id === p.id
+                                        className={`cursor-pointer rounded-2xl border px-4 py-3 transition-all duration-200 ${selectedSwapPerson?.id === p.id
                                                 ? "border-green-400 bg-green-500/20 scale-[1.02]"
                                                 : "border-white/10 bg-white/5 hover:bg-white/10"
-                                        }`}
+                                            }`}
                                     >
                                         <div className="font-semibold text-white">
                                             {p.name}
@@ -358,11 +353,10 @@ export default function Schedule() {
                             <button
                                 disabled={!selectedSwapPerson}
                                 onClick={() => swapPerson(selectedSwapPerson.id)}
-                                className={`flex-1 rounded-xl py-3 font-bold transition ${
-                                    selectedSwapPerson
+                                className={`flex-1 rounded-xl py-3 font-bold transition ${selectedSwapPerson
                                         ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:scale-[1.02]"
                                         : "bg-white/10 text-white/40 cursor-not-allowed"
-                                }`}
+                                    }`}
                             >
                                 Confirm Swap
                             </button>

@@ -1,299 +1,252 @@
 [
-  {
-    "name": "scheduleHistory",
-    "validator": {
-      "$jsonSchema": {
-        "bsonType": "object",
-        "required": [
-          "_id",
-          "clusterId",
-          "personId",
-          "day"
-        ],
-        "properties": {
-          "_id": {
-            "bsonType": "objectId"
-          },
-          "clusterId": {
-            "bsonType": "string"
-          },
-          "personId": {
-            "bsonType": "string"
-          },
-          "day": {
-            "bsonType": "int"
-          }
-        }
-      }
-    },
-    "validationLevel": "moderate",
-    "validationAction": "error"
-  },
-  {
-    "name": "closedDay",
-    "validator": {
-      "$jsonSchema": {
-        "bsonType": "object",
-        "required": [
-          "_id",
-          "day"
-        ],
-        "properties": {
-          "_id": {
-            "bsonType": "objectId"
-          },
-          "day": {
-            "bsonType": "date"
-          }
-        }
-      }
-    },
-    "validationLevel": "moderate",
-    "validationAction": "error"
-  },
-  {
-    "name": "scheduleOverride",
-    "validator": {
-      "$jsonSchema": {
-        "bsonType": "object",
-        "required": [
-          "_id",
-          "personId",
-          "newPersonId",
-          "date"
-        ],
-        "properties": {
-          "_id": {
-            "bsonType": "objectId"
-          },
-          "personId": {
-            "bsonType": "string"
-          },
-          "newPersonId": {
-            "bsonType": "string"
-          },
-          "date": {
-            "bsonType": "date"
-          }
-        }
-      }
-    },
-    "validationLevel": "moderate",
-    "validationAction": "error"
-  },
-  {
-    "name": "instruction",
-    "validator": {
-      "$jsonSchema": {
-        "bsonType": "object",
-        "required": [
-          "_id",
-          "bad",
-          "clusterId",
-          "description",
-          "expectedTime",
-          "good",
-          "title"
-        ],
-        "properties": {
-          "_id": {
-            "bsonType": "objectId"
-          },
-          "bad": {
-            "bsonType": "string"
-          },
-          "clusterId": {
-            "bsonType": "string"
-          },
-          "description": {
-            "bsonType": "string"
-          },
-          "expectedTime": {
-            "bsonType": "string"
-          },
-          "good": {
-            "bsonType": "string"
-          },
-          "title": {
-            "bsonType": "string"
-          }
-        }
-      }
-    },
-    "validationLevel": "moderate",
-    "validationAction": "error"
-  },
-  {
-    "name": "cluster",
-    "validator": {
-      "$jsonSchema": {
-        "bsonType": "object",
-        "required": [
-          "_id",
-          "name"
-        ],
-        "properties": {
-          "_id": {
-            "bsonType": "objectId"
-          },
-          "name": {
-            "bsonType": "string"
-          },
-          "teamId": {
-            "bsonType": "string"
-          }
-        }
-      }
-    },
-    "validationLevel": "moderate",
-    "validationAction": "error"
-  },
-  {
-    "name": "person",
-    "validator": {
-      "$jsonSchema": {
-        "bsonType": "object",
-        "required": [
-          "_id",
-          "name",
-          "teamId"
-        ],
-        "properties": {
-          "_id": {
-            "bsonType": "objectId"
-          },
-          "name": {
-            "bsonType": "string"
-          },
-          "team": {
-            "bsonType": "string"
-          }
-        }
-      }
-    },
-    "validationLevel": "moderate",
-    "validationAction": "error"
-  },
-  {
-    "name": "method",
-    "validator": {
-      "$jsonSchema": {
-        "bsonType": "object",
-        "required": [
-          "_id",
-          "content",
-          "instructionId"
-        ],
-        "properties": {
-          "_id": {
-            "bsonType": "objectId"
-          },
-          "content": {
-            "bsonType": "string"
-          },
-          "instructionId": {
-            "bsonType": "string"
-          }
-        }
-      }
-    },
-    "validationLevel": "moderate",
-    "validationAction": "error"
-  },
-  {
-    "name": "result",
-    "validator": {
-      "$jsonSchema": {
-        "bsonType": "object",
-        "required": [
-          "_id",
-          "instructionId",
-          "note",
-          "passed",
-          "reportId"
-        ],
-        "properties": {
-          "_id": {
-            "bsonType": "objectId"
-          },
-          "instructionId": {
-            "bsonType": "string"
-          },
-          "note": {
-            "bsonType": "string"
-          },
-          "passed": {
-            "bsonType": "bool"
-          },
-          "reportId": {
-            "bsonType": "string"
-          }
-        }
-      }
-    },
-    "validationLevel": "moderate",
-    "validationAction": "error"
-  },
-  {
-    "name": "report",
-    "validator": {
-      "$jsonSchema": {
-        "bsonType": "object",
-        "required": [
-          "_id",
-          "clusterId",
-          "endDate",
-          "personId",
-          "startDate"
-        ],
-        "properties": {
-          "_id": {
-            "bsonType": "objectId"
-          },
-          "clusterId": {
-            "bsonType": "string"
-          },
-          "endDate": {
-            "bsonType": "long"
-          },
-          "personId": {
-            "bsonType": "string"
-          },
-          "startDate": {
-            "bsonType": "long"
-          },
-          "passed": {
-            "bsonType": "bool"
-          }
-        }
-      }
-    },
-    "validationLevel": "moderate",
-    "validationAction": "error"
-  },
-  {
-    "name": "team",
-    "validator": {
-      "$jsonSchema": {
-        "bsonType": "object",
-        "required": [
-          "_id",
-          "name"
-        ],
-        "properties": {
-          "_id": {
-            "bsonType": "objectId"
-          },
-          "name": {
-            "bsonType": "string"
-          },
-          "clusters_per_day": {
-            "bsonType": "int"
-          }
-        }
-      }
-    },
-    "validationLevel": "moderate",
-    "validationAction": "error"
-  }
+   {
+      "name": "scheduleHistory",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "clusterId", "personId", "day"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "clusterId": {
+                  "bsonType": "string"
+               },
+               "personId": {
+                  "bsonType": "string"
+               },
+               "day": {
+                  "bsonType": "int"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "closedDay",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "day"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "day": {
+                  "bsonType": "date"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "scheduleOverride",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "personId", "newPersonId", "date"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "personId": {
+                  "bsonType": "string"
+               },
+               "newPersonId": {
+                  "bsonType": "string"
+               },
+               "date": {
+                  "bsonType": "date"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "instruction",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "bad", "clusterId", "description", "expectedTime", "good", "title"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "bad": {
+                  "bsonType": "string"
+               },
+               "clusterId": {
+                  "bsonType": "string"
+               },
+               "description": {
+                  "bsonType": "string"
+               },
+               "expectedTime": {
+                  "bsonType": "string"
+               },
+               "good": {
+                  "bsonType": "string"
+               },
+               "title": {
+                  "bsonType": "string"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "cluster",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "name"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "name": {
+                  "bsonType": "string"
+               },
+               "teamId": {
+                  "bsonType": "string"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "person",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "name", "teamId"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "name": {
+                  "bsonType": "string"
+               },
+               "team": {
+                  "bsonType": "string"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "method",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "content", "instructionId"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "content": {
+                  "bsonType": "string"
+               },
+               "instructionId": {
+                  "bsonType": "string"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "result",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "instructionId", "note", "passed", "reportId"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "instructionId": {
+                  "bsonType": "string"
+               },
+               "note": {
+                  "bsonType": "string"
+               },
+               "passed": {
+                  "bsonType": "bool"
+               },
+               "reportId": {
+                  "bsonType": "string"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "report",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "clusterId", "endDate", "personId", "startDate"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "clusterId": {
+                  "bsonType": "string"
+               },
+               "endDate": {
+                  "bsonType": "long"
+               },
+               "personId": {
+                  "bsonType": "string"
+               },
+               "startDate": {
+                  "bsonType": "long"
+               },
+               "passed": {
+                  "bsonType": "bool"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "team",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "name"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "name": {
+                  "bsonType": "string"
+               },
+               "clusters_per_day": {
+                  "bsonType": "int"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   }
 ]

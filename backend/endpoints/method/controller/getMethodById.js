@@ -21,21 +21,22 @@ module.exports = (db) => {
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The method id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The method id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid method id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid method id provided' });
          }
 
          // Get methods
-         const response = await db.collection('method')
-            .findOne({
-               _id: new ObjectId(sanitizedId)
-            });
+         const response = await db.collection('method').findOne({
+            _id: new ObjectId(sanitizedId),
+         });
 
          if (!response) {
-            return res.status(409).json({ success: false, error: 'Method does\'t exist' });
+            return res.status(409).json({ success: false, error: "Method does't exist" });
          }
 
          response.id = sanitizedId;

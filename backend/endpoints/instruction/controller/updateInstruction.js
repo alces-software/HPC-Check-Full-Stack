@@ -31,11 +31,8 @@ module.exports = (db) => {
          // Check updates
          const updates = Object.fromEntries(
             Object.entries(rest)
-               .filter(([_, v]) => v != null)
-               .map(([k, v]) => [
-                  k,
-                  typeof v === "string" ? v.trim() : v
-               ])
+               .filter(([, v]) => v != null)
+               .map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v]),
          );
 
          if (Object.keys(updates).length === 0) {
@@ -43,11 +40,9 @@ module.exports = (db) => {
          }
 
          // Updates values in the database
-         await db.collection('instruction')
-            .updateOne(
-               { _id: new ObjectId(sanitizedId) },
-               { $set: updates }
-            );
+         await db
+            .collection('instruction')
+            .updateOne({ _id: new ObjectId(sanitizedId) }, { $set: updates });
 
          return res.status(200).json({ success: true });
       } catch (error) {

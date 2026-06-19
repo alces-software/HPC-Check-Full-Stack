@@ -15,46 +15,50 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: "Missing instruction id" });
+            return res.status(400).json({ success: false, error: 'Missing instruction id' });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The instruction id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The instruction id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid instruction id provided" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'Invalid instruction id provided' });
          }
 
          // Check content
          if (!content) {
-            return res.status(400).json({ success: false, error: "Missing method content" });
+            return res.status(400).json({ success: false, error: 'Missing method content' });
          }
 
          const sanitizedContent = String(content).trim();
 
          if (sanitizedContent.length == 0) {
-            return res.status(400).json({ success: false, error: "The content provided is empty" });
+            return res.status(400).json({ success: false, error: 'The content provided is empty' });
          }
 
          // Check if instruction exists
-         const instructionExists = await db.collection('instruction')
-            .findOne({
-               _id: new ObjectId(sanitizedId)
-            });
+         const instructionExists = await db.collection('instruction').findOne({
+            _id: new ObjectId(sanitizedId),
+         });
 
          if (!instructionExists) {
-            return res.status(404).json({ success: false, error: "An instruction with that id doesn't exist" });
+            return res
+               .status(404)
+               .json({ success: false, error: "An instruction with that id doesn't exist" });
          }
 
          // Add to database
-         await db.collection('method')
-            .insertOne({
-               instructionId: sanitizedId,
-               content: sanitizedContent
-            });
+         await db.collection('method').insertOne({
+            instructionId: sanitizedId,
+            content: sanitizedContent,
+         });
 
          return res.status(200).json({ success: true });
       } catch (error) {

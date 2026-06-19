@@ -21,32 +21,34 @@ module.exports = (db) => {
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
          }
 
          // Get the cluster
-         const results = await db.collection('cluster')
-            .findOne({
-               _id: new ObjectId(sanitizedId)
-            });
+         const results = await db.collection('cluster').findOne({
+            _id: new ObjectId(sanitizedId),
+         });
 
          if (!results) {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
          }
 
          return res.status(200).json({
-            success: true, body: {
+            success: true,
+            body: {
                id: sanitizedId,
                name: results.name,
-               teamId: results.teamId
-            }
+               teamId: results.teamId,
+            },
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
-   }
+   };
 };

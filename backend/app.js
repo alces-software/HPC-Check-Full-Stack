@@ -6,7 +6,6 @@ const { Database } = require('./db/db');
 const { seedData } = require('./scripts/testData');
 const Scheduler = require('./schedule/scheduler');
 
-
 (async () => {
    const app = express();
 
@@ -14,20 +13,17 @@ const Scheduler = require('./schedule/scheduler');
    app.use(express.json());
 
    // Connect to database
-   const databaseObject = new Database(
-      process.env.MONGO_URI,
-      process.env.MONGO_DATABASE
-   );
+   const databaseObject = new Database(process.env.MONGO_URI, process.env.MONGO_DATABASE);
 
    let databaseConnection = await databaseObject.connect();
-   if (!await databaseObject.validate()) {
+   if (!(await databaseObject.validate())) {
       await databaseObject.generateDb();
       await seedData(databaseConnection);
    }
 
    await Scheduler.populateClosedDays(databaseConnection);
 
-   console.log("Connected to database");
+   console.log('Connected to database');
 
    // Register rota routes
    app.use('/', await require('./endpoints/rota/routes')(databaseConnection));

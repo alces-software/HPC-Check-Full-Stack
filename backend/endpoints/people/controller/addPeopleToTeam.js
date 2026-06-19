@@ -12,43 +12,46 @@ module.exports = (db) => {
    return async (req, res) => {
       try {
          const { id } = req.params || {};
-         const { teamId } = req.body || {}
+         const { teamId } = req.body || {};
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing person\'s id' });
+            return res.status(400).json({ success: false, error: "Missing person's id" });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The person\'s id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: "The person's id provided is empty" });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid person id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid person id provided' });
          }
 
          // Check team id
          if (!teamId) {
-            return res.status(400).json({ success: false, error: 'Missing team\'s id' });
+            return res.status(400).json({ success: false, error: "Missing team's id" });
          }
 
          const sanitizedTeamId = String(teamId).trim();
 
          if (sanitizedTeamId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The team\'s id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: "The team's id provided is empty" });
          }
 
          if (!ObjectId.isValid(sanitizedTeamId)) {
-            return res.status(400).json({ success: false, error: "Invalid team id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
          }
 
          //  Check if the person exists
-         const personExists = await db.collection('person')
-            .findOne({
-               _id: new ObjectId(sanitizedId)
-            });
+         const personExists = await db.collection('person').findOne({
+            _id: new ObjectId(sanitizedId),
+         });
 
          if (!personExists) {
             return res.status(404).json({ success: false, error: "Person doesn't exist" });
@@ -56,32 +59,32 @@ module.exports = (db) => {
 
          // Check if clusters current team wont be left without clusters
          if (personExists.teamId) {
-            const cluster_count = await db.collection('cluster')
-               .countDocuments({
-                  teamId: personExists.teamId
-               });
+            const cluster_count = await db.collection('cluster').countDocuments({
+               teamId: personExists.teamId,
+            });
 
             if (cluster_count <= 1) {
-               return res.status(422).json({ success: false, error: "Can't remove person as the team would be left without a person" });
+               return res.status(422).json({
+                  success: false,
+                  error: "Can't remove person as the team would be left without a person",
+               });
             }
          }
 
          // Check if the team exists
-         const teamExists = await db.collection('team')
-            .findOne({
-               _id: new ObjectId(sanitizedTeamId)
-            });
+         const teamExists = await db.collection('team').findOne({
+            _id: new ObjectId(sanitizedTeamId),
+         });
 
          if (!teamExists) {
             return res.status(404).json({ success: false, error: "Team doesn't exist" });
          }
 
          // Update the person in the database
-         db.collection('person')
-            .updateOne(
-               { _id: new ObjectId(sanitizedId) },
-               { $set: { teamId: sanitizedTeamId } }
-            );
+         db.collection('person').updateOne(
+            { _id: new ObjectId(sanitizedId) },
+            { $set: { teamId: sanitizedTeamId } },
+         );
 
          return res.status(200).json({ success: true });
       } catch (error) {

@@ -21,21 +21,24 @@ module.exports = (db) => {
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The instruction id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The instruction id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid instruction id provided" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'Invalid instruction id provided' });
          }
 
          // Get the instruction
-         const response = await db.collection('instruction')
-            .findOne({
-               _id: new ObjectId(sanitizedId)
-            });
+         const response = await db.collection('instruction').findOne({
+            _id: new ObjectId(sanitizedId),
+         });
 
          if (!response) {
-            return res.status(409).json({ success: false, error: 'Instruction does\'t exist' });
+            return res.status(409).json({ success: false, error: "Instruction does't exist" });
          }
 
          response.id = response._id.toString();
@@ -43,19 +46,20 @@ module.exports = (db) => {
          response.methods = [];
 
          // Get methods for the instruction
-         const methods = await db.collection('method')
+         const methods = await db
+            .collection('method')
             .find({
-               instructionId: response.id
+               instructionId: response.id,
             })
             .toArray()
-            .then(result => result
-               .map(({ _id, ...rest }) => ({
+            .then((result) =>
+               result.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
-                  ...rest
-               }))
+                  ...rest,
+               })),
             );
 
-         methods.forEach(m => {
+         methods.forEach((m) => {
             const methodData = m;
             methodData.id = m.id;
             delete methodData._id;

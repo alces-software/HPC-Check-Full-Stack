@@ -9,15 +9,16 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const response = await db.collection('team')
+         const response = await db
+            .collection('team')
             .find({})
             .toArray()
-            .then(res => res
-               .map(data => ({
+            .then((res) =>
+               res.map((data) => ({
                   id: data._id.toString(),
                   name: data.name,
-                  clusters_per_day: data.clusters_per_day
-               }))
+                  clusters_per_day: data.clusters_per_day,
+               })),
             );
 
          return res.status(200).json({ success: true, body: response });

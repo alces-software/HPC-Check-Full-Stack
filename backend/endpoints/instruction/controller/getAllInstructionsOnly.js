@@ -21,24 +21,27 @@ module.exports = (db) => {
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
          }
 
          // Get all the instructions
-         const response = await db.collection('instruction')
+         const response = await db
+            .collection('instruction')
             .find({
-               clusterId: sanitizedId
+               clusterId: sanitizedId,
             })
             .toArray()
-            .then(res => res
-               .map(({ _id, ...rest }) => ({
+            .then((res) =>
+               res.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
-                  ...rest
-               }))
+                  ...rest,
+               })),
             );
 
          return res.status(200).json({ success: true, body: response });

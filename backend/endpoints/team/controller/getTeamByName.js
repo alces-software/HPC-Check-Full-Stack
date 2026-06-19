@@ -19,17 +19,16 @@ module.exports = (db) => {
          const sanitizedName = String(name).trim();
 
          if (sanitizedName.length == 0) {
-            return res.status(400).json({ success: false, error: "The name provided is empty" });
+            return res.status(400).json({ success: false, error: 'The name provided is empty' });
          }
 
          // Get team
-         const results = await db.collection('team')
-            .findOne({
-               name: {
-                  $regex: `^${sanitizedName}$`,
-                  $options: "i"
-               }
-            });
+         const results = await db.collection('team').findOne({
+            name: {
+               $regex: `^${sanitizedName}$`,
+               $options: 'i',
+            },
+         });
 
          if (!results) {
             return res.status(404).json({ success: false, error: "Team doesn't exist" });
@@ -37,11 +36,12 @@ module.exports = (db) => {
 
          // Return team information
          return res.status(200).json({
-            success: true, body: {
+            success: true,
+            body: {
                id: results._id.toString(),
                name: results.name,
-               clusters_per_day: results.clusters_per_day
-            }
+               clusters_per_day: results.clusters_per_day,
+            },
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

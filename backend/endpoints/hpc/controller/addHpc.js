@@ -21,27 +21,28 @@ module.exports = (db) => {
          const sanitizedName = String(name).trim();
 
          if (sanitizedName.length == 0) {
-            return res.status(400).json({ success: false, error: "The name provided is empty" });
+            return res.status(400).json({ success: false, error: 'The name provided is empty' });
          }
 
          // Check if hpc already exists
-         const existingHpc = await db.collection('cluster')
-            .findOne({
-               name: {
-                  $regex: `^${sanitizedName}$`,
-                  $options: 'i'
-               }
-            });
+         const existingHpc = await db.collection('cluster').findOne({
+            name: {
+               $regex: `^${sanitizedName}$`,
+               $options: 'i',
+            },
+         });
 
          if (existingHpc) {
             return res.status(409).json({ success: false, error: 'HPC already exits' });
          }
 
          // Add it to the database
-         const clusterId = await db.collection('cluster')
+         const clusterId = await db
+            .collection('cluster')
             .insertOne({
-               name: sanitizedName
-            }).then(res => res.insertedId.toString());
+               name: sanitizedName,
+            })
+            .then((res) => res.insertedId.toString());
 
          templateIt(clusterId, db);
 

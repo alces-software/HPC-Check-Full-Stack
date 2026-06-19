@@ -16,22 +16,24 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing cluster\'s id' });
+            return res.status(400).json({ success: false, error: "Missing cluster's id" });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
          }
 
          // Check team id
          if (!teamId) {
-            return res.status(400).json({ success: false, error: 'Missing team\'s id' });
+            return res.status(400).json({ success: false, error: "Missing team's id" });
          }
 
          const sanitizedTeamId = String(teamId).trim();
@@ -41,14 +43,13 @@ module.exports = (db) => {
          }
 
          if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ success: false, error: "Invalid team id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
          }
 
          // Check cluster exists
-         const clusterExists = await db.collection('cluster')
-            .findOne({
-               _id: new ObjectId(sanitizedId)
-            });
+         const clusterExists = await db.collection('cluster').findOne({
+            _id: new ObjectId(sanitizedId),
+         });
 
          if (!clusterExists) {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
@@ -56,32 +57,31 @@ module.exports = (db) => {
 
          // Check if clusters current team wont be left without clusters
          if (clusterExists.teamId) {
-            const cluster_count = await db.collection('cluster')
-               .countDocuments({
-                  teamId: clusterExists.teamId
-               });
+            const cluster_count = await db.collection('cluster').countDocuments({
+               teamId: clusterExists.teamId,
+            });
 
             if (cluster_count <= 1) {
-               return res.status(422).json({ success: false, error: "Can't remove cluster as the team would be left without a cluster" });
+               return res.status(422).json({
+                  success: false,
+                  error: "Can't remove cluster as the team would be left without a cluster",
+               });
             }
          }
 
          // Check that team exists
-         const teamExists = await db.collection('team')
-            .findOne({
-               _id: new ObjectId(sanitizedTeamId)
-            });
+         const teamExists = await db.collection('team').findOne({
+            _id: new ObjectId(sanitizedTeamId),
+         });
 
          if (!teamExists) {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
          }
 
          // Add the cluster to the team in the database
-         await db.collection('cluster')
-            .updateOne(
-               { _id: new ObjectId(sanitizedId) },
-               { $set: { teamId: sanitizedTeamId } }
-            );
+         await db
+            .collection('cluster')
+            .updateOne({ _id: new ObjectId(sanitizedId) }, { $set: { teamId: sanitizedTeamId } });
 
          return res.status(200).json({ success: true });
       } catch (error) {

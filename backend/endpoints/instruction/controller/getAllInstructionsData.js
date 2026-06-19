@@ -21,45 +21,49 @@ module.exports = (db) => {
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The cluster id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
          }
 
          const response = [];
 
          // Get all the instructions
-         const instructions = await db.collection('instruction')
+         const instructions = await db
+            .collection('instruction')
             .find({
-               clusterId: sanitizedId
+               clusterId: sanitizedId,
             })
             .toArray()
-            .then(res => res
-               .map(({ _id, ...rest }) => ({
+            .then((res) =>
+               res.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
-                  ...rest
-               }))
+                  ...rest,
+               })),
             );
 
          // Get all the methods associated with the instruction
          for (const i of instructions) {
-            const methods = await db.collection('method')
+            const methods = await db
+               .collection('method')
                .find({
-                  instructionId: i.id
+                  instructionId: i.id,
                })
                .toArray()
-               .then(res => res
-                  .map(({ _id, ...rest }) => ({
+               .then((res) =>
+                  res.map(({ _id, ...rest }) => ({
                      id: _id.toString(),
-                     ...rest
-                  }))
+                     ...rest,
+                  })),
                );
 
             i.methods = [];
 
-            methods.forEach(m => {
+            methods.forEach((m) => {
                const methodData = m;
                methodData.id = m.id;
                delete methodData._id;

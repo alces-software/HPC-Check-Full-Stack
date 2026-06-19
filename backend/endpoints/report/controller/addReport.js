@@ -15,73 +15,83 @@ module.exports = (db) => {
 
          // Check cluster id
          if (!clusterId) {
-            return res.status(400).json({ success: false, error: "Missing cluster id" });
+            return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }
 
          const sanitizedClusterId = String(clusterId).trim();
 
          if (sanitizedClusterId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The person id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The person id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedClusterId)) {
-            return res.status(400).json({ success: false, error: "Invalid cluster id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
          }
 
-         const clusterExists = await db.collection('cluster')
-            .findOne({
-               _id: new ObjectId(sanitizedClusterId)
-            });
+         const clusterExists = await db.collection('cluster').findOne({
+            _id: new ObjectId(sanitizedClusterId),
+         });
 
          if (!clusterExists) {
-            return res.status(404).json({ success: false, error: "The cluster specified does not exits" });
+            return res
+               .status(404)
+               .json({ success: false, error: 'The cluster specified does not exits' });
          }
 
          // Check person id
          if (!personId) {
-            return res.status(400).json({ success: false, error: "Missing persons id" });
+            return res.status(400).json({ success: false, error: 'Missing persons id' });
          }
 
          const sanitizedPersonId = String(personId).trim();
 
          if (sanitizedPersonId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The person id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The person id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedPersonId)) {
-            return res.status(400).json({ success: false, error: "Invalid person id provided" });
+            return res.status(400).json({ success: false, error: 'Invalid person id provided' });
          }
 
-         const personExists = await db.collection('person')
-            .findOne({
-               _id: new ObjectId(sanitizedPersonId)
-            });
+         const personExists = await db.collection('person').findOne({
+            _id: new ObjectId(sanitizedPersonId),
+         });
 
          if (!personExists) {
-            return res.status(404).json({ success: false, error: "The person specified does not exits" });
+            return res
+               .status(404)
+               .json({ success: false, error: 'The person specified does not exits' });
          }
 
          // Check start time
          if (!startTime) {
-            return res.status(400).json({ success: false, error: "Missing start time" });
+            return res.status(400).json({ success: false, error: 'Missing start time' });
          }
 
          // Check end time
          if (!endTime) {
-            return res.status(400).json({ success: false, error: "Missing end time" });
+            return res.status(400).json({ success: false, error: 'Missing end time' });
          }
 
          // Check results
          if (!results) {
-            return res.status(400).json({ success: false, error: "Missing results" });
+            return res.status(400).json({ success: false, error: 'Missing results' });
          }
 
          if (!Array.isArray(results)) {
-            return res.status(400).json({ success: false, error: "The results you've provided is not an array" });
+            return res
+               .status(400)
+               .json({ success: false, error: "The results you've provided is not an array" });
          }
 
          if (results.length === 0) {
-            return res.status(400).json({ success: false, error: 'The results array provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The results array provided is empty' });
          }
 
          // Check to make sure no report has been submitted for the cluster on that day
@@ -91,44 +101,47 @@ module.exports = (db) => {
          const endOfDay = new Date();
          endOfDay.setHours(23, 59, 59, 999);
 
-         const reportExists = await db.collection('report')
-            .findOne({
-               clusterId: sanitizedClusterId,
-               startDate: {
-                  $gte: startOfDay.getTime(),
-                  $lte: endOfDay.getTime()
-               }
-            });
+         const reportExists = await db.collection('report').findOne({
+            clusterId: sanitizedClusterId,
+            startDate: {
+               $gte: startOfDay.getTime(),
+               $lte: endOfDay.getTime(),
+            },
+         });
 
          if (reportExists) {
-            return res.status(409).json({ success: false, error: "A report already exists for this cluster" });
+            return res
+               .status(409)
+               .json({ success: false, error: 'A report already exists for this cluster' });
          }
 
          // Add the report to the database
-         const reportId = await db.collection('report')
+         const reportId = await db
+            .collection('report')
             .insertOne({
                clusterId: sanitizedClusterId,
                personId: sanitizedPersonId,
                startDate: Long.fromNumber(startTime),
                endDate: Long.fromNumber(endTime),
-               passed: results.every(r => r.passed)
+               passed: results.every((r) => r.passed),
             })
-            .then(i =>
-               i.insertedId.toString()
-            );
+            .then((i) => i.insertedId.toString());
 
          if (!ObjectId.isValid(reportId)) {
-            return res.status(500).json({ success: false, error: "Something went wrong adding the report to the database" });
+            return res.status(500).json({
+               success: false,
+               error: 'Something went wrong adding the report to the database',
+            });
          }
 
          // Add each section of results to the database
          const insertData = [];
-         results.forEach(r => {
+         results.forEach((r) => {
             insertData.push({
                instructionId: r.instructionId,
                reportId: reportId,
                passed: r.passed,
-               note: r.note
+               note: r.note,
             });
          });
 

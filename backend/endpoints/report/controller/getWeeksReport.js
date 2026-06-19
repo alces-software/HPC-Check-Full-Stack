@@ -14,25 +14,27 @@ module.exports = (db) => {
          const skip = (page - 1) * limit;
 
          // Get people
-         const people = await db.collection('person')
+         const people = await db
+            .collection('person')
             .find({})
             .toArray()
-            .then(res => res
-               .map(data => ({
+            .then((res) =>
+               res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name
-               }))
+                  name: data.name,
+               })),
             );
 
          // Get clusters
-         const cluster = await db.collection('cluster')
+         const cluster = await db
+            .collection('cluster')
             .find({})
             .toArray()
-            .then(res => res
-               .map(data => ({
+            .then((res) =>
+               res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name
-               }))
+                  name: data.name,
+               })),
             );
 
          const d = new Date();
@@ -40,13 +42,13 @@ module.exports = (db) => {
          const day = d.getDay();
          const diffToMonday = day === 0 ? -6 : 1 - day;
 
-         const start = new Date(req.query.start) || new Date(d);
+         const start = req.query.start ? new Date(req.query.start) : new Date(d);
          if (!req.query.start) {
             start.setDate(start.getDate() + diffToMonday);
          }
          start.setUTCHours(0, 0, 0, 0);
 
-         const end = new Date(req.query.end) || new Date(defaultStart);
+         const end = req.query.end ? new Date(req.query.end) : new Date(start);
          if (!req.query.end) {
             end.setDate(end.getDate() + 6);
          }
@@ -55,19 +57,19 @@ module.exports = (db) => {
          const query = {
             startDate: {
                $gte: start.getTime(),
-               $lte: end.getTime()
-            }
+               $lte: end.getTime(),
+            },
          };
 
          const [totalCount, results] = await Promise.all([
-            db.collection('report').
-               countDocuments(query),
-            db.collection('report')
+            db.collection('report').countDocuments(query),
+            db
+               .collection('report')
                .find(query)
                .sort({ startDate: -1 })
                .skip(skip)
                .limit(limit)
-               .toArray()
+               .toArray(),
          ]);
 
          const totalPages = Math.ceil(totalCount / limit);
@@ -76,9 +78,9 @@ module.exports = (db) => {
             success: true,
             body: results.map(({ _id, ...rest }) => ({
                id: _id.toString(),
-               person: people.find(p => p.id === rest.personId)?.name,
-               cluster: cluster.find(c => c.id === rest.clusterId)?.name,
-               ...rest
+               person: people.find((p) => p.id === rest.personId)?.name,
+               cluster: cluster.find((c) => c.id === rest.clusterId)?.name,
+               ...rest,
             })),
             pagination: {
                totalCount,
@@ -86,11 +88,11 @@ module.exports = (db) => {
                limit,
                totalPages,
                hasNextPage: page < totalPages,
-               hasPrevPage: page > 1
-            }
+               hasPrevPage: page > 1,
+            },
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
-   }
+   };
 };

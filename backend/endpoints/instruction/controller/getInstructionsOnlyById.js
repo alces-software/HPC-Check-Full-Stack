@@ -21,21 +21,24 @@ module.exports = (db) => {
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The instruction id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The instruction id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: "Invalid instruction id provided" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'Invalid instruction id provided' });
          }
 
          // Get instruction
-         const response = await db.collection('instruction')
-            .findOne({
-               _id: new ObjectId(sanitizedId)
-            });
+         const response = await db.collection('instruction').findOne({
+            _id: new ObjectId(sanitizedId),
+         });
 
          if (!response) {
-            return res.status(409).json({ success: false, error: 'Instruction does\'t exist' });
+            return res.status(409).json({ success: false, error: "Instruction does't exist" });
          }
 
          response.id = response._id.toString();

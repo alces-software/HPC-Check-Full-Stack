@@ -1,4 +1,4 @@
-const { MongoClient, Db } = require("mongodb");
+const { MongoClient } = require('mongodb');
 const fs = require('fs');
 
 module.exports.Database = class {
@@ -14,19 +14,19 @@ module.exports.Database = class {
       this.dbName = dbName;
 
       /**
-       * @type {Db | null}
+       * @type {import('mongodb').Db | null}
        */
       this.db = null;
 
       /**
-       * @type {Promise<Db> | null}
+       * @type {Promise<import('mongodb').Db> | null}
        */
       this.connectPromise = null;
    }
 
    /**
     * Connects to MongoDB
-    * @returns {Promise<Db>}
+    * @returns {Promise<import('mongodb').Db>}
     */
    async connect() {
       if (this.db) return this.db;
@@ -49,9 +49,7 @@ module.exports.Database = class {
       const admin = this.db.admin();
       const { databases } = await admin.listDatabases();
 
-      const exists = databases.some(
-         database => database.name === this.dbName
-      );
+      const exists = databases.some((database) => database.name === this.dbName);
 
       return exists;
    }
@@ -59,30 +57,23 @@ module.exports.Database = class {
    async exportDb() {
       const collections = await this.db.listCollections().toArray();
 
-      const exportData = collections.map(collection => ({
+      const exportData = collections.map((collection) => ({
          name: collection.name,
          validator: collection.options?.validator || null,
          validationLevel: collection.options?.validationLevel || null,
-         validationAction: collection.options?.validationAction || null
+         validationAction: collection.options?.validationAction || null,
       }));
 
-      fs.writeFileSync(
-         'mongodb-schema.json',
-         JSON.stringify(exportData, null, 2)
-      );
+      fs.writeFileSync('mongodb-schema.json', JSON.stringify(exportData, null, 2));
    }
 
    async generateDb() {
-      const schema = JSON.parse(
-         fs.readFileSync('db/mongodb-schema.json', 'utf8')
-      );
+      const schema = JSON.parse(fs.readFileSync('db/mongodb-schema.json', 'utf8'));
 
       const db = await this.connect();
 
       for (const collectionDef of schema) {
-         const exists = await db
-            .listCollections({ name: collectionDef.name })
-            .hasNext();
+         const exists = await db.listCollections({ name: collectionDef.name }).hasNext();
 
          if (exists) {
             console.log(`Collection "${collectionDef.name}" already exists`);
@@ -92,15 +83,12 @@ module.exports.Database = class {
          await db.createCollection(collectionDef.name, {
             validator: collectionDef.validator ?? undefined,
             validationLevel: collectionDef.validationLevel ?? undefined,
-            validationAction: collectionDef.validationAction ?? undefined
+            validationAction: collectionDef.validationAction ?? undefined,
          });
 
          console.log(`Created collection "${collectionDef.name}"`);
       }
 
-      await db.collection("closedDay").createIndex(
-         { day: 1 },
-         { unique: true }
-      );
+      await db.collection('closedDay').createIndex({ day: 1 }, { unique: true });
    }
 };
