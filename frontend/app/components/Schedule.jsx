@@ -156,13 +156,18 @@ export default function Schedule() {
                         const dayDate = new Date(weekBeginning);
                         dayDate.setDate(weekBeginning.getDate() + offset);
 
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+
+                        const isCurrentOrFuture = dayDate >= today;
+
                         const formattedDate = dayDate.toLocaleDateString("en-GB", {
                             day: "numeric",
                             month: "short",
                         });
 
                         const isToday =
-                            new Date().toDateString() === dayDate.toDateString();
+                            today.toDateString() === dayDate.toDateString();
 
                         return (
                             <div
@@ -228,30 +233,31 @@ export default function Schedule() {
                                                     >
                                                         <div className="flex items-center justify-between font-semibold text-white">
                                                             {name}
+                                                            {isCurrentOrFuture && (
+                                                                <button
+                                                                    className="ml-3 rounded-full bg-gradient-to-r from-emerald-500 to-sky-500 px-3 py-1.5 text-xs font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:scale-[1.02] hover:shadow-emerald-500/30"
+                                                                    onClick={async () => {
+                                                                        const teamMembers =
+                                                                            await getTeamMembers(
+                                                                                person.teamId
+                                                                            );
 
-                                                            <button
-                                                                className="ml-3 rounded-full bg-gradient-to-r from-emerald-500 to-sky-500 px-3 py-1.5 text-xs font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:scale-[1.02] hover:shadow-emerald-500/30"
-                                                                onClick={async () => {
-                                                                    const teamMembers =
-                                                                        await getTeamMembers(
-                                                                            person.teamId
-                                                                        );
+                                                                        setSwapTarget({
+                                                                            personName: name,
+                                                                            personId: person.id,
+                                                                            teamId: person.teamId,
+                                                                            date: date
+                                                                                .toISOString()
+                                                                                .split("T")[0],
+                                                                            options: teamMembers,
+                                                                        });
 
-                                                                    setSwapTarget({
-                                                                        personName: name,
-                                                                        personId: person.id,
-                                                                        teamId: person.teamId,
-                                                                        date: date
-                                                                            .toISOString()
-                                                                            .split("T")[0],
-                                                                        options: teamMembers,
-                                                                    });
-
-                                                                    setSelectedSwapPerson(null);
-                                                                }}
-                                                            >
-                                                                Swap
-                                                            </button>
+                                                                        setSelectedSwapPerson(null);
+                                                                    }}
+                                                                >
+                                                                    Swap
+                                                                </button>
+                                                            )}
                                                         </div>
 
                                                         <div className="flex flex-wrap gap-2">
