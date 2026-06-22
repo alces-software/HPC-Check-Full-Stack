@@ -4,21 +4,17 @@ import { defineConfig } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default defineConfig([
+   js.configs.recommended,
+
    {
       files: ['**/*.{js,mjs,cjs}'],
       languageOptions: {
-         globals: globals.browser
+         sourceType: 'module', // ✅ FIX: allows import/export
+         globals: {
+            ...globals.node
+         }
       }
    },
 
-   js.configs.recommended,
-
-   eslintConfigPrettier,
-
-   {
-      files: ['**/*.js'],
-      languageOptions: {
-         sourceType: 'commonjs'
-      }
-   }
+   eslintConfigPrettier
 ]);
