@@ -26,8 +26,8 @@ module.exports = (db) => {
          const existingPerson = await db.collection('person').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
-               $options: 'i',
-            },
+               $options: 'i'
+            }
          });
 
          if (existingPerson) {
@@ -36,7 +36,7 @@ module.exports = (db) => {
 
          // Add person to the database
          await db.collection('person').insertOne({
-            name: sanitizedName,
+            name: sanitizedName
          });
 
          return res.status(200).json({ success: true });

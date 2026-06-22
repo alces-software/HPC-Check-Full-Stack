@@ -26,8 +26,8 @@ module.exports = (db) => {
          const results = await db.collection('team').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
-               $options: 'i',
-            },
+               $options: 'i'
+            }
          });
 
          if (!results) {
@@ -40,8 +40,8 @@ module.exports = (db) => {
             body: {
                id: results._id.toString(),
                name: results.name,
-               clusters_per_day: results.clusters_per_day,
-            },
+               clusters_per_day: results.clusters_per_day
+            }
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

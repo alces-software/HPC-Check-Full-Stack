@@ -53,11 +53,11 @@ class Scheduler {
                filter: { day },
                update: {
                   $setOnInsert: {
-                     day,
-                  },
+                     day
+                  }
                },
-               upsert: true,
-            },
+               upsert: true
+            }
          };
       });
 
@@ -117,7 +117,7 @@ class Scheduler {
       const closedColl = db.collection('closedDay');
       const closedDocs = await closedColl
          .find({
-            day: { $gte: startDate },
+            day: { $gte: startDate }
          })
          .toArray();
 

@@ -43,7 +43,7 @@ module.exports = (db) => {
 
          // Make sure the method is in the database
          const method = await db.collection('method').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!method) {

@@ -9,7 +9,7 @@ module.exports = (db) => {
          if (!day) {
             return res.status(400).json({
                success: false,
-               error: 'Missing day',
+               error: 'Missing day'
             });
          }
 
@@ -18,7 +18,7 @@ module.exports = (db) => {
          if (isNaN(date.getTime())) {
             return res.status(400).json({
                success: false,
-               error: 'Invalid date',
+               error: 'Invalid date'
             });
          }
 
@@ -27,30 +27,30 @@ module.exports = (db) => {
          const collection = db.collection('closedDay');
 
          const existing = await collection.findOne({
-            day: date,
+            day: date
          });
 
          if (existing) {
             return res.status(409).json({
                success: false,
-               error: 'Office already marked closed for this day',
+               error: 'Office already marked closed for this day'
             });
          }
 
          await collection.insertOne({
-            day: date,
+            day: date
          });
 
          return res.status(201).json({
             success: true,
             body: {
-               day,
-            },
+               day
+            }
          });
       } catch (error) {
          return res.status(500).json({
             success: false,
-            error: error.message,
+            error: error.message
          });
       }
    };

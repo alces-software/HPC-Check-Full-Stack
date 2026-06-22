@@ -38,8 +38,8 @@ module.exports = (db) => {
             .then((res) =>
                res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name,
-               })),
+                  name: data.name
+               }))
             );
 
          // Gets clusters
@@ -50,8 +50,8 @@ module.exports = (db) => {
             .then((res) =>
                res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name,
-               })),
+                  name: data.name
+               }))
             );
 
          // Gets all the reports for the cluster from today
@@ -67,8 +67,8 @@ module.exports = (db) => {
                clusterId: sanitisedId,
                startDate: {
                   $gte: startOfDay.getTime(),
-                  $lte: endOfDay.getTime(),
-               },
+                  $lte: endOfDay.getTime()
+               }
             })
             .toArray()
             .then((res) =>
@@ -76,8 +76,8 @@ module.exports = (db) => {
                   id: _id.toString(),
                   person: people.find((p) => p.id === rest.personId)?.name,
                   cluster: cluster.find((c) => c.id === rest.clusterId)?.name,
-                  ...rest,
-               })),
+                  ...rest
+               }))
             );
 
          return res.status(200).json({ success: true, body: response });

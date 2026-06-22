@@ -31,7 +31,7 @@ module.exports = (db) => {
          }
 
          const report = await db.collection('report').findOne({
-            _id: new ObjectId(sanitisedId),
+            _id: new ObjectId(sanitisedId)
          });
 
          if (!report) {
@@ -41,7 +41,7 @@ module.exports = (db) => {
          const results = await db
             .collection('result')
             .find({
-               reportId: sanitisedId,
+               reportId: sanitisedId
             })
             .toArray();
 
@@ -52,8 +52,8 @@ module.exports = (db) => {
             .then((res) =>
                res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name,
-               })),
+                  name: data.name
+               }))
             );
 
          const cluster = await db
@@ -63,8 +63,8 @@ module.exports = (db) => {
             .then((res) =>
                res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name,
-               })),
+                  name: data.name
+               }))
             );
 
          return res.status(200).json({
@@ -81,9 +81,9 @@ module.exports = (db) => {
                results: results.map((result) => ({
                   instructionId: result.instructionId,
                   passed: result.passed,
-                  note: result.note,
-               })),
-            },
+                  note: result.note
+               }))
+            }
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

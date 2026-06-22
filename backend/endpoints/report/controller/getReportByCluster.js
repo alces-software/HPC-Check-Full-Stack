@@ -42,8 +42,8 @@ module.exports = (db) => {
             .then((res) =>
                res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name,
-               })),
+                  name: data.name
+               }))
             );
 
          // Get clusters
@@ -54,8 +54,8 @@ module.exports = (db) => {
             .then((res) =>
                res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name,
-               })),
+                  name: data.name
+               }))
             );
 
          let query;
@@ -70,9 +70,9 @@ module.exports = (db) => {
             query = {
                startDate: {
                   $gte: start.getTime(),
-                  $lte: end.getTime(),
+                  $lte: end.getTime()
                },
-               clusterId: sanitizedClusterId,
+               clusterId: sanitizedClusterId
             };
          } else {
             query = { clusterId: sanitizedClusterId };
@@ -87,7 +87,7 @@ module.exports = (db) => {
                .sort({ startDate: -1 })
                .skip(skip)
                .limit(limit)
-               .toArray(),
+               .toArray()
          ]);
 
          const totalPages = Math.ceil(total / limit);
@@ -98,7 +98,7 @@ module.exports = (db) => {
                id: _id.toString(),
                person: people.find((p) => p.id === rest.personId)?.name,
                cluster: cluster.find((c) => c.id == rest.clusterId)?.name,
-               ...rest,
+               ...rest
             })),
             pagination: {
                total,
@@ -106,8 +106,8 @@ module.exports = (db) => {
                limit,
                totalPages,
                hasNextPage: page < totalPages,
-               hasPrevPage: page > 1,
-            },
+               hasPrevPage: page > 1
+            }
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

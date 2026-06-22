@@ -11,7 +11,7 @@ module.exports.seedData = async (db) => {
    const users = [
       { _id: new ObjectId(), name: 'Oscar' },
       { _id: new ObjectId(), name: 'Alex' },
-      { _id: new ObjectId(), name: 'Calum' },
+      { _id: new ObjectId(), name: 'Calum' }
    ];
 
    // Insert a team and associate people/clusters with it
@@ -26,7 +26,7 @@ module.exports.seedData = async (db) => {
    // Cluster
    const cognitionCluster = {
       _id: new ObjectId(),
-      name: 'Cognition',
+      name: 'Cognition'
    };
 
    // Associate cluster with the default team
@@ -42,7 +42,7 @@ module.exports.seedData = async (db) => {
          description: 'Confirm login nodes and user-facing hosts are reachable.',
          clusterId: cognitionCluster._id.toString(),
          good: 'Successful login and filesystem access on all tested hosts.',
-         bad: 'Login failures, timeouts, or inaccessible filesystems.',
+         bad: 'Login failures, timeouts, or inaccessible filesystems.'
       },
       {
          _id: new ObjectId(),
@@ -51,7 +51,7 @@ module.exports.seedData = async (db) => {
          description: 'Verify quota system and test home filesystem performance.',
          clusterId: cognitionCluster._id.toString(),
          good: 'Usage below limits and filesystem tests complete quickly.',
-         bad: 'Quota issues or poor filesystem performance.',
+         bad: 'Quota issues or poor filesystem performance.'
       },
       {
          _id: new ObjectId(),
@@ -60,7 +60,7 @@ module.exports.seedData = async (db) => {
          description: 'Verify scratch storage quotas and Lustre performance.',
          clusterId: cognitionCluster._id.toString(),
          good: 'Commands succeed with healthy performance.',
-         bad: 'Filesystem issues, errors, or slow performance.',
+         bad: 'Filesystem issues, errors, or slow performance.'
       },
       {
          _id: new ObjectId(),
@@ -69,7 +69,7 @@ module.exports.seedData = async (db) => {
          description: 'Confirm scheduler responsiveness and node availability.',
          clusterId: cognitionCluster._id.toString(),
          good: 'Nodes visible and scheduler operating normally.',
-         bad: 'Nodes down/drained or scheduler unresponsive.',
+         bad: 'Nodes down/drained or scheduler unresponsive.'
       },
       {
          _id: new ObjectId(),
@@ -78,7 +78,7 @@ module.exports.seedData = async (db) => {
          description: 'Validate GPU node health and availability.',
          clusterId: cognitionCluster._id.toString(),
          good: 'GPU nodes healthy and accessible.',
-         bad: 'Missing nodes or unhealthy GPU resources.',
+         bad: 'Missing nodes or unhealthy GPU resources.'
       },
       {
          _id: new ObjectId(),
@@ -87,7 +87,7 @@ module.exports.seedData = async (db) => {
          description: 'Verify jobs can be submitted and completed.',
          clusterId: cognitionCluster._id.toString(),
          good: 'Jobs execute successfully.',
-         bad: 'Jobs fail or remain pending.',
+         bad: 'Jobs fail or remain pending.'
       },
       {
          _id: new ObjectId(),
@@ -96,7 +96,7 @@ module.exports.seedData = async (db) => {
          description: 'Verify Slurm commands and environment modules.',
          clusterId: cognitionCluster._id.toString(),
          good: 'Environment commands work normally.',
-         bad: 'Broken environment or unavailable commands.',
+         bad: 'Broken environment or unavailable commands.'
       },
       {
          _id: new ObjectId(),
@@ -105,7 +105,7 @@ module.exports.seedData = async (db) => {
          description: 'Ensure no test artifacts remain.',
          clusterId: cognitionCluster._id.toString(),
          good: 'No jobs or files left behind.',
-         bad: 'Residual jobs, files, or quota usage.',
+         bad: 'Residual jobs, files, or quota usage.'
       },
       {
          _id: new ObjectId(),
@@ -114,8 +114,8 @@ module.exports.seedData = async (db) => {
          description: 'Record outcome and escalate issues if required.',
          clusterId: cognitionCluster._id.toString(),
          good: 'Daily check completed successfully.',
-         bad: 'Issues require escalation to OPS.',
-      },
+         bad: 'Issues require escalation to OPS.'
+      }
    ];
 
    await instructionsCollection.insertMany(instructions);
@@ -127,7 +127,7 @@ module.exports.seedData = async (db) => {
          methods.push({
             _id: new ObjectId(),
             content,
-            instructionId: instructionId.toString(),
+            instructionId: instructionId.toString()
          });
       });
    };
@@ -135,41 +135,41 @@ module.exports.seedData = async (db) => {
    addMethods(instructions[0]._id, [
       'SSH to login1.cognition.gla.alces.network and verify a normal prompt appears.',
       'SSH to a random selection of user-facing nodes.',
-      'Confirm home directories and shared filesystems are accessible.',
+      'Confirm home directories and shared filesystems are accessible.'
    ]);
 
    addMethods(instructions[1]._id, [
       'Run: quota -s',
       'Run: df -h ~',
       'Perform block and metadata filesystem tests using dd and touch.',
-      'Create a large test file and verify quota reporting updates correctly.',
+      'Create a large test file and verify quota reporting updates correctly.'
    ]);
 
    addMethods(instructions[2]._id, [
       'Run: lfs quota /mnt/scratch/users/$USER',
       'Verify scratch directory contents are accessible.',
       'Perform large file write and metadata performance tests.',
-      'Confirm filesystem performance and quota reporting are acceptable.',
+      'Confirm filesystem performance and quota reporting are acceptable.'
    ]);
 
    addMethods(instructions[3]._id, [
       'Run: sinfo -Nl',
       'Review partition information using scontrol show partitions.',
       'Inspect nodes using scontrol show node.',
-      'Review running jobs and investigate a sample job where possible.',
+      'Review running jobs and investigate a sample job where possible.'
    ]);
 
    addMethods(instructions[4]._id, [
       'Review node status using sinfo.',
       'SSH to a selection of GPU nodes and verify responsiveness.',
       'Submit an interactive GPU job and run nvidia-smi health checks.',
-      'Inspect a node currently running a GPU workload.',
+      'Inspect a node currently running a GPU workload.'
    ]);
 
    addMethods(instructions[5]._id, [
       'Run a simple CPU test job with srun.',
       'Monitor queue status using squeue -u $USER.',
-      'Submit a small batch script and confirm successful completion.',
+      'Submit a small batch script and confirm successful completion.'
    ]);
 
    addMethods(instructions[6]._id, ['Run: module avail', 'Run: which srun', 'Run: squeue']);
@@ -177,12 +177,12 @@ module.exports.seedData = async (db) => {
    addMethods(instructions[7]._id, [
       'Check for active jobs using squeue -u $USER.',
       'Remove temporary files from home and scratch storage.',
-      'Run quota and verify usage has returned to normal.',
+      'Run quota and verify usage has returned to normal.'
    ]);
 
    addMethods(instructions[8]._id, [
       'If all checks pass, log: "Daily user check complete – no issues".',
-      'For any RED item, escalate to OPS with exact command output.',
+      'For any RED item, escalate to OPS with exact command output.'
    ]);
 
    await methodsCollection.insertMany(methods);
@@ -193,21 +193,21 @@ module.exports.seedData = async (db) => {
    const additionalUsers = [
       { _id: new ObjectId(), name: 'Sarah' },
       { _id: new ObjectId(), name: 'Jamie' },
-      { _id: new ObjectId(), name: 'Priya' },
+      { _id: new ObjectId(), name: 'Priya' }
    ];
 
    // Additional team
    const aiResearchTeam = {
       _id: new ObjectId(),
       name: 'AI Research',
-      clusters_per_day: 1,
+      clusters_per_day: 1
    };
 
    await teamsCollection.insertOne(aiResearchTeam);
 
    const additionalUsersWithTeam = additionalUsers.map((u) => ({
       ...u,
-      teamId: aiResearchTeam._id.toString(),
+      teamId: aiResearchTeam._id.toString()
    }));
 
    await peopleCollection.insertMany(additionalUsersWithTeam);
@@ -216,7 +216,7 @@ module.exports.seedData = async (db) => {
    const inferenceCluster = {
       _id: new ObjectId(),
       name: 'Inference',
-      teamId: aiResearchTeam._id.toString(),
+      teamId: aiResearchTeam._id.toString()
    };
 
    await clustersCollection.insertOne(inferenceCluster);
@@ -230,7 +230,7 @@ module.exports.seedData = async (db) => {
          description: 'Verify inference endpoints are responding normally.',
          clusterId: inferenceCluster._id.toString(),
          good: 'All endpoints return successful responses.',
-         bad: 'Errors, timeouts, or degraded performance detected.',
+         bad: 'Errors, timeouts, or degraded performance detected.'
       },
       {
          _id: new ObjectId(),
@@ -239,7 +239,7 @@ module.exports.seedData = async (db) => {
          description: 'Check serving GPUs are healthy and available.',
          clusterId: inferenceCluster._id.toString(),
          good: 'GPU resources are healthy and within expected usage.',
-         bad: 'Unavailable devices or abnormal utilisation.',
+         bad: 'Unavailable devices or abnormal utilisation.'
       },
       {
          _id: new ObjectId(),
@@ -248,8 +248,8 @@ module.exports.seedData = async (db) => {
          description: 'Run a test request through the production model.',
          clusterId: inferenceCluster._id.toString(),
          good: 'Inference completes successfully with expected output.',
-         bad: 'Request fails or produces unexpected results.',
-      },
+         bad: 'Request fails or produces unexpected results.'
+      }
    ];
 
    await instructionsCollection.insertMany(inferenceInstructions);
@@ -257,16 +257,16 @@ module.exports.seedData = async (db) => {
    // Methods
    addMethods(inferenceInstructions[0]._id, [
       'Call the health endpoint for each inference service.',
-      'Verify response times are within expected limits.',
+      'Verify response times are within expected limits.'
    ]);
 
    addMethods(inferenceInstructions[1]._id, [
       'Run nvidia-smi on serving nodes.',
-      'Check for hardware errors or unavailable devices.',
+      'Check for hardware errors or unavailable devices.'
    ]);
 
    addMethods(inferenceInstructions[2]._id, [
       'Submit a standard inference request.',
-      'Confirm the response is returned successfully.',
+      'Confirm the response is returned successfully.'
    ]);
 };

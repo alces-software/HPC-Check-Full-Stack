@@ -1,8 +1,8 @@
-import Report from "../components/Report";
-import { Suspense } from "react";
+import Report from '../components/Report';
+import { Suspense } from 'react';
 
 export const metadata = {
-   title: "Report"
+   title: 'Report'
 };
 
 export default function Page() {

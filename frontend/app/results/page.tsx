@@ -1,13 +1,13 @@
-import Results from "../components/Results"
+import Results from '../components/Results';
 
 export const metadata = {
-  title: "Results"
+   title: 'Results'
 };
 
 export default function ResultsPage() {
-  return (
-    <main>
-      <Results />
-    </main>
-  );
+   return (
+      <main>
+         <Results />
+      </main>
+   );
 }

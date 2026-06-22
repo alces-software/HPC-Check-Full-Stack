@@ -30,7 +30,7 @@ module.exports = (db) => {
 
          // Get the team
          const results = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!results) {
@@ -43,8 +43,8 @@ module.exports = (db) => {
             body: {
                id: sanitizedId,
                name: results.name,
-               clusters_per_day: results.clusters_per_day,
-            },
+               clusters_per_day: results.clusters_per_day
+            }
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

@@ -48,7 +48,7 @@ module.exports = (db) => {
 
          // Check cluster exists
          const clusterExists = await db.collection('cluster').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!clusterExists) {
@@ -58,20 +58,20 @@ module.exports = (db) => {
          // Check if clusters current team wont be left without clusters
          if (clusterExists.teamId) {
             const cluster_count = await db.collection('cluster').countDocuments({
-               teamId: clusterExists.teamId,
+               teamId: clusterExists.teamId
             });
 
             if (cluster_count <= 1) {
                return res.status(422).json({
                   success: false,
-                  error: "Can't remove cluster as the team would be left without a cluster",
+                  error: "Can't remove cluster as the team would be left without a cluster"
                });
             }
          }
 
          // Check that team exists
          const teamExists = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedTeamId),
+            _id: new ObjectId(sanitizedTeamId)
          });
 
          if (!teamExists) {

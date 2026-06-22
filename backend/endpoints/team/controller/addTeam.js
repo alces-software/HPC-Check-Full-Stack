@@ -25,8 +25,8 @@ module.exports = (db) => {
          const existingTeam = await db.collection('team').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
-               $options: 'i',
-            },
+               $options: 'i'
+            }
          });
 
          if (existingTeam) {
@@ -36,7 +36,7 @@ module.exports = (db) => {
          // Add team to database
          await db.collection('team').insertOne({
             name: sanitizedName,
-            clusters_per_day: 1,
+            clusters_per_day: 1
          });
 
          return res.status(200).json({ success: true });

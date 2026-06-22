@@ -30,12 +30,12 @@ module.exports = (db) => {
 
          // Delete instruction
          await db.collection('instruction').deleteOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          // Delete all the methods associated with the instruction
          await db.collection('method').deleteMany({
-            instructionId: sanitizedId,
+            instructionId: sanitizedId
          });
 
          return res.status(200).json({ success: true });

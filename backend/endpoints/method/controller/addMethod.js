@@ -45,7 +45,7 @@ module.exports = (db) => {
 
          // Check if instruction exists
          const instructionExists = await db.collection('instruction').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!instructionExists) {
@@ -57,7 +57,7 @@ module.exports = (db) => {
          // Add to database
          await db.collection('method').insertOne({
             instructionId: sanitizedId,
-            content: sanitizedContent,
+            content: sanitizedContent
          });
 
          return res.status(200).json({ success: true });

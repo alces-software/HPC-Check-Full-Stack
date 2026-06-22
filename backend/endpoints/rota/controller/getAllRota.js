@@ -35,7 +35,7 @@ module.exports = (db) => {
                     .collection('cluster')
                     .find({ _id: { $in: clusterObjectIds } })
                     .toArray()
-               : [],
+               : []
          ]);
 
          const peopleMap = new Map(people.map((p) => [p._id.toString(), p.name]));
@@ -55,24 +55,24 @@ module.exports = (db) => {
                            id: personId,
                            clusters: (cIds || []).map((id) => ({
                               id,
-                              name: clusterMap.get(id) ?? id,
-                           })),
-                        },
+                              name: clusterMap.get(id) ?? id
+                           }))
+                        }
                      ];
-                  }),
-               ),
-            ]),
+                  })
+               )
+            ])
          );
          return res.status(200).json({
             success: true,
-            body: enriched,
+            body: enriched
          });
       } catch (error) {
          console.error('rota enriched error:', error);
 
          return res.status(500).json({
             success: false,
-            error: error.message,
+            error: error.message
          });
       }
    };

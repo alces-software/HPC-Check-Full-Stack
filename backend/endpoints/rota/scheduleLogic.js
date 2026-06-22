@@ -27,15 +27,15 @@ async function initialiseSchedulers(db, team) {
          clusterIds,
          Number(process.env.CLUSTERS_PER_DAY) || 1,
          new Date('2026-06-08'),
-         team,
+         team
       ),
       nameScheduler: new Scheduler(
          peopleNames,
          clusterNames,
          Number(process.env.CLUSTERS_PER_DAY) || 1,
          new Date('2026-06-08'),
-         team,
-      ),
+         team
+      )
    };
 
    return schedulers;
@@ -53,7 +53,7 @@ async function getDaily(db, day) {
    endOfDay.setHours(23, 59, 59, 999);
 
    const isClosed = await db.collection('closedDay').findOne({
-      day: targetDate,
+      day: targetDate
    });
 
    if (isClosed) {
@@ -65,8 +65,8 @@ async function getDaily(db, day) {
       .find({
          date: {
             $gte: targetDate,
-            $lte: endOfDay,
-         },
+            $lte: endOfDay
+         }
       })
       .toArray();
 
@@ -114,5 +114,5 @@ async function getWeekly(db, date = new Date()) {
 
 module.exports = {
    getWeekly,
-   getDaily,
+   getDaily
 };

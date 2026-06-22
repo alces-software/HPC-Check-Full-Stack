@@ -17,8 +17,8 @@ module.exports = (db) => {
                res.map((data) => ({
                   id: data._id.toString(),
                   name: data.name,
-                  clusters_per_day: data.clusters_per_day,
-               })),
+                  clusters_per_day: data.clusters_per_day
+               }))
             );
 
          return res.status(200).json({ success: true, body: response });

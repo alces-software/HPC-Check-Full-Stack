@@ -32,13 +32,13 @@ module.exports = (db) => {
 
          // Check cluster exists
          const existingCluster = await db.collection('cluster').findOneAndDelete({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!existingCluster) {
             return res.status(409).json({
                success: false,
-               error: "HPC doesn't exists",
+               error: "HPC doesn't exists"
             });
          }
 
@@ -46,13 +46,13 @@ module.exports = (db) => {
          const reports = await db
             .collection('report')
             .find({
-               clusterId: sanitizedId,
+               clusterId: sanitizedId
             })
             .toArray()
             .then((res) =>
                res.map(({ _id }) => ({
-                  _id: _id,
-               })),
+                  _id: _id
+               }))
             );
 
          if (reports.length == 0) {
@@ -62,35 +62,35 @@ module.exports = (db) => {
          // Delete each report associated with the cluster
          reports.forEach(async (report) => {
             await db.collection('result').deleteMany({
-               reportId: report._id,
+               reportId: report._id
             });
          });
 
          await db.collection('report').deleteMany({
-            _id: { $in: reports.map((r) => r._id) },
+            _id: { $in: reports.map((r) => r._id) }
          });
 
          // Delete each instruction and method linked to the cluster
          const instructions = await db
             .collection('instruction')
             .find({
-               clusterId: new ObjectId(sanitizedId),
+               clusterId: new ObjectId(sanitizedId)
             })
             .toArray()
             .then((res) =>
                res.map(({ _id }) => ({
-                  _id: _id,
-               })),
+                  _id: _id
+               }))
             );
 
          instructions.forEach(async (instruction) => {
             await db.collection('method').deleteMany({
-               instructionId: instruction._id,
+               instructionId: instruction._id
             });
          });
 
          await db.collection('instruction').deleteMany({
-            _id: { $in: instructions.map((i) => i._id) },
+            _id: { $in: instructions.map((i) => i._id) }
          });
 
          return res.status(200).json({ success: true });

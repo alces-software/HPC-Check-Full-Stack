@@ -32,14 +32,14 @@ module.exports = (db) => {
          const data = await db
             .collection('cluster')
             .find({
-               teamId: { $ne: sanitizedId },
+               teamId: { $ne: sanitizedId }
             })
             .toArray()
             .then((res) =>
                res.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
-                  ...rest,
-               })),
+                  ...rest
+               }))
             );
 
          return res.status(200).json({ success: true, body: data });

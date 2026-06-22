@@ -1,16 +1,16 @@
-import ClusterSettings from "@/app/components/ClusterSettings";
-import { Suspense } from "react";
+import ClusterSettings from '@/app/components/ClusterSettings';
+import { Suspense } from 'react';
 
 export const metadata = {
-  title: "Cluster Options"
+   title: 'Cluster Options'
 };
 
 export default async function ClusterPage() {
-  return (
-    <main>
-      <Suspense>
-        <ClusterSettings />
-      </Suspense>
-    </main>
-  );
+   return (
+      <main>
+         <Suspense>
+            <ClusterSettings />
+         </Suspense>
+      </main>
+   );
 }

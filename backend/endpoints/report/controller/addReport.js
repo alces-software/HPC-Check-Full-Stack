@@ -31,7 +31,7 @@ module.exports = (db) => {
          }
 
          const clusterExists = await db.collection('cluster').findOne({
-            _id: new ObjectId(sanitizedClusterId),
+            _id: new ObjectId(sanitizedClusterId)
          });
 
          if (!clusterExists) {
@@ -58,7 +58,7 @@ module.exports = (db) => {
          }
 
          const personExists = await db.collection('person').findOne({
-            _id: new ObjectId(sanitizedPersonId),
+            _id: new ObjectId(sanitizedPersonId)
          });
 
          if (!personExists) {
@@ -105,8 +105,8 @@ module.exports = (db) => {
             clusterId: sanitizedClusterId,
             startDate: {
                $gte: startOfDay.getTime(),
-               $lte: endOfDay.getTime(),
-            },
+               $lte: endOfDay.getTime()
+            }
          });
 
          if (reportExists) {
@@ -123,14 +123,14 @@ module.exports = (db) => {
                personId: sanitizedPersonId,
                startDate: Long.fromNumber(startTime),
                endDate: Long.fromNumber(endTime),
-               passed: results.every((r) => r.passed),
+               passed: results.every((r) => r.passed)
             })
             .then((i) => i.insertedId.toString());
 
          if (!ObjectId.isValid(reportId)) {
             return res.status(500).json({
                success: false,
-               error: 'Something went wrong adding the report to the database',
+               error: 'Something went wrong adding the report to the database'
             });
          }
 
@@ -141,7 +141,7 @@ module.exports = (db) => {
                instructionId: r.instructionId,
                reportId: reportId,
                passed: r.passed,
-               note: r.note,
+               note: r.note
             });
          });
 

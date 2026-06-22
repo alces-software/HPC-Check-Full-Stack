@@ -34,7 +34,7 @@ module.exports = (db) => {
 
          // Get the instruction
          const response = await db.collection('instruction').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!response) {
@@ -49,14 +49,14 @@ module.exports = (db) => {
          const methods = await db
             .collection('method')
             .find({
-               instructionId: response.id,
+               instructionId: response.id
             })
             .toArray()
             .then((result) =>
                result.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
-                  ...rest,
-               })),
+                  ...rest
+               }))
             );
 
          methods.forEach((m) => {

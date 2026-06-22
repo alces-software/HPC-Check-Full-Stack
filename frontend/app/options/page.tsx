@@ -1,13 +1,13 @@
-import Options from "../components/Options"
+import Options from '../components/Options';
 
 export const metadata = {
-  title: "Options"
+   title: 'Options'
 };
 
 export default function OptionsPage() {
-  return (
-    <main>
-      <Options />
-    </main>
-  );
+   return (
+      <main>
+         <Options />
+      </main>
+   );
 }

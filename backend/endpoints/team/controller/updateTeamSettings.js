@@ -32,7 +32,7 @@ module.exports = (db) => {
 
          // Check team exists
          const teamExists = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!teamExists) {
@@ -43,7 +43,7 @@ module.exports = (db) => {
          const updates = Object.fromEntries(
             Object.entries(rest)
                .filter(([, v]) => v != null)
-               .map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v]),
+               .map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v])
          );
 
          if (Object.keys(updates).length === 0) {
