@@ -287,27 +287,6 @@ export default function Options() {
       });
    };
 
-   const handleRegenerateSchedule = () => {
-      clearStatus();
-
-      requestConfirmation('Are you sure you want to regenerate the schedule?', async () => {
-         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/rota/new`);
-
-            const json = await res.json();
-
-            if (json.success) {
-               showStatus('Generated new schedule', 'success');
-            } else {
-               throw new Error(json.message || 'Failed to regenerate schedule');
-            }
-         } catch (err) {
-            console.error(err);
-            showStatus('Failed to regenerate schedule.', 'error');
-         }
-      });
-   };
-
    const handleAddTeam = () => {
       setTeamError('');
       clearStatus();
@@ -582,24 +561,6 @@ export default function Options() {
                         </div>
                      </div>
                   </div>
-               </div>
-               <div className="mt-6 rounded-2xl border border-purple-400/20 bg-purple-500/10 p-6">
-                  <div className="mb-3 text-4xl">📅</div>
-
-                  <h2 className="mb-2 text-2xl font-bold text-white">Schedule Management</h2>
-
-                  <p className="mb-6 text-slate-300">
-                     Rebuild and redistribute the rota using the latest users, clusters, and
-                     scheduling rules. If you do not click this, the schedule will be updated next
-                     monday with the new fields
-                  </p>
-
-                  <button
-                     onClick={handleRegenerateSchedule}
-                     className="rounded-xl bg-gradient-to-r cursor-pointer from-purple-600 to-indigo-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:scale-105 hover:shadow-xl"
-                  >
-                     🔄 Regenerate Schedule
-                  </button>
                </div>
             </div>
          </div>

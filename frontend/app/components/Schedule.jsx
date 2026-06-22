@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 
 export default function Schedule() {
    const [weekOffset, setWeekOffset] = useState(0);
@@ -38,9 +38,9 @@ export default function Schedule() {
       ['fri', 'Friday', 4]
    ];
 
-   async function fetchWeek() {
-      setLoading(true);
+   const fetchWeek = useCallback(async () => {
       try {
+         setLoading(true);
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/rota/week/${
                weekBeginning.toISOString().split('T')[0]
@@ -54,11 +54,11 @@ export default function Schedule() {
       } finally {
          setLoading(false);
       }
-   }
+   }, [weekBeginning]);
 
    useEffect(() => {
       fetchWeek();
-   }, [weekBeginning]);
+   }, [fetchWeek, weekBeginning]);
 
    async function getTeamMembers(teamId) {
       if (teamCache[teamId]) return teamCache[teamId];

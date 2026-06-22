@@ -86,7 +86,7 @@ export default function ClusterSettingsPage() {
       return map;
    }, [recentReports]);
 
-   async function getSteps() {
+   const getSteps = useCallback(async () => {
       if (!clusterId) return;
 
       setLoadingSteps(true);
@@ -109,11 +109,11 @@ export default function ClusterSettingsPage() {
       } finally {
          setLoadingSteps(false);
       }
-   }
+   }, [clusterId]);
 
    useEffect(() => {
       getSteps();
-   }, [clusterId]);
+   }, [clusterId, getSteps]);
 
    useEffect(() => {
       async function getReports() {
