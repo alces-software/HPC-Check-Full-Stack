@@ -699,7 +699,7 @@ export default function ClusterSettingsPage() {
                                                       {methodIndex + 1}
                                                    </span>
 
-                                                   <div className="prose prose-invert max-w-none text-sm leading-relaxed">
+                                                   <div className="prose prose-invert max-w-none text-sm leading-relaxed overflow-x-auto">
                                                       <ReactMarkdown>
                                                          {method.content}
                                                       </ReactMarkdown>
