@@ -377,7 +377,7 @@ export default function Form() {
                                     {i + 1}
                                   </span>
 
-                            <div className="prose prose-invert max-w-none">
+                            <div className="prose prose-invert max-w-none overflow-x-auto">
                               <ReactMarkdown>{method.content}</ReactMarkdown>
                             </div>
                             </div>
