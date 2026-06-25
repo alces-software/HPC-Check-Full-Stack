@@ -34,15 +34,15 @@ module.exports = (db) => {
          const [people, clusters] = await Promise.all([
             personObjectIds.length
                ? db
-                  .collection('person')
-                  .find({ _id: { $in: personObjectIds } })
-                  .toArray()
+                    .collection('person')
+                    .find({ _id: { $in: personObjectIds } })
+                    .toArray()
                : [],
             clusterObjectIds.length
                ? db
-                  .collection('cluster')
-                  .find({ _id: { $in: clusterObjectIds } })
-                  .toArray()
+                    .collection('cluster')
+                    .find({ _id: { $in: clusterObjectIds } })
+                    .toArray()
                : []
          ]);
 

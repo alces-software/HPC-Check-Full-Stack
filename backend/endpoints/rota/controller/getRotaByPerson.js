@@ -56,11 +56,11 @@ module.exports = (db) => {
          // 3. Fetch cluster details in batch (better than per-loop lookup)
          const clusters = assignedClusterIds.length
             ? await db
-               .collection('cluster')
-               .find({
-                  _id: { $in: assignedClusterIds.map((c) => new ObjectId(c)) }
-               })
-               .toArray()
+                 .collection('cluster')
+                 .find({
+                    _id: { $in: assignedClusterIds.map((c) => new ObjectId(c)) }
+                 })
+                 .toArray()
             : [];
 
          const clusterMap = Object.fromEntries(clusters.map((c) => [c._id.toString(), c.name]));
