@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const Scheduler = require('../../schedule/scheduler');
 
 async function getTeams(db) {
@@ -21,18 +22,20 @@ async function initialiseSchedulers(db, team) {
    const clusterNames = clusterDocs.map((c) => c.name);
    const clusterIds = clusterDocs.map((c) => c._id.toString());
 
+   const teamInfo = await db.collection('team').findOne({ _id: new ObjectId(team) });
+
    schedulers = {
       idScheduler: new Scheduler(
          peopleIds,
          clusterIds,
-         Number(team.clusters_per_day) || 1,
+         Number(teamInfo.clusters_per_day) || 1,
          new Date('2026-06-08'),
          team
       ),
       nameScheduler: new Scheduler(
          peopleNames,
          clusterNames,
-         Number(team.clusters_per_day) || 1,
+         Number(teamInfo.clusters_per_day) || 1,
          new Date('2026-06-08'),
          team
       )
