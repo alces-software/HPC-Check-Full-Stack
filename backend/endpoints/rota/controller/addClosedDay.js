@@ -2,6 +2,11 @@
  * @param {import('mongodb').Db} db
  */
 module.exports = (db) => {
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
    return async (req, res) => {
       try {
          const { day } = req.body || {};

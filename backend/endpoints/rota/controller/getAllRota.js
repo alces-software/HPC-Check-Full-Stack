@@ -2,7 +2,15 @@ require('dotenv').config();
 const { ObjectId } = require('mongodb');
 const { getWeekly } = require('../scheduleLogic');
 
+/**
+ * @param {import('mongodb').Db} db
+ */
 module.exports = (db) => {
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
    return async (req, res) => {
       try {
          const weekly = await getWeekly(db);
@@ -26,15 +34,15 @@ module.exports = (db) => {
          const [people, clusters] = await Promise.all([
             personObjectIds.length
                ? db
-                    .collection('person')
-                    .find({ _id: { $in: personObjectIds } })
-                    .toArray()
+                  .collection('person')
+                  .find({ _id: { $in: personObjectIds } })
+                  .toArray()
                : [],
             clusterObjectIds.length
                ? db
-                    .collection('cluster')
-                    .find({ _id: { $in: clusterObjectIds } })
-                    .toArray()
+                  .collection('cluster')
+                  .find({ _id: { $in: clusterObjectIds } })
+                  .toArray()
                : []
          ]);
 

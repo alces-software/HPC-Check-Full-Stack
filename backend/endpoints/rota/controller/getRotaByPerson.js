@@ -5,6 +5,11 @@ const { getDaily } = require('../scheduleLogic');
  * @param {import('mongodb').Db} db
  */
 module.exports = (db) => {
+   /**
+    * @param {import('express').Request} req
+    * @param {import('express').Response} res
+    * @returns {Promise<void>}
+    */
    return async (req, res) => {
       try {
          const { id } = req.params || {};
@@ -51,11 +56,11 @@ module.exports = (db) => {
          // 3. Fetch cluster details in batch (better than per-loop lookup)
          const clusters = assignedClusterIds.length
             ? await db
-                 .collection('cluster')
-                 .find({
-                    _id: { $in: assignedClusterIds.map((c) => new ObjectId(c)) }
-                 })
-                 .toArray()
+               .collection('cluster')
+               .find({
+                  _id: { $in: assignedClusterIds.map((c) => new ObjectId(c)) }
+               })
+               .toArray()
             : [];
 
          const clusterMap = Object.fromEntries(clusters.map((c) => [c._id.toString(), c.name]));
