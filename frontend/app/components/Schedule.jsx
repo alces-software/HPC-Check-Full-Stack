@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
+import { IoSwapHorizontal } from 'react-icons/io5';
+import { IoIosArrowForward } from 'react-icons/io';
 
 export default function Schedule() {
    const [weekOffset, setWeekOffset] = useState(0);
@@ -111,7 +113,7 @@ export default function Schedule() {
       <main className="space-y-8">
          <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
             {/* Header */}
-            <div className="mb-8 flex items-center justify-between">
+            <div className="mb-4 flex items-center justify-between">
                <div>
                   <h1 className="text-4xl font-bold text-white">Weekly Schedule</h1>
                   <p className="mt-2 text-slate-300">Week beginning {formattedWeekBeginning}</p>
@@ -120,24 +122,44 @@ export default function Schedule() {
                <div className="flex gap-3">
                   <button
                      onClick={() => setWeekOffset((w) => w - 1)}
-                     className="rounded-lg bg-white/10 px-4 py-2 text-white hover:bg-white/20"
+                     className="rounded-lg cursor-pointer bg-white/10 px-3 py-1.5 text-md text-white hover:bg-white/20"
                   >
-                     ← Prev
+                    <div className="flex items-center gap-1">
+                     <IoIosArrowForward className="rotate-180" aria-hidden="true" />
+                        Prev
+                        
+                     </div>
                   </button>
 
                   <button
                      onClick={() => setWeekOffset(0)}
-                     className="rounded-lg bg-green-500/20 px-4 py-2 text-green-200 hover:bg-green-500/30"
+                     className="rounded-lg cursor-pointer bg-green-500/20 px-3 py-1.5 text-md text-green-200 hover:bg-green-500/30"
                   >
                      Today
                   </button>
 
                   <button
                      onClick={() => setWeekOffset((w) => w + 1)}
-                     className="rounded-lg bg-white/10 px-4 py-2 text-white hover:bg-white/20"
+                     className="rounded-lg cursor-pointer bg-white/10 px-3 py-1.5 text-md text-white hover:bg-white/20"
                   >
-                     Next →
+                     <div className="flex items-center gap-1">
+                        Next
+                        <IoIosArrowForward aria-hidden="true" />
+                     </div>
                   </button>
+               </div>
+            </div>
+
+            <div className="mb-6 flex justify-end">
+               <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10 text-amber-200/90">
+                     <IoSwapHorizontal className="text-base" aria-hidden="true" />
+                  </span>
+
+                  <span>
+                     <span className="font-semibold text-white">Swap</span> replaces a scheduled
+                     person for that day.
+                  </span>
                </div>
             </div>
 
@@ -211,11 +233,13 @@ export default function Schedule() {
                                                 : ''
                                           }`}
                                        >
-                                          <div className="flex items-center justify-between font-semibold text-white">
+                                          <div className="flex items-center gap-3 font-semibold text-white">
                                              {name}
                                              {isCurrentOrFuture && (
                                                 <button
-                                                   className="ml-3 rounded-full bg-gradient-to-r from-emerald-500 to-sky-500 px-3 py-1.5 text-xs font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:scale-[1.02] hover:shadow-emerald-500/30"
+                                                   className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10 text-amber-200/90 transition hover:border-amber-300/35 hover:bg-amber-500/15 hover:text-amber-100"
+                                                   aria-label={`Swap ${name}`}
+                                                   title={`Swap ${name}`}
                                                    onClick={async () => {
                                                       const teamMembers = await getTeamMembers(
                                                          person.teamId
@@ -232,7 +256,10 @@ export default function Schedule() {
                                                       setSelectedSwapPerson(null);
                                                    }}
                                                 >
-                                                   Swap
+                                                   <IoSwapHorizontal
+                                                      className="cursor-pointer text-base"
+                                                      aria-hidden="true"
+                                                   />
                                                 </button>
                                              )}
                                           </div>
