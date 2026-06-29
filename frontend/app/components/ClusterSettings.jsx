@@ -334,10 +334,8 @@ export default function ClusterSettingsPage() {
 
    return (
       <main className="flex min-h-screen items-start justify-center">
-
-
          <div className="relative z-10 w-full max-w-5xl">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
+            <div className="rounded-3xl border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl md:p-10">
                <div className="mt-8 text-center">
                   <div className="mb-4 flex justify-center">
                      <FaDatabase className="h-20 w-20 text-emerald-300" aria-hidden="true" />
@@ -415,7 +413,7 @@ export default function ClusterSettingsPage() {
                </div>
 
                {activeTab === 'instructions' && (
-                  <div className="rounded-2xl border border-white/10  p-6 backdrop-blur-sm">
+                  <div className="rounded-2xl border border-white/10 p-4 backdrop-blur-sm md:p-6">
                      <div className="mb-6 flex items-start justify-between gap-4">
                         <div>
                            <h2 className="text-3xl font-bold text-white">Instructions</h2>
@@ -461,7 +459,7 @@ export default function ClusterSettingsPage() {
                      )}
 
                      {addingInstruction ? (
-                        <div className="mb-6 space-y-3 rounded-xl border border-white/10 p-4">
+                        <div className="mb-6 space-y-3 rounded-xl border border-white/10 p-3 md:p-4">
                            <input
                               value={newInstructionTitle}
                               onChange={(e) => setNewInstructionTitle(e.target.value)}
@@ -516,10 +514,10 @@ export default function ClusterSettingsPage() {
                            return (
                               <section
                                  key={step.id}
-                                 className="rounded-2xl border border-white/10 bg-white/5 p-6"
+                                 className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6"
                               >
-                                 <div className="mb-4 flex items-start justify-between gap-4">
-                                    <div className="flex-1">
+                                 <div className="mb-4 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                                    <div className="min-w-0 flex-1">
                                        {editingInstructionId === step.id ? (
                                           <div className="space-y-3">
                                              <input
@@ -548,7 +546,7 @@ export default function ClusterSettingsPage() {
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
 
-                                             <div className="flex justify-end gap-3">
+                                             <div className="flex flex-col gap-3 md:flex-row md:justify-end">
                                                 <button
                                                    type="button"
                                                    onClick={() => {
@@ -556,7 +554,7 @@ export default function ClusterSettingsPage() {
                                                       setEditedInstructionTitle('');
                                                       setEditedInstructionDescription('');
                                                    }}
-                                                   className="cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 cursor-pointer"
+                                                   className="w-full cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 cursor-pointer md:w-auto"
                                                 >
                                                    Cancel
                                                 </button>
@@ -571,7 +569,7 @@ export default function ClusterSettingsPage() {
                                                          editedInstructionExpectedTime.trim()
                                                       )
                                                    }
-                                                   className="cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 cursor-pointer"
+                                                   className="w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 cursor-pointer md:w-auto"
                                                 >
                                                    Save Changes
                                                 </button>
@@ -587,11 +585,11 @@ export default function ClusterSettingsPage() {
                                                 <h2 className="text-xl font-semibold text-white">
                                                    {step.title}
                                                 </h2>
-                                                    {step.expectedTime && (
-                                 <span className="shrink-0 rounded-full border border-blue-400/20 bg-blue-500/20 px-3 py-1 text-right text-sm font-semibold text-blue-200">
-                                    {step.expectedTime}
-                                 </span>
-                                       )}
+                                                {step.expectedTime && (
+                                                   <span className="shrink-0 rounded-full border border-blue-400/20 bg-blue-500/20 px-3 py-1 text-right text-sm font-semibold text-blue-200">
+                                                      {step.expectedTime}
+                                                   </span>
+                                                )}
                                              </div>
 
                                              <p className="text-slate-300">{step.description}</p>
@@ -599,7 +597,7 @@ export default function ClusterSettingsPage() {
                                        )}
                                     </div>
 
-                                    <div className="flex items-start gap-3">
+                                    <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-start">
                                        <button
                                           type="button"
                                           onClick={() => {
@@ -612,7 +610,7 @@ export default function ClusterSettingsPage() {
                                                 step.expectedTime || ''
                                              );
                                           }}
-                                          className="cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white cursor-pointer"
+                                          className="w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white cursor-pointer md:w-auto"
                                        >
                                           Edit Instruction
                                        </button>
@@ -628,16 +626,14 @@ export default function ClusterSettingsPage() {
                                                 deleteInstruction(step.id);
                                              }
                                           }}
-                                          className="cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white cursor-pointer"
+                                          className="w-full cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white cursor-pointer md:w-auto"
                                        >
                                           Delete Instruction
                                        </button>
-
-                     
                                     </div>
                                  </div>
 
-                                 <details className="mb-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">
+                                 <details className="mb-4 rounded-xl border border-white/10 bg-slate-900/40 p-3 md:p-4">
                                     <summary className="cursor-pointer font-medium text-blue-300 transition hover:text-blue-200 cursor-pointer">
                                        View Methods
                                     </summary>
@@ -662,14 +658,14 @@ export default function ClusterSettingsPage() {
                                                       className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                                    />
 
-                                                   <div className="mt-3 flex justify-end gap-3">
+                                                   <div className="mt-3 flex flex-col gap-3 md:flex-row md:justify-end">
                                                       <button
                                                          type="button"
                                                          onClick={() => {
                                                             setEditingMethodId(null);
                                                             setEditedMethodContent('');
                                                          }}
-                                                         className="cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white"
+                                                         className="w-full cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white md:w-auto"
                                                       >
                                                          Cancel
                                                       </button>
@@ -690,7 +686,7 @@ export default function ClusterSettingsPage() {
                                                                sanitizedContent
                                                             );
                                                          }}
-                                                         className="cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/20 hover:text-white"
+                                                         className="w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/20 hover:text-white md:w-auto"
                                                       >
                                                          Save Changes
                                                       </button>
@@ -711,14 +707,14 @@ export default function ClusterSettingsPage() {
                                              )}
 
                                              {isEditing && editingMethodId !== method.id && (
-                                                <div className="mt-4 flex justify-end gap-3">
+                                                <div className="mt-4 flex flex-col gap-3 md:flex-row md:justify-end">
                                                    <button
                                                       type="button"
                                                       onClick={() => {
                                                          setEditingMethodId(method.id);
                                                          setEditedMethodContent(method.content);
                                                       }}
-                                                      className="cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white"
+                                                      className="w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white md:w-auto"
                                                    >
                                                       Edit Method
                                                    </button>
@@ -734,7 +730,7 @@ export default function ClusterSettingsPage() {
                                                             deleteMethod(method.id);
                                                          }
                                                       }}
-                                                      className="cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white"
+                                                      className="w-full cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white md:w-auto"
                                                    >
                                                       Delete Method
                                                    </button>
@@ -773,14 +769,14 @@ export default function ClusterSettingsPage() {
                                                       className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                                    />
 
-                                                   <div className="mt-3 flex justify-end gap-3">
+                                                   <div className="mt-3 flex flex-col gap-3 md:flex-row md:justify-end">
                                                       <button
                                                          type="button"
                                                          onClick={() => {
                                                             setAddMethodStepID(null);
                                                             setNewMethod('');
                                                          }}
-                                                         className="cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white"
+                                                         className="w-full cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white md:w-auto"
                                                       >
                                                          Cancel
                                                       </button>
@@ -798,7 +794,7 @@ export default function ClusterSettingsPage() {
 
                                                             addNewMethod(step.id, sanitizedContent);
                                                          }}
-                                                         className="cursor-pointer rounded-xl border border-green-300/25 bg-green-500/15 px-5 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/25 hover:text-white"
+                                                         className="w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/15 px-5 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/25 hover:text-white md:w-auto"
                                                       >
                                                          Add Method
                                                       </button>
@@ -960,7 +956,7 @@ export default function ClusterSettingsPage() {
                                                 </span>
 
                                                 <span className="transition group-hover:translate-x-0.5">
-                                                     <IoIosArrowForward></IoIosArrowForward>
+                                                   <IoIosArrowForward></IoIosArrowForward>
                                                 </span>
                                              </div>
                                           </div>

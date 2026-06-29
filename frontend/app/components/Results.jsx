@@ -171,20 +171,25 @@ export default function ResultsPage() {
    }
 
    return (
-      <main className="flex justify-center">
-         <div className="w-full max-w-5xl rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
+      <main className="flex min-h-screen items-start justify-center px-2 sm:px-4">
+         <div className="w-full max-w-5xl rounded-3xl border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl md:p-10">
             {/* HEADER */}
-            <div className="text-center mb-10">
+            <div className="mt-8 mb-8 text-center md:mb-10">
                <div className="mb-4 flex justify-center">
-                  <FaChartBar className="h-20 w-20 text-purple-300" aria-hidden="true" />
+                  <FaChartBar
+                     className="h-16 w-16 text-purple-300 sm:h-20 sm:w-20"
+                     aria-hidden="true"
+                  />
                </div>
-               <h1 className="text-5xl font-bold text-white">Report Explorer</h1>
-               <p className="text-slate-300 mt-2">Cluster or weekly report view</p>
+               <h1 className="text-5xl font-bold text-white ">Report Explorer</h1>
+               <p className="mt-2 text-sm text-slate-300 sm:text-base">
+                  Cluster or weekly report view
+               </p>
             </div>
 
             {/* MODE TOGGLE */}
             <div className="mb-8 flex justify-center">
-               <div className="inline-flex items-center gap-5 rounded-2xl px-8 py-4 backdrop-blur-sm">
+               <div className="inline-flex items-center gap-4 rounded-2xl px-4 py-3 backdrop-blur-sm sm:gap-5 sm:px-8 sm:py-4">
                   <button
                      onClick={() => setMode('cluster')}
                      className={[
@@ -213,11 +218,11 @@ export default function ResultsPage() {
 
             {/* WEEK DATE RANGE */}
             {mode === 'week' && (
-               <div className="mb-6 rounded-2xl border border-white/10  p-5 backdrop-blur-sm">
-                  <div className="mb-4 flex items-center justify-between">
+               <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 p-4 backdrop-blur-sm sm:p-5">
+                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                      <div>
-                        <h3 className="text-white font-medium">Custom Date Range</h3>
-                        <p className="text-xs text-slate-400 mt-1">
+                        <h3 className="font-medium text-white">Custom Date Range</h3>
+                        <p className="mt-1 text-xs text-slate-400">
                            Leave empty to use the current week.
                         </p>
                      </div>
@@ -228,57 +233,93 @@ export default function ResultsPage() {
                               setStartDate('');
                               setEndDate('');
                            }}
-                           className="rounded-lg border border-white/10 px-3 py-1 text-xs text-slate-300 hover:bg-white/5 hover:text-white transition"
+                           className="w-full rounded-lg border border-white/10 px-3 py-1.5 text-xs text-slate-300 transition hover:bg-white/5 hover:text-white sm:w-auto sm:py-1"
                         >
                            Reset
                         </button>
                      )}
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-2">
-                     <input
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
-                     />
+                  <div className="grid min-w-0 gap-3 sm:gap-4 md:grid-cols-2">
+                     <div className="relative min-w-0 max-w-full">
+                        <input
+                           type="date"
+                           value={startDate}
+                           onChange={(e) => setStartDate(e.target.value)}
+                           className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
+                              startDate ? 'text-white' : 'text-transparent sm:text-white'
+                           }`}
+                        />
+                        {!startDate && (
+                           <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
+                              Start date
+                           </span>
+                        )}
+                     </div>
 
-                     <input
-                        type="date"
-                        value={endDate}
-                        min={startDate || undefined}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
-                     />
+                     <div className="relative min-w-0 max-w-full">
+                        <input
+                           type="date"
+                           value={endDate}
+                           min={startDate || undefined}
+                           onChange={(e) => setEndDate(e.target.value)}
+                           className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
+                              endDate ? 'text-white' : 'text-transparent sm:text-white'
+                           }`}
+                        />
+                        {!endDate && (
+                           <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
+                              End date
+                           </span>
+                        )}
+                     </div>
                   </div>
                </div>
             )}
 
             {/* CLUSTER DATE RANGE (NEW BUT MATCHING STYLE) */}
             {mode === 'cluster' && (
-               <div className="mb-6 rounded-2xl border border-white/10 p-5 backdrop-blur-sm">
+               <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 p-4 backdrop-blur-sm sm:p-5">
                   <div className="mb-4">
-                     <h3 className="text-white font-medium">Cluster Date Range (optional)</h3>
-                     <p className="text-xs text-slate-400 mt-1">
+                     <h3 className="font-medium text-white">Cluster Date Range (optional)</h3>
+                     <p className="mt-1 text-xs text-slate-400">
                         Filter cluster reports by date range
                      </p>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-2">
-                     <input
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
-                     />
+                  <div className="grid min-w-0 gap-3 sm:gap-4 md:grid-cols-2">
+                     <div className="relative min-w-0 max-w-full">
+                        <input
+                           type="date"
+                           value={startDate}
+                           onChange={(e) => setStartDate(e.target.value)}
+                           className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
+                              startDate ? 'text-white' : 'text-transparent sm:text-white'
+                           }`}
+                        />
+                        {!startDate && (
+                           <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
+                              Start date
+                           </span>
+                        )}
+                     </div>
 
-                     <input
-                        type="date"
-                        value={endDate}
-                        min={startDate || undefined}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
-                     />
+                     <div className="relative min-w-0 max-w-full">
+                        <input
+                           type="date"
+                           value={endDate}
+                           min={startDate || undefined}
+                           onChange={(e) => setEndDate(e.target.value)}
+                           className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
+                              endDate ? 'text-white' : 'text-transparent sm:text-white'
+                           }`}
+                        />
+                        {!endDate && (
+                           <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
+                              End date
+                           </span>
+                        )}
+                     </div>
                   </div>
                </div>
             )}
@@ -290,20 +331,22 @@ export default function ResultsPage() {
 
                   <Listbox value={selectedClusterId} onChange={setSelectedClusterId}>
                      <div className="relative">
-                        <ListboxButton className="w-full cursor-pointer rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-left text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
-                           {selectedCluster?.name || 'Select a cluster...'}
+                        <ListboxButton className="relative w-full cursor-pointer rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 pr-10 text-left text-sm text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 sm:text-base">
+                           <span className="block min-w-0 truncate">
+                              {selectedCluster?.name || 'Select a cluster...'}
+                           </span>
 
                            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                               ▼
                            </span>
                         </ListboxButton>
 
-                        <ListboxOptions className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl">
+                        <ListboxOptions className="relative z-20 mt-2 max-h-40 w-full overflow-y-auto overflow-x-hidden rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl sm:absolute sm:left-0 sm:right-0 sm:z-50 sm:max-h-60">
                            {clusters.map((c) => (
                               <ListboxOption
                                  key={c.id}
                                  value={c.id}
-                                 className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
+                                 className="cursor-pointer whitespace-normal break-words px-3 py-2 text-sm text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold sm:px-4 sm:py-3 sm:text-base"
                               >
                                  {c.name}
                               </ListboxOption>
@@ -322,22 +365,22 @@ export default function ResultsPage() {
                <p className="text-center text-slate-400">No reports found</p>
             )}
 
-            {/* RESULTS (UNCHANGED STYLING) */}
-            <div className="space-y-6">
+            {/* RESULTS */}
+            <div className="space-y-5 sm:space-y-6">
                {Object.entries(grouped).map(([date, items]) => (
                   <div
                      key={date}
-                     className="rounded-2xl border border-white/10 backdrop-blur-sm overflow-hidden"
+                     className="overflow-hidden rounded-2xl border border-white/10 backdrop-blur-sm"
                   >
-                     <div className="flex items-center justify-between px-5 py-3 border-b border-white/10">
-                        <h2 className="text-white font-semibold tracking-wide">{date}</h2>
+                     <div className="flex flex-col gap-2 border-b border-white/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+                        <h2 className="font-semibold tracking-wide text-white">{date}</h2>
 
-                        <span className="text-xs text-slate-300  border border-white/10 px-3 py-1 rounded-full">
+                        <span className="w-fit rounded-full border border-white/10 px-3 py-1 text-xs text-slate-300">
                            {items.length} report(s)
                         </span>
                      </div>
 
-                     <div className="p-4 space-y-2">
+                     <div className="space-y-2 p-3 sm:p-4">
                         {items.map((r) => {
                            const passed = r.passed;
 
@@ -347,7 +390,7 @@ export default function ResultsPage() {
                                  onClick={() => router.push(`/report?id=${r.id}`)}
                                  className={[
                                     'w-full group text-left',
-                                    'rounded-xl border px-4 py-4',
+                                    'rounded-xl border px-3 py-3 sm:px-4 sm:py-4',
                                     'transition-all duration-200',
                                     'hover:shadow-lg hover:-translate-y-[1px] cursor-pointer',
                                     'active:scale-[0.99]',
@@ -356,8 +399,8 @@ export default function ResultsPage() {
                                        : 'border-red-400/30 bg-red-500/20'
                                  ].join(' ')}
                               >
-                                 <div className="flex items-start justify-between gap-4">
-                                    <div className="flex gap-3">
+                                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                                    <div className="flex min-w-0 gap-3">
                                        <div
                                           className={[
                                              'mt-1 h-3 w-3 rounded-full shrink-0',
@@ -365,9 +408,9 @@ export default function ResultsPage() {
                                           ].join(' ')}
                                        />
 
-                                       <div className="space-y-1">
-                                          <div className="flex items-center gap-2">
-                                             <span className="text-white font-medium">
+                                       <div className="min-w-0 space-y-1">
+                                          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+                                             <span className="break-all text-sm font-medium text-white sm:text-base">
                                                 Report #{r.id}
                                              </span>
 
@@ -385,28 +428,32 @@ export default function ResultsPage() {
 
                                           <div className="mt-3 flex flex-wrap gap-2">
                                              {mode === 'week' && (
-                                                <span className="inline-flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
+                                                <span className="inline-flex max-w-full items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
                                                    <FaDatabase
-                                                      className="text-emerald-300"
+                                                      className="shrink-0 text-emerald-300"
                                                       aria-hidden="true"
                                                    />
-                                                   {r.cluster || 'Unknown'}
+                                                   <span className="min-w-0 break-words">
+                                                      {r.cluster || 'Unknown'}
+                                                   </span>
                                                 </span>
                                              )}
 
-                                             <span className="inline-flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
+                                             <span className="inline-flex max-w-full items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
                                                 <FaUser
-                                                   className="text-blue-300"
+                                                   className="shrink-0 text-blue-300"
                                                    aria-hidden="true"
                                                 />
-                                                {r.person || 'Unknown'}
+                                                <span className="min-w-0 break-words">
+                                                   {r.person || 'Unknown'}
+                                                </span>
                                              </span>
                                           </div>
                                        </div>
                                     </div>
 
-                                    <div className="text-xs text-slate-300 group-hover:text-white flex items-center gap-1 transition">
-                                       <span className="opacity-0 group-hover:opacity-100 transition">
+                                    <div className="flex items-center gap-1 self-end text-xs text-slate-300 transition group-hover:text-white sm:self-auto">
+                                       <span className="opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
                                           Open
                                        </span>
                                        <span className="group-hover:translate-x-0.5 transition">
@@ -424,25 +471,31 @@ export default function ResultsPage() {
 
             {/* PAGINATION */}
             {pagination && (
-               <div className="flex items-center justify-between mt-10 text-white">
+               <div className="mt-10 flex flex-col items-stretch gap-3 text-white sm:flex-row sm:items-center sm:justify-between">
                   <button
                      disabled={!pagination.hasPrevPage}
                      onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                     className="px-4 py-2 rounded-xl border border-white/10 bg-white/5 disabled:opacity-30 hover:bg-white/10 transition"
+                     className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 transition hover:bg-white/10 disabled:opacity-30 sm:w-auto"
                   >
-                    <span className='flex items-center gap-1'><IoIosArrowForward className='rotate-180' aria-hidden='true'></IoIosArrowForward>Previous</span> 
+                     <span className="flex items-center justify-center gap-1">
+                        <IoIosArrowForward className="rotate-180" aria-hidden="true" />
+                        Previous
+                     </span>
                   </button>
 
-                  <div className="text-sm text-slate-300">
+                  <div className="text-center text-sm text-slate-300">
                      Page {pagination.page} of {pagination.totalPages}
                   </div>
 
                   <button
                      disabled={!pagination.hasNextPage}
                      onClick={() => setPage((p) => p + 1)}
-                     className="px-4 py-2 rounded-xl border border-white/10 bg-white/5 disabled:opacity-30 hover:bg-white/10 transition"
+                     className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 transition hover:bg-white/10 disabled:opacity-30 sm:w-auto"
                   >
-                     <span className='flex items-center gap-1'>Next<IoIosArrowForward aria-hidden='true'></IoIosArrowForward></span> 
+                     <span className="flex items-center justify-center gap-1">
+                        Next
+                        <IoIosArrowForward aria-hidden="true" />
+                     </span>
                   </button>
                </div>
             )}

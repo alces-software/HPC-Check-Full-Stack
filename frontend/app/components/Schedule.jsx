@@ -113,21 +113,33 @@ export default function Schedule() {
       <main className="space-y-8">
          <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
             {/* Header */}
-            <div className="mb-4 flex items-center justify-between">
-               <div>
+            <div className="mb-6 grid gap-4 text-center md:grid-cols-[1fr_auto] md:items-start md:text-left">
+               <div className="order-1 md:col-start-1 md:row-start-1">
                   <h1 className="text-4xl font-bold text-white">Weekly Schedule</h1>
                   <p className="mt-2 text-slate-300">Week beginning {formattedWeekBeginning}</p>
                </div>
 
-               <div className="flex gap-3">
+               <div className="order-2 flex justify-center md:order-3 md:col-start-2 md:row-start-2 md:justify-end">
+                  <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10 text-amber-200/90">
+                        <IoSwapHorizontal className="text-base" aria-hidden="true" />
+                     </span>
+
+                     <span>
+                        <span className="font-semibold text-white">Swap</span> replaces a scheduled
+                        person for that day.
+                     </span>
+                  </div>
+               </div>
+
+               <div className="order-3 flex justify-center gap-3 md:order-2 md:col-start-2 md:row-start-1 md:justify-end">
                   <button
                      onClick={() => setWeekOffset((w) => w - 1)}
                      className="rounded-lg cursor-pointer bg-white/10 px-3 py-1.5 text-md text-white hover:bg-white/20"
                   >
-                    <div className="flex items-center gap-1">
-                     <IoIosArrowForward className="rotate-180" aria-hidden="true" />
+                     <div className="flex items-center gap-1">
+                        <IoIosArrowForward className="rotate-180" aria-hidden="true" />
                         Prev
-                        
                      </div>
                   </button>
 
@@ -147,19 +159,6 @@ export default function Schedule() {
                         <IoIosArrowForward aria-hidden="true" />
                      </div>
                   </button>
-               </div>
-            </div>
-
-            <div className="mb-6 flex justify-end">
-               <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10 text-amber-200/90">
-                     <IoSwapHorizontal className="text-base" aria-hidden="true" />
-                  </span>
-
-                  <span>
-                     <span className="font-semibold text-white">Swap</span> replaces a scheduled
-                     person for that day.
-                  </span>
                </div>
             </div>
 

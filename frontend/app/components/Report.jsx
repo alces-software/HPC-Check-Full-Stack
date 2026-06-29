@@ -130,11 +130,11 @@ export default function Report() {
                <div className="divide-y divide-white/10 md:hidden">
                   {report.results.map((result, index) => (
                      <div key={index} className="p-4">
-                        <div className="flex justify-between gap-3">
-                           <h3 className="text-white">{result.title}</h3>
+                        <div className="flex items-start justify-between gap-3">
+                           <h3 className="min-w-0 flex-1 break-words text-white">{result.title}</h3>
 
                            <span
-                              className={`rounded-full border px-3 py-1 text-xs font-bold uppercase ${outcomeStyle(
+                              className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-bold uppercase ${outcomeStyle(
                                  result.passed
                               )}`}
                            >
