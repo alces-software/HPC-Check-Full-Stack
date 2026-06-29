@@ -4,12 +4,7 @@
       "validator": {
          "$jsonSchema": {
             "bsonType": "object",
-            "required": [
-               "_id",
-               "clusterId",
-               "personId",
-               "day"
-            ],
+            "required": ["_id", "clusterId", "personId", "day"],
             "properties": {
                "_id": {
                   "bsonType": "objectId"
@@ -34,10 +29,7 @@
       "validator": {
          "$jsonSchema": {
             "bsonType": "object",
-            "required": [
-               "_id",
-               "day"
-            ],
+            "required": ["_id", "day"],
             "properties": {
                "_id": {
                   "bsonType": "objectId"
@@ -56,12 +48,7 @@
       "validator": {
          "$jsonSchema": {
             "bsonType": "object",
-            "required": [
-               "_id",
-               "personId",
-               "newPersonId",
-               "date"
-            ],
+            "required": ["_id", "personId", "newPersonId", "date"],
             "properties": {
                "_id": {
                   "bsonType": "objectId"
@@ -86,15 +73,7 @@
       "validator": {
          "$jsonSchema": {
             "bsonType": "object",
-            "required": [
-               "_id",
-               "bad",
-               "clusterId",
-               "description",
-               "expectedTime",
-               "good",
-               "title"
-            ],
+            "required": ["_id", "bad", "clusterId", "description", "expectedTime", "good", "title"],
             "properties": {
                "_id": {
                   "bsonType": "objectId"
@@ -131,10 +110,7 @@
       "validator": {
          "$jsonSchema": {
             "bsonType": "object",
-            "required": [
-               "_id",
-               "name"
-            ],
+            "required": ["_id", "name"],
             "properties": {
                "_id": {
                   "bsonType": "objectId"
@@ -156,11 +132,7 @@
       "validator": {
          "$jsonSchema": {
             "bsonType": "object",
-            "required": [
-               "_id",
-               "name",
-               "teamId"
-            ],
+            "required": ["_id", "name", "teamId"],
             "properties": {
                "_id": {
                   "bsonType": "objectId"
@@ -182,11 +154,7 @@
       "validator": {
          "$jsonSchema": {
             "bsonType": "object",
-            "required": [
-               "_id",
-               "content",
-               "instructionId"
-            ],
+            "required": ["_id", "content", "instructionId"],
             "properties": {
                "_id": {
                   "bsonType": "objectId"
@@ -208,13 +176,7 @@
       "validator": {
          "$jsonSchema": {
             "bsonType": "object",
-            "required": [
-               "_id",
-               "instructionId",
-               "note",
-               "passed",
-               "reportId"
-            ],
+            "required": ["_id", "instructionId", "note", "passed", "reportId"],
             "properties": {
                "_id": {
                   "bsonType": "objectId"
@@ -242,13 +204,7 @@
       "validator": {
          "$jsonSchema": {
             "bsonType": "object",
-            "required": [
-               "_id",
-               "clusterId",
-               "endDate",
-               "personId",
-               "startDate"
-            ],
+            "required": ["_id", "clusterId", "endDate", "personId", "startDate"],
             "properties": {
                "_id": {
                   "bsonType": "objectId"
@@ -279,10 +235,7 @@
       "validator": {
          "$jsonSchema": {
             "bsonType": "object",
-            "required": [
-               "_id",
-               "name"
-            ],
+            "required": ["_id", "name"],
             "properties": {
                "_id": {
                   "bsonType": "objectId"

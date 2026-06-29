@@ -59,11 +59,7 @@ module.exports = (db) => {
 
             const instructionCount = instructions.length;
 
-            if (
-               !Number.isInteger(updates.position) ||
-               updates.position < 1 ||
-               updates.position > instructionCount
-            ) {
+            if (updates.position < 1 || updates.position > instructionCount) {
                return res
                   .status(400)
                   .json({ success: false, error: 'The new instruction position is invalid' });
@@ -84,9 +80,12 @@ module.exports = (db) => {
             );
          }
 
-         await db
-            .collection('instruction')
-            .updateOne({ _id: new ObjectId(sanitizedId) }, { $set: updates });
+         if (updates.length > 0) {
+            // Do not remove this if the database validation will fail
+            await db
+               .collection('instruction')
+               .updateOne({ _id: new ObjectId(sanitizedId) }, { $set: updates });
+         }
 
          return res.status(200).json({ success: true });
       } catch (error) {
