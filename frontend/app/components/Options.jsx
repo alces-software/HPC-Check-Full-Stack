@@ -307,10 +307,10 @@ export default function Options() {
             <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
                <div className="mb-10 text-center">
                   <div className="mb-4 flex justify-center">
-                     <IoIosSettings className="h-20 w-20 text-amber-300" aria-hidden="true" />
+                     <IoIosSettings className="h-25 w-25 text-amber-300" aria-hidden="true" />
                   </div>
 
-                  <h1 className="text-5xl font-bold text-white">Administration</h1>
+                  <h1 className="text-4xl sm:text-5xl font-bold text-white">Administration</h1>
 
                   <p className="mt-3 text-lg text-slate-300">
                      Manage users, clusters, and future system options.
@@ -353,9 +353,9 @@ export default function Options() {
                   </div>
                )}
 
-               <div className="grid gap-6 lg:grid-cols-3">
+               <div className="grid justify-items-center gap-6 lg:grid-cols-3 lg:justify-items-stretch">
                   {/* Users */}
-                  <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-6">
+                  <div className="w-full max-w-sm rounded-2xl border border-blue-400/20 bg-blue-500/10 p-6 lg:max-w-none">
                      <FaUser className="mb-3 text-4xl text-blue-300" aria-hidden="true" />
 
                      <h2 className="mb-2 text-2xl font-bold text-white">Add User</h2>
@@ -418,7 +418,7 @@ export default function Options() {
                   </div>
 
                   {/* Clusters */}
-                  <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-6">
+                  <div className="w-full max-w-sm rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-6 lg:max-w-none">
                      <FaDatabase className="mb-3 text-4xl text-emerald-300" aria-hidden="true" />
 
                      <h2 className="mb-2 text-2xl font-bold text-white">Add Cluster</h2>
@@ -492,7 +492,7 @@ export default function Options() {
                   </div>
 
                   {/* Teams */}
-                  <div className="rounded-2xl border border-amber-400/20 bg-amber-500/10 p-6">
+                  <div className="w-full max-w-sm rounded-2xl border border-amber-400/20 bg-amber-500/10 p-6 lg:max-w-none">
                      <FaUsers className="mb-3 text-4xl text-amber-300" aria-hidden="true" />
 
                      <h2 className="mb-2 text-2xl font-bold text-white">Add Team</h2>
