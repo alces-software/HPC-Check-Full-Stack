@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
+import { FaClipboardList } from 'react-icons/fa';
 
 export default function Form() {
    const [completedSteps, setCompletedSteps] = useState({});
@@ -55,6 +56,7 @@ export default function Form() {
    }, []);
 
    const clusterId = allClusters.find((c) => c.id === cookieCluster)?.id;
+   const clusterName = allClusters.find((c) => c.id === cookieCluster)?.name;
 
    // NEW CODE - REVIEW
    const getSteps = useCallback(async () => {
@@ -243,26 +245,23 @@ export default function Form() {
    return (
       <main className="relative flex min-h-screen items-center justify-center overflow-hidden">
          {/* background */}
-         <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
-         <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl" />
 
+        
          {/* content wrapper */}
-         <div className="relative z-10 w-full max-w-6xl">
+         <div className="relative z-10 w-full max-w-5xl">
             <form
                onSubmit={handleSubmit}
-               className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl"
+               className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl"
             >
                {/* Header */}
                <div className="mb-10 text-center">
                   <div className="mb-4 flex justify-center">
-                     <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-4xl shadow-xl">
-                        📋
-                     </div>
+                     <FaClipboardList className="h-20 w-20 text-blue-300" aria-hidden="true" />
                   </div>
                   <h1 className="text-4xl font-bold text-white">Process Documentation</h1>
                   <p className="mt-3 text-lg text-slate-300">
                      {name}&apos;s Check for{' '}
-                     <span className="font-semibold text-blue-300">{cookieCluster}</span>
+                     <span className="font-semibold text-blue-300">{clusterName}</span>
                   </p>
                </div>
 
@@ -271,7 +270,7 @@ export default function Form() {
                   {steps.length == 0 && (
                      <p className="text-lg text-slate-300 text-center">No instruction available</p>
                   )}
-                  {steps.map((step) => {
+                  {steps.map((step, index) => {
                      const isCompleted = Boolean(completedSteps[step.id]);
 
                      const isEditing = editingStepID === step.id;
@@ -282,15 +281,33 @@ export default function Form() {
                            key={step.id}
                            className="rounded-2xl border border-white/10 bg-white/5 p-6"
                         >
+
+                           {/* <h2>{index + 1}</h2>
                            <h2 className="mb-4 flex items-center justify-between text-xl font-semibold text-white">
                               {step.title}
 
                               {step.expectedTime && (
-                                 <span className="shrink-0 rounded-full border border-blue-400/20 bg-blue-500/10 px-3 py-1 text-right text-sm font-semibold text-blue-200">
+                                 <span className="shrink-0 rounded-full border border-blue-400/20 bg-blue-500/20 px-3 py-1 text-right text-sm font-semibold text-blue-200">
                                     {step.expectedTime}
                                  </span>
                               )}
-                           </h2>
+                           </h2> */}
+                           <div className="mb-2 flex items-center gap-3">
+                                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-400/30 bg-blue-500/20 text-sm font-bold text-blue-300">
+                                                   {index + 1}
+                                                </span>
+
+                                                <h2 className="text-xl font-semibold text-white">
+                                                   {step.title}
+                                                </h2>
+                                                   {step.expectedTime && (
+                                 <span className="shrink-0 rounded-full border border-blue-400/20 bg-blue-500/20 px-3 py-1 text-right text-sm font-semibold text-blue-200">
+                                    {step.expectedTime}
+                                 </span>
+                              )}
+                                              
+                                             </div>
+                                             
 
                            <p className="mb-4 text-slate-300">{step.description}</p>
 

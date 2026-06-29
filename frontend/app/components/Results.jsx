@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
+import { FaChartBar, FaDatabase, FaUser } from 'react-icons/fa';
+import { IoIosArrowForward } from 'react-icons/io';
 
 export default function ResultsPage() {
    const router = useRouter();
@@ -173,21 +175,23 @@ export default function ResultsPage() {
          <div className="w-full max-w-5xl rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
             {/* HEADER */}
             <div className="text-center mb-10">
-               <div className="text-5xl mb-4">📊</div>
+               <div className="mb-4 flex justify-center">
+                  <FaChartBar className="h-20 w-20 text-purple-300" aria-hidden="true" />
+               </div>
                <h1 className="text-5xl font-bold text-white">Report Explorer</h1>
                <p className="text-slate-300 mt-2">Cluster or weekly report view</p>
             </div>
 
             {/* MODE TOGGLE */}
-            <div className="flex justify-center mb-8">
-               <div className="flex items-center gap-1 rounded-2xl border border-white/10 bg-white/5 p-1 backdrop-blur-xl">
+            <div className="mb-8 flex justify-center">
+               <div className="inline-flex items-center gap-5 rounded-2xl px-8 py-4 backdrop-blur-sm">
                   <button
                      onClick={() => setMode('cluster')}
                      className={[
-                        'px-4 py-2 rounded-xl text-sm transition cursor-pointer',
+                        'cursor-pointer border-b-2 pb-2 text-sm font-semibold tracking-wide transition',
                         mode === 'cluster'
-                           ? 'bg-white/10 text-white'
-                           : 'text-slate-400 hover:text-white hover:bg-white/5'
+                           ? 'border-blue-400 text-white'
+                           : 'border-transparent text-slate-400 hover:text-white'
                      ].join(' ')}
                   >
                      Cluster
@@ -196,10 +200,10 @@ export default function ResultsPage() {
                   <button
                      onClick={() => setMode('week')}
                      className={[
-                        'px-4 py-2 rounded-xl text-sm transition cursor-pointer',
+                        'cursor-pointer border-b-2 pb-2 text-sm font-semibold tracking-wide transition',
                         mode === 'week'
-                           ? 'bg-white/10 text-white'
-                           : 'text-slate-400 hover:text-white hover:bg-white/5'
+                           ? 'border-blue-400 text-white'
+                           : 'border-transparent text-slate-400 hover:text-white'
                      ].join(' ')}
                   >
                      Weekly
@@ -209,7 +213,7 @@ export default function ResultsPage() {
 
             {/* WEEK DATE RANGE */}
             {mode === 'week' && (
-               <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
+               <div className="mb-6 rounded-2xl border border-white/10  p-5 backdrop-blur-sm">
                   <div className="mb-4 flex items-center justify-between">
                      <div>
                         <h3 className="text-white font-medium">Custom Date Range</h3>
@@ -252,7 +256,7 @@ export default function ResultsPage() {
 
             {/* CLUSTER DATE RANGE (NEW BUT MATCHING STYLE) */}
             {mode === 'cluster' && (
-               <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm">
+               <div className="mb-6 rounded-2xl border border-white/10 p-5 backdrop-blur-sm">
                   <div className="mb-4">
                      <h3 className="text-white font-medium">Cluster Date Range (optional)</h3>
                      <p className="text-xs text-slate-400 mt-1">
@@ -280,10 +284,10 @@ export default function ResultsPage() {
             )}
 
             {/* CLUSTER SELECT */}
-            <div className="mb-6">
-               <label className="mb-2 block text-sm text-slate-200">Cluster</label>
+            {mode === 'cluster' && (
+               <div className="mb-6">
+                  <label className="mb-2 block text-sm text-slate-200">Cluster</label>
 
-               <div className={mode === 'week' ? 'opacity-40 pointer-events-none' : ''}>
                   <Listbox value={selectedClusterId} onChange={setSelectedClusterId}>
                      <div className="relative">
                         <ListboxButton className="w-full cursor-pointer rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-left text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
@@ -308,7 +312,7 @@ export default function ResultsPage() {
                      </div>
                   </Listbox>
                </div>
-            </div>
+            )}
 
             {/* LOADING */}
             {loading && <p className="text-center text-slate-300">Loading reports...</p>}
@@ -323,13 +327,13 @@ export default function ResultsPage() {
                {Object.entries(grouped).map(([date, items]) => (
                   <div
                      key={date}
-                     className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden"
+                     className="rounded-2xl border border-white/10 backdrop-blur-sm overflow-hidden"
                   >
-                     <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 bg-white/5">
+                     <div className="flex items-center justify-between px-5 py-3 border-b border-white/10">
                         <h2 className="text-white font-semibold tracking-wide">{date}</h2>
 
-                        <span className="text-xs text-slate-300 bg-white/5 border border-white/10 px-3 py-1 rounded-full">
-                           {items.length} reports
+                        <span className="text-xs text-slate-300  border border-white/10 px-3 py-1 rounded-full">
+                           {items.length} report(s)
                         </span>
                      </div>
 
@@ -381,13 +385,21 @@ export default function ResultsPage() {
 
                                           <div className="mt-3 flex flex-wrap gap-2">
                                              {mode === 'week' && (
-                                                <span className="rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
-                                                   🗄️ {r.cluster || 'Unknown'}
+                                                <span className="inline-flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
+                                                   <FaDatabase
+                                                      className="text-emerald-300"
+                                                      aria-hidden="true"
+                                                   />
+                                                   {r.cluster || 'Unknown'}
                                                 </span>
                                              )}
 
-                                             <span className="rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
-                                                👤 {r.person || 'Unknown'}
+                                             <span className="inline-flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
+                                                <FaUser
+                                                   className="text-blue-300"
+                                                   aria-hidden="true"
+                                                />
+                                                {r.person || 'Unknown'}
                                              </span>
                                           </div>
                                        </div>
@@ -398,7 +410,7 @@ export default function ResultsPage() {
                                           Open
                                        </span>
                                        <span className="group-hover:translate-x-0.5 transition">
-                                          →
+                                          <IoIosArrowForward></IoIosArrowForward>
                                        </span>
                                     </div>
                                  </div>
@@ -418,7 +430,7 @@ export default function ResultsPage() {
                      onClick={() => setPage((p) => Math.max(p - 1, 1))}
                      className="px-4 py-2 rounded-xl border border-white/10 bg-white/5 disabled:opacity-30 hover:bg-white/10 transition"
                   >
-                     ← Previous
+                    <span className='flex items-center gap-1'><IoIosArrowForward className='rotate-180' aria-hidden='true'></IoIosArrowForward>Previous</span> 
                   </button>
 
                   <div className="text-sm text-slate-300">
@@ -430,7 +442,7 @@ export default function ResultsPage() {
                      onClick={() => setPage((p) => p + 1)}
                      className="px-4 py-2 rounded-xl border border-white/10 bg-white/5 disabled:opacity-30 hover:bg-white/10 transition"
                   >
-                     Next →
+                     <span className='flex items-center gap-1'>Next<IoIosArrowForward aria-hidden='true'></IoIosArrowForward></span> 
                   </button>
                </div>
             )}

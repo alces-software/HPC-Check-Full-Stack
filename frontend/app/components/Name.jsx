@@ -4,6 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
+import { FaUser } from 'react-icons/fa';
+import { IoIosArrowForward } from 'react-icons/io';
 
 export default function Name() {
    const [people, setPeople] = useState([]);
@@ -30,7 +32,11 @@ export default function Name() {
          <div className="w-full max-w-md">
             <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
                <div className="mb-8 text-center">
-                  <h1 className="text-4xl font-bold text-white">Welcome 👋</h1>
+                  <div className="mb-4 flex justify-center">
+                     <FaUser className="h-20 w-20 text-blue-300" aria-hidden="true" />
+                  </div>
+
+                  <h1 className="text-4xl font-bold text-white">Welcome</h1>
                   <p className="mt-2 text-slate-300">Select your name to continue</p>
                </div>
 
@@ -72,9 +78,12 @@ export default function Name() {
                   <button
                      type="submit"
                      disabled={!selectedId}
-                     className="w-full cursor-pointer rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02] hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                     className="flex w-full cursor-pointer items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.02] hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                     Continue →
+                     <div className="flex items-center gap-1">
+                        Continue
+                        <IoIosArrowForward aria-hidden="true" />
+                     </div>
                   </button>
                </form>
             </div>
