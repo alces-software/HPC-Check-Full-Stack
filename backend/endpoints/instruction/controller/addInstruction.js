@@ -89,6 +89,11 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'The bad provided is empty' });
          }
 
+         // Get new instructions position
+         const currentTotalInstructions = await db
+            .collection('instruction')
+            .countDocuments({ clusterId: sanitizedClusterId });
+
          // Check if cluster exists
          const clusterExists = await db.collection('cluster').findOne({
             _id: new ObjectId(sanitizedClusterId)
@@ -107,7 +112,8 @@ module.exports = (db) => {
             description: sanitizedDescription,
             clusterId: sanitizedClusterId,
             good: sanitizedGood,
-            bad: sanitizedBad
+            bad: sanitizedBad,
+            position: currentTotalInstructions + 1
          });
 
          return res.status(200).json({ success: true });

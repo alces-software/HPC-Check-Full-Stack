@@ -5,6 +5,9 @@ import ReactMarkdown from 'react-markdown';
 import ClusterInstructionsPDF from './ClusterInstructionsPDF.jsx';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { FaDatabase, FaUser } from 'react-icons/fa';
+import { IoIosArrowForward } from 'react-icons/io';
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
 
 export default function ClusterSettingsPage() {
    const searchParams = useSearchParams();
@@ -52,6 +55,7 @@ export default function ClusterSettingsPage() {
    const [editedInstructionTitle, setEditedInstructionTitle] = useState('');
    const [editedInstructionDescription, setEditedInstructionDescription] = useState('');
    const [editedInstructionExpectedTime, setEditedInstructionExpectedTime] = useState('');
+   const [editedInstructionPosition, setEditedInstructionPosition] = useState(0);
 
    const [addingInstruction, setAddingInstruction] = useState(false);
    const [newInstructionTitle, setNewInstructionTitle] = useState('');
@@ -237,7 +241,7 @@ export default function ClusterSettingsPage() {
       }
    }
 
-   async function updateInstruction(id, title, description, expectedTime) {
+   async function updateInstruction(id, title, description, expectedTime, position) {
       try {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/instruction`, {
             method: 'PATCH',
@@ -246,7 +250,8 @@ export default function ClusterSettingsPage() {
                id,
                title,
                description,
-               expectedTime
+               expectedTime,
+               position
             })
          });
 
@@ -331,18 +336,19 @@ export default function ClusterSettingsPage() {
    }
 
    return (
-      <main className="relative flex min-h-screen justify-center overflow-hidden px-6 py-8">
-         <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
-         <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-3xl" />
+      <main className="flex min-h-screen items-start justify-center">
+         <div className="relative z-10 w-full max-w-5xl">
+            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
+               <div className="mt-8 text-center">
+                  <div className="mb-4 flex justify-center">
+                     <FaDatabase className="h-20 w-20 text-emerald-300" aria-hidden="true" />
+                  </div>
 
-         <div className="relative z-10 w-full max-w-6xl">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
-               <div className="mb-10 text-center">
                   <h1 className="text-5xl font-bold text-white">{cluster.name}</h1>
 
-                  <p className="mt-4 text-lg text-slate-300">Cluster settings and overview</p>
+                  <p className="mt-3 text-lg text-slate-300">Cluster settings and overview</p>
 
-                  <div className="mt-6 flex flex-wrap gap-3 flex justify-center">
+                  <div className="mt-6 flex flex-wrap justify-center gap-3">
                      {!hasChecks ? (
                         <>
                            <span className="rounded-full border border-blue-400/30 bg-blue-500/20 px-4 py-2 text-sm font-semibold text-blue-200">
@@ -379,8 +385,8 @@ export default function ClusterSettingsPage() {
                   </div>
                </div>
 
-               <div className="mb-8 flex justify-center">
-                  <div className="inline-flex items-center gap-5 rounded-2xl bg-white/[0.03] px-8 py-4 backdrop-blur-sm">
+               <div className="mt-10 mb-8 flex justify-center">
+                  <div className="inline-flex items-center gap-5 rounded-2xl px-8 py-4 backdrop-blur-sm">
                      <button
                         type="button"
                         onClick={() => setActiveTab('instructions')}
@@ -410,7 +416,7 @@ export default function ClusterSettingsPage() {
                </div>
 
                {activeTab === 'instructions' && (
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm">
+                  <div className="rounded-2xl border border-white/10  p-6 backdrop-blur-sm">
                      <div className="mb-6 flex items-start justify-between gap-4">
                         <div>
                            <h2 className="text-3xl font-bold text-white">Instructions</h2>
@@ -456,7 +462,7 @@ export default function ClusterSettingsPage() {
                      )}
 
                      {addingInstruction ? (
-                        <div className="mb-6 space-y-3 rounded-xl border border-white/10 bg-white/5 p-4">
+                        <div className="mb-6 space-y-3 rounded-xl border border-white/10 p-4">
                            <input
                               value={newInstructionTitle}
                               onChange={(e) => setNewInstructionTitle(e.target.value)}
@@ -543,6 +549,36 @@ export default function ClusterSettingsPage() {
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
 
+                                             <div className="relative">
+                                                <select
+                                                   value={editedInstructionPosition}
+                                                   onChange={(e) =>
+                                                      setEditedInstructionPosition(e.target.value)
+                                                   }
+                                                   className="w-full appearance-none rounded-xl border border-slate-700 bg-slate-900 p-4 pr-12 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                                                >
+                                                   {Array.from({ length: steps.length }, (_, i) => (
+                                                      <option key={i + 1} value={i + 1}>
+                                                         {i + 1}
+                                                      </option>
+                                                   ))}
+                                                </select>
+
+                                                <svg
+                                                   className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                                                   fill="none"
+                                                   stroke="currentColor"
+                                                   strokeWidth="2"
+                                                   viewBox="0 0 24 24"
+                                                >
+                                                   <path
+                                                      strokeLinecap="round"
+                                                      strokeLinejoin="round"
+                                                      d="M19 9l-7 7-7-7"
+                                                   />
+                                                </svg>
+                                             </div>
+
                                              <div className="flex justify-end gap-3">
                                                 <button
                                                    type="button"
@@ -550,6 +586,8 @@ export default function ClusterSettingsPage() {
                                                       setEditingInstructionId(null);
                                                       setEditedInstructionTitle('');
                                                       setEditedInstructionDescription('');
+                                                      setEditedInstructionExpectedTime('');
+                                                      setEditedInstructionPosition(0);
                                                    }}
                                                    className="cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 cursor-pointer"
                                                 >
@@ -563,7 +601,8 @@ export default function ClusterSettingsPage() {
                                                          step.id,
                                                          editedInstructionTitle.trim(),
                                                          editedInstructionDescription.trim(),
-                                                         editedInstructionExpectedTime.trim()
+                                                         editedInstructionExpectedTime.trim(),
+                                                         editedInstructionPosition
                                                       )
                                                    }
                                                    className="cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 cursor-pointer"
@@ -579,9 +618,14 @@ export default function ClusterSettingsPage() {
                                                    {index + 1}
                                                 </span>
 
-                                                <h3 className="text-xl font-semibold text-white">
+                                                <h2 className="text-xl font-semibold text-white">
                                                    {step.title}
-                                                </h3>
+                                                </h2>
+                                                {step.expectedTime && (
+                                                   <span className="shrink-0 rounded-full border border-blue-400/20 bg-blue-500/20 px-3 py-1 text-right text-sm font-semibold text-blue-200">
+                                                      {step.expectedTime}
+                                                   </span>
+                                                )}
                                              </div>
 
                                              <p className="text-slate-300">{step.description}</p>
@@ -601,6 +645,7 @@ export default function ClusterSettingsPage() {
                                              setEditedInstructionExpectedTime(
                                                 step.expectedTime || ''
                                              );
+                                             setEditedInstructionPosition(step.position || 1);
                                           }}
                                           className="cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white cursor-pointer"
                                        >
@@ -622,12 +667,6 @@ export default function ClusterSettingsPage() {
                                        >
                                           Delete Instruction
                                        </button>
-
-                                       {step.expectedTime && (
-                                          <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300">
-                                             {step.expectedTime}
-                                          </span>
-                                       )}
                                     </div>
                                  </div>
 
@@ -644,10 +683,7 @@ export default function ClusterSettingsPage() {
                                        )}
 
                                        {(step.methods || []).map((method, methodIndex) => (
-                                          <li
-                                             key={method.id}
-                                             className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-4"
-                                          >
+                                          <li key={method.id} className="rounded-xl px-4 py-4">
                                              {editingMethodId === method.id ? (
                                                 <div>
                                                    <textarea
@@ -857,7 +893,7 @@ export default function ClusterSettingsPage() {
                )}
 
                {activeTab === 'results' && (
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm">
+                  <div className="rounded-2xl border border-white/10 p-6 backdrop-blur-sm">
                      <div className="mb-6">
                         <h2 className="text-3xl font-bold text-white">Recent Results</h2>
 
@@ -939,8 +975,12 @@ export default function ClusterSettingsPage() {
 
                                                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-300">
                                                       <div className="mt-3 flex flex-wrap gap-2">
-                                                         <span className="rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
-                                                            👤 {report.person || 'Unknown'}
+                                                         <span className="inline-flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
+                                                            <FaUser
+                                                               className="text-blue-300"
+                                                               aria-hidden="true"
+                                                            />
+                                                            {report.person || 'Unknown'}
                                                          </span>
                                                       </div>
                                                    </div>
@@ -953,7 +993,7 @@ export default function ClusterSettingsPage() {
                                                 </span>
 
                                                 <span className="transition group-hover:translate-x-0.5">
-                                                   →
+                                                   <IoIosArrowForward></IoIosArrowForward>
                                                 </span>
                                              </div>
                                           </div>
