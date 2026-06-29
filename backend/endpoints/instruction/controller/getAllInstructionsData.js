@@ -74,7 +74,9 @@ module.exports = (db) => {
             response.push(i);
          }
 
-         return res.status(200).json({ success: true, body: response });
+         return res
+            .status(200)
+            .json({ success: true, body: response.sort((a, b) => a.position - b.position) });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }

@@ -477,8 +477,16 @@ export default function ResultsPage() {
                      onClick={() => setPage((p) => Math.max(p - 1, 1))}
                      className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 transition hover:bg-white/10 disabled:opacity-30 sm:w-auto"
                   >
+<<<<<<< HEAD
                      <span className="flex items-center justify-center gap-1">
                         <IoIosArrowForward className="rotate-180" aria-hidden="true" />
+=======
+                     <span className="flex items-center gap-1">
+                        <IoIosArrowForward
+                           className="rotate-180"
+                           aria-hidden="true"
+                        ></IoIosArrowForward>
+>>>>>>> origin/main
                         Previous
                      </span>
                   </button>
@@ -492,9 +500,14 @@ export default function ResultsPage() {
                      onClick={() => setPage((p) => p + 1)}
                      className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 transition hover:bg-white/10 disabled:opacity-30 sm:w-auto"
                   >
+<<<<<<< HEAD
                      <span className="flex items-center justify-center gap-1">
                         Next
                         <IoIosArrowForward aria-hidden="true" />
+=======
+                     <span className="flex items-center gap-1">
+                        Next<IoIosArrowForward aria-hidden="true"></IoIosArrowForward>
+>>>>>>> origin/main
                      </span>
                   </button>
                </div>

@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FaDatabase, FaUser } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
 
 export default function ClusterSettingsPage() {
    const searchParams = useSearchParams();
@@ -54,6 +55,7 @@ export default function ClusterSettingsPage() {
    const [editedInstructionTitle, setEditedInstructionTitle] = useState('');
    const [editedInstructionDescription, setEditedInstructionDescription] = useState('');
    const [editedInstructionExpectedTime, setEditedInstructionExpectedTime] = useState('');
+   const [editedInstructionPosition, setEditedInstructionPosition] = useState(0);
 
    const [addingInstruction, setAddingInstruction] = useState(false);
    const [newInstructionTitle, setNewInstructionTitle] = useState('');
@@ -239,7 +241,7 @@ export default function ClusterSettingsPage() {
       }
    }
 
-   async function updateInstruction(id, title, description, expectedTime) {
+   async function updateInstruction(id, title, description, expectedTime, position) {
       try {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/instruction`, {
             method: 'PATCH',
@@ -248,7 +250,8 @@ export default function ClusterSettingsPage() {
                id,
                title,
                description,
-               expectedTime
+               expectedTime,
+               position
             })
          });
 
@@ -546,13 +549,49 @@ export default function ClusterSettingsPage() {
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
 
+<<<<<<< HEAD
                                              <div className="flex flex-col gap-3 md:flex-row md:justify-end">
+=======
+                                             <div className="relative">
+                                                <select
+                                                   value={editedInstructionPosition}
+                                                   onChange={(e) =>
+                                                      setEditedInstructionPosition(e.target.value)
+                                                   }
+                                                   className="w-full appearance-none rounded-xl border border-slate-700 bg-slate-900 p-4 pr-12 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                                                >
+                                                   {Array.from({ length: steps.length }, (_, i) => (
+                                                      <option key={i + 1} value={i + 1}>
+                                                         {i + 1}
+                                                      </option>
+                                                   ))}
+                                                </select>
+
+                                                <svg
+                                                   className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                                                   fill="none"
+                                                   stroke="currentColor"
+                                                   strokeWidth="2"
+                                                   viewBox="0 0 24 24"
+                                                >
+                                                   <path
+                                                      strokeLinecap="round"
+                                                      strokeLinejoin="round"
+                                                      d="M19 9l-7 7-7-7"
+                                                   />
+                                                </svg>
+                                             </div>
+
+                                             <div className="flex justify-end gap-3">
+>>>>>>> origin/main
                                                 <button
                                                    type="button"
                                                    onClick={() => {
                                                       setEditingInstructionId(null);
                                                       setEditedInstructionTitle('');
                                                       setEditedInstructionDescription('');
+                                                      setEditedInstructionExpectedTime('');
+                                                      setEditedInstructionPosition(0);
                                                    }}
                                                    className="w-full cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 cursor-pointer md:w-auto"
                                                 >
@@ -566,7 +605,8 @@ export default function ClusterSettingsPage() {
                                                          step.id,
                                                          editedInstructionTitle.trim(),
                                                          editedInstructionDescription.trim(),
-                                                         editedInstructionExpectedTime.trim()
+                                                         editedInstructionExpectedTime.trim(),
+                                                         editedInstructionPosition
                                                       )
                                                    }
                                                    className="w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 cursor-pointer md:w-auto"
@@ -609,6 +649,7 @@ export default function ClusterSettingsPage() {
                                              setEditedInstructionExpectedTime(
                                                 step.expectedTime || ''
                                              );
+                                             setEditedInstructionPosition(step.position || 1);
                                           }}
                                           className="w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white cursor-pointer md:w-auto"
                                        >
