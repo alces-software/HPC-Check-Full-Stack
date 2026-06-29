@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { FaFolderOpen, FaInbox, FaUser } from 'react-icons/fa';
+import { IoIosArrowForward } from 'react-icons/io';
 
 export default function PersonalSchedule() {
    const [clusters, setClusters] = useState([]);
@@ -118,9 +120,7 @@ export default function PersonalSchedule() {
                {/* Header */}
                <div className="mb-10 text-center">
                   <div className="mb-4 flex justify-center">
-                     <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-4xl shadow-xl">
-                        👤
-                     </div>
+                     <FaUser className="h-20 w-20 text-blue-300" aria-hidden="true" />
                   </div>
 
                   <h1 className="text-4xl font-bold text-white">{name}&apos;s Clusters</h1>
@@ -152,7 +152,10 @@ export default function PersonalSchedule() {
                                         hover:shadow-2xl
                                     "
                         >
-                           <div className="mb-4 text-4xl">📂</div>
+                           <FaFolderOpen
+                              className="mb-4 text-4xl text-blue-300"
+                              aria-hidden="true"
+                           />
 
                            <div className="text-xs font-semibold uppercase tracking-widest text-blue-300">
                               Cluster
@@ -160,15 +163,18 @@ export default function PersonalSchedule() {
 
                            <div className="mt-2 text-xl font-bold text-white">{cluster.name}</div>
 
-                           <div className="mt-4 font-medium text-blue-300 transition-transform group-hover:translate-x-2">
-                              Open Report →
+                           <div className="mt-2 font-medium text-blue-300 transition-transform group-hover:translate-x-2">
+                              <div className="flex items-center gap-1">
+                        Continue
+                        <IoIosArrowForward aria-hidden="true" />
+                     </div>
                            </div>
                         </button>
                      ))}
                   </div>
                ) : (
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
-                     <div className="mb-4 text-6xl">📭</div>
+                     <FaInbox className="mx-auto mb-4 text-6xl text-slate-300" aria-hidden="true" />
 
                      <h2 className="text-xl font-semibold text-white">No Clusters Assigned</h2>
 

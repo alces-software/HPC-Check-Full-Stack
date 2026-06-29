@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
+import { FaDatabase, FaUser, FaUsers } from 'react-icons/fa';
+import { IoIosSettings } from 'react-icons/io';
 
 export default function TeamSettingsPage() {
    const searchParams = useSearchParams();
@@ -298,9 +300,7 @@ export default function TeamSettingsPage() {
             <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
                <div className="mt-8 text-center">
                   <div className="mb-4 flex justify-center">
-                     <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-4xl shadow-xl">
-                        👥
-                     </div>
+                     <FaUsers className="h-20 w-20 text-amber-300" aria-hidden="true" />
                   </div>
 
                   <h1 className="text-5xl font-bold text-white">{team.name}</h1>
@@ -326,7 +326,7 @@ export default function TeamSettingsPage() {
 
                <div className="mt-10 grid gap-6 lg:grid-cols-2">
                   <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-6">
-                     <div className="mb-3 text-4xl">👤</div>
+                     <FaUser className="mb-3 text-4xl text-blue-300" aria-hidden="true" />
 
                      <h2 className="mb-2 text-2xl font-bold text-white">Users</h2>
 
@@ -399,7 +399,7 @@ export default function TeamSettingsPage() {
                   </div>
 
                   <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-6">
-                     <div className="mb-3 text-4xl">🗄️</div>
+                     <FaDatabase className="mb-3 text-4xl text-emerald-300" aria-hidden="true" />
 
                      <h2 className="mb-2 text-2xl font-bold text-white">Clusters</h2>
 
@@ -476,7 +476,7 @@ export default function TeamSettingsPage() {
 
                {/* SETTINGS SECTION */}
                <div className="mt-6 rounded-2xl border border-purple-400/20 bg-purple-500/10 p-6">
-                  <div className="mb-3 text-4xl">⚙️</div>
+                  <IoIosSettings className="mb-3 text-4xl text-purple-300" aria-hidden="true" />
 
                   <h2 className="mb-2 text-2xl font-bold text-white">Settings</h2>
 
