@@ -549,9 +549,6 @@ export default function ClusterSettingsPage() {
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
 
-<<<<<<< HEAD
-                                             <div className="flex flex-col gap-3 md:flex-row md:justify-end">
-=======
                                              <div className="relative">
                                                 <select
                                                    value={editedInstructionPosition}
@@ -583,7 +580,6 @@ export default function ClusterSettingsPage() {
                                              </div>
 
                                              <div className="flex justify-end gap-3">
->>>>>>> origin/main
                                                 <button
                                                    type="button"
                                                    onClick={() => {
