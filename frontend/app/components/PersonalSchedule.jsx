@@ -165,9 +165,9 @@ export default function PersonalSchedule() {
 
                            <div className="mt-2 font-medium text-blue-300 transition-transform group-hover:translate-x-2">
                               <div className="flex items-center gap-1">
-                        Continue
-                        <IoIosArrowForward aria-hidden="true" />
-                     </div>
+                                 Continue
+                                 <IoIosArrowForward aria-hidden="true" />
+                              </div>
                            </div>
                         </button>
                      ))}

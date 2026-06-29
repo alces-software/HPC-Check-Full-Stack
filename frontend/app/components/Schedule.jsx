@@ -124,10 +124,9 @@ export default function Schedule() {
                      onClick={() => setWeekOffset((w) => w - 1)}
                      className="rounded-lg cursor-pointer bg-white/10 px-3 py-1.5 text-md text-white hover:bg-white/20"
                   >
-                    <div className="flex items-center gap-1">
-                     <IoIosArrowForward className="rotate-180" aria-hidden="true" />
+                     <div className="flex items-center gap-1">
+                        <IoIosArrowForward className="rotate-180" aria-hidden="true" />
                         Prev
-                        
                      </div>
                   </button>
 
