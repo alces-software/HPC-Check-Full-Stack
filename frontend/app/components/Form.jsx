@@ -246,7 +246,6 @@ export default function Form() {
       <main className="relative flex min-h-screen items-center justify-center overflow-hidden">
          {/* background */}
 
-        
          {/* content wrapper */}
          <div className="relative z-10 w-full max-w-5xl">
             <form
@@ -281,7 +280,6 @@ export default function Form() {
                            key={step.id}
                            className="rounded-2xl border border-white/10 bg-white/5 p-6"
                         >
-
                            {/* <h2>{index + 1}</h2>
                            <h2 className="mb-4 flex items-center justify-between text-xl font-semibold text-white">
                               {step.title}
@@ -293,21 +291,17 @@ export default function Form() {
                               )}
                            </h2> */}
                            <div className="mb-2 flex items-center gap-3">
-                                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-400/30 bg-blue-500/20 text-sm font-bold text-blue-300">
-                                                   {index + 1}
-                                                </span>
+                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-400/30 bg-blue-500/20 text-sm font-bold text-blue-300">
+                                 {index + 1}
+                              </span>
 
-                                                <h2 className="text-xl font-semibold text-white">
-                                                   {step.title}
-                                                </h2>
-                                                   {step.expectedTime && (
+                              <h2 className="text-xl font-semibold text-white">{step.title}</h2>
+                              {step.expectedTime && (
                                  <span className="shrink-0 rounded-full border border-blue-400/20 bg-blue-500/20 px-3 py-1 text-right text-sm font-semibold text-blue-200">
                                     {step.expectedTime}
                                  </span>
                               )}
-                                              
-                                             </div>
-                                             
+                           </div>
 
                            <p className="mb-4 text-slate-300">{step.description}</p>
 

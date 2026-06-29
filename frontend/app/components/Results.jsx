@@ -430,7 +430,13 @@ export default function ResultsPage() {
                      onClick={() => setPage((p) => Math.max(p - 1, 1))}
                      className="px-4 py-2 rounded-xl border border-white/10 bg-white/5 disabled:opacity-30 hover:bg-white/10 transition"
                   >
-                    <span className='flex items-center gap-1'><IoIosArrowForward className='rotate-180' aria-hidden='true'></IoIosArrowForward>Previous</span> 
+                     <span className="flex items-center gap-1">
+                        <IoIosArrowForward
+                           className="rotate-180"
+                           aria-hidden="true"
+                        ></IoIosArrowForward>
+                        Previous
+                     </span>
                   </button>
 
                   <div className="text-sm text-slate-300">
@@ -442,7 +448,9 @@ export default function ResultsPage() {
                      onClick={() => setPage((p) => p + 1)}
                      className="px-4 py-2 rounded-xl border border-white/10 bg-white/5 disabled:opacity-30 hover:bg-white/10 transition"
                   >
-                     <span className='flex items-center gap-1'>Next<IoIosArrowForward aria-hidden='true'></IoIosArrowForward></span> 
+                     <span className="flex items-center gap-1">
+                        Next<IoIosArrowForward aria-hidden="true"></IoIosArrowForward>
+                     </span>
                   </button>
                </div>
             )}

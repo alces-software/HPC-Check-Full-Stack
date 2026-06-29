@@ -39,10 +39,53 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'No valid fields to update' });
          }
 
-         // Updates values in the database
-         await db
+         // Check instruction exists
+         const instructionExists = await db
             .collection('instruction')
-            .updateOne({ _id: new ObjectId(sanitizedId) }, { $set: updates });
+            .findOne({ _id: new ObjectId(sanitizedId) });
+         if (!instructionExists) {
+            return res
+               .status(404)
+               .json({ success: false, error: 'No instruction with that id exists' });
+         }
+
+         // Check position if provided and update instructions around it
+         if (updates.position != null) {
+            let instructions = await db
+               .collection('instruction')
+               .find({ clusterId: instructionExists.clusterId })
+               .toArray()
+               .then((res) => res.sort((a, b) => a.position - b.position));
+
+            const instructionCount = instructions.length;
+
+            if (updates.position < 1 || updates.position > instructionCount) {
+               return res
+                  .status(400)
+                  .json({ success: false, error: 'The new instruction position is invalid' });
+            }
+
+            instructions = instructions.filter((i) => !i._id.equals(new ObjectId(id)));
+            instructions.splice(updates.position - 1, 0, instructionExists);
+
+            await db.collection('instruction').bulkWrite(
+               instructions.map((i, index) => ({
+                  updateOne: {
+                     filter: { _id: i._id },
+                     update: {
+                        $set: { position: index + 1 }
+                     }
+                  }
+               }))
+            );
+         }
+
+         if (updates.length > 0) {
+            // Do not remove this if the database validation will fail
+            await db
+               .collection('instruction')
+               .updateOne({ _id: new ObjectId(sanitizedId) }, { $set: updates });
+         }
 
          return res.status(200).json({ success: true });
       } catch (error) {
