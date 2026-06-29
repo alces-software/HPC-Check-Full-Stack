@@ -112,11 +112,11 @@ module.exports.seedData = async (db) => {
    // CLUSTERS (5)
    // -----------------------------
    const clusters = [
-      { _id: id(), name: 'Compute Stability' },
-      { _id: id(), name: 'Storage Integrity' },
-      { _id: id(), name: 'Inference Reliability' },
-      { _id: id(), name: 'Training Pipeline' },
-      { _id: id(), name: 'Network & Services' }
+      { _id: id(), name: 'Compute Stability', poolId: str(pools[0]._id) },
+      { _id: id(), name: 'Storage Integrity', poolId: str(pools[0]._id) },
+      { _id: id(), name: 'Inference Reliability', poolId: str(pools[1]._id) },
+      { _id: id(), name: 'Training Pipeline', poolId: str(pools[1]._id) },
+      { _id: id(), name: 'Network & Services', poolId: str(pools[2]._id) }
    ];
 
    await clusterCol.insertMany(clusters);

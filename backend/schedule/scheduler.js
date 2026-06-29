@@ -13,7 +13,10 @@ async function getTeams(db) {
       .find({})
       .toArray()
       .then((res) =>
-         res.map((data) => data._id.toString())
+         res.map((data) => ({
+            id: data._id.toString(),
+            clustersPerDay: data.clusters_per_day
+         }))
       );
    return response
 }
@@ -32,8 +35,95 @@ async function isWorkingDay(db, date) {
    return !response;
 }
 
+/**
+ * gets an array of team IDs
+ *
+ * @param {import('mongodb').Db} db - MongoDB database instance.
+ * @param {Date} date - MongoDB database instance.
+ */
 async function generateScheduleForDay(db, date) {
+   const teams = await getTeams(db);
    
+   for (let i=0; i<teams.length; i++) {
+      const team = teams[i]
+      // get pools for team
+      const pools = await db
+         .collection('teampool')
+         .find({ teamId: team.id })
+         .toArray();
+      const poolIds = pools.map(p => p.poolId);
+
+      // get the last team.clustersPerDay clusters that are in all the pools ordered by the last time they appeared in the schedule
+      const clusters = await db
+         .collection('cluster')
+         .find({ poolId: { $in: poolIds } })
+         .toArray();
+      
+      const lastUsage = await db.collection('schedule').aggregate([
+         {
+            $match: {
+               clusterId: { $in: clusters.map(c => c._id.toString()) }
+            }
+         },
+         {
+            $group: {
+               _id: "$clusterId",
+               lastDay: { $max: "$day" }
+            }
+         }
+         ]).toArray();
+      
+      const lastMap = new Map(
+         lastUsage.map(x => [x._id, x.lastDay])
+      );
+
+      clusters.sort((a, b) => {
+         const aTime = lastMap.get(a._id.toString())?.getTime() ?? 0;
+         const bTime = lastMap.get(b._id.toString())?.getTime() ?? 0;
+         return aTime - bTime;
+      });
+
+      const selectedClusters = clusters.slice(0, team.clusters_per_day);
+
+      // for each of them assign a random person from that team to it checking for the flag
+
+      const people = await db
+         .collection('person')
+         .find({ teamId: team.id })
+         .toArray();
+
+      for (const cluster of selectedClusters) {
+
+         const available = people.filter(p => !p.scheduled);
+
+         if (available.length === 0) {
+            people.forEach(p => p.scheduled = false);
+         }
+
+         const freshAvailable = people.filter(p => !p.scheduled);
+
+         const personIndex = Math.floor(Math.random() * freshAvailable.length);
+         const person = freshAvailable[personIndex];
+
+         await db.collection('schedule').insertOne({
+            personId: person._id.toString(),
+            clusterId: cluster._id.toString(),
+            day: date
+         });
+
+         person.scheduled = true;
+      }
+
+      await db.collection('person').bulkWrite(
+         people.map(p => ({
+            updateOne: {
+               filter: { _id: p._id },
+               update: { $set: { scheduled: p.scheduled } }
+            }
+         }))
+      );
+   }
+
 }
 
 /**
