@@ -1,272 +1,251 @@
 const { ObjectId } = require('mongodb');
 
 module.exports.seedData = async (db) => {
-   const peopleCollection = db.collection('person');
-   const clustersCollection = db.collection('cluster');
-   const teamsCollection = db.collection('team');
-   const instructionsCollection = db.collection('instruction');
-   const methodsCollection = db.collection('method');
+   const personCol = db.collection('person');
+   const teamCol = db.collection('team');
+   const poolCol = db.collection('pool');
+   const clusterCol = db.collection('cluster');
+   const teampoolCol = db.collection('teampool');
+   const instructionCol = db.collection('instruction');
+   const methodCol = db.collection('method');
 
-   // Users
-   const users = [
-      { _id: new ObjectId(), name: 'Oscar' },
-      { _id: new ObjectId(), name: 'Alex' },
-      { _id: new ObjectId(), name: 'Calum' }
+   // -----------------------------
+   // Helpers
+   // -----------------------------
+   const id = () => new ObjectId();
+   const str = (x) => x.toString();
+
+   const makeMethods = (instructionId, items) =>
+      items.map((content) => ({
+         _id: id(),
+         instructionId: str(instructionId),
+         content
+      }));
+
+   const makeInstructions = (clusterId, baseTitle, templates) =>
+      templates.map((t, i) => ({
+         _id: id(),
+         clusterId: str(clusterId),
+         title: `${baseTitle} ${i + 1} - ${t.title}`,
+         expectedTime: t.time,
+         description: t.description,
+         good: t.good,
+         bad: t.bad
+      }));
+
+   // -----------------------------
+   // POOLS (3)
+   // -----------------------------
+   const pools = [
+      { _id: id(), name: 'HPC Operations' },
+      { _id: id(), name: 'AI Services' },
+      { _id: id(), name: 'Infrastructure Health' }
    ];
 
-   // Insert a team and associate people/clusters with it
-   const defaultTeam = { _id: new ObjectId(), name: 'HPC Ops', clusters_per_day: 1 };
-   await teamsCollection.insertOne(defaultTeam);
+   await poolCol.insertMany(pools);
 
-   // Attach teamId (as string) to each user to satisfy schema
-   const usersWithTeam = users.map((u) => ({ ...u, teamId: defaultTeam._id.toString() }));
-
-   await peopleCollection.insertMany(usersWithTeam);
-
-   // Cluster
-   const cognitionCluster = {
-      _id: new ObjectId(),
-      name: 'Cognition'
-   };
-
-   // Associate cluster with the default team
-   cognitionCluster.teamId = defaultTeam._id.toString();
-
-   await clustersCollection.insertOne(cognitionCluster);
-
-   const instructions = [
+   // -----------------------------
+   // TEAMS (2)
+   // -----------------------------
+   const teams = [
       {
-         _id: new ObjectId(),
-         title: 'Login & Basic Access',
-         expectedTime: '2-3 mins',
-         description: 'Confirm login nodes and user-facing hosts are reachable.',
-         clusterId: cognitionCluster._id.toString(),
-         good: 'Successful login and filesystem access on all tested hosts.',
-         bad: 'Login failures, timeouts, or inaccessible filesystems.'
+         _id: id(),
+         name: 'Platform Ops',
+         clusters_per_day: 2,
+         assigned: true
       },
       {
-         _id: new ObjectId(),
-         title: 'Home Directory & User Quota + Filesystem Experience',
-         expectedTime: '6-7 mins',
-         description: 'Verify quota system and test home filesystem performance.',
-         clusterId: cognitionCluster._id.toString(),
-         good: 'Usage below limits and filesystem tests complete quickly.',
-         bad: 'Quota issues or poor filesystem performance.'
-      },
-      {
-         _id: new ObjectId(),
-         title: 'Scratch / Lustre Storage + Filesystem Experience',
-         expectedTime: '5-6 mins',
-         description: 'Verify scratch storage quotas and Lustre performance.',
-         clusterId: cognitionCluster._id.toString(),
-         good: 'Commands succeed with healthy performance.',
-         bad: 'Filesystem issues, errors, or slow performance.'
-      },
-      {
-         _id: new ObjectId(),
-         title: 'Slurm Scheduler Status',
-         expectedTime: '4-5 mins',
-         description: 'Confirm scheduler responsiveness and node availability.',
-         clusterId: cognitionCluster._id.toString(),
-         good: 'Nodes visible and scheduler operating normally.',
-         bad: 'Nodes down/drained or scheduler unresponsive.'
-      },
-      {
-         _id: new ObjectId(),
-         title: 'GPU / Compute Node Availability',
-         expectedTime: '3-4 mins',
-         description: 'Validate GPU node health and availability.',
-         clusterId: cognitionCluster._id.toString(),
-         good: 'GPU nodes healthy and accessible.',
-         bad: 'Missing nodes or unhealthy GPU resources.'
-      },
-      {
-         _id: new ObjectId(),
-         title: 'Light Test Job Submission',
-         expectedTime: '5-6 mins',
-         description: 'Verify jobs can be submitted and completed.',
-         clusterId: cognitionCluster._id.toString(),
-         good: 'Jobs execute successfully.',
-         bad: 'Jobs fail or remain pending.'
-      },
-      {
-         _id: new ObjectId(),
-         title: 'Services & Environment',
-         expectedTime: '3-4 mins',
-         description: 'Verify Slurm commands and environment modules.',
-         clusterId: cognitionCluster._id.toString(),
-         good: 'Environment commands work normally.',
-         bad: 'Broken environment or unavailable commands.'
-      },
-      {
-         _id: new ObjectId(),
-         title: 'Cleanup & Verification',
-         expectedTime: '2 mins',
-         description: 'Ensure no test artifacts remain.',
-         clusterId: cognitionCluster._id.toString(),
-         good: 'No jobs or files left behind.',
-         bad: 'Residual jobs, files, or quota usage.'
-      },
-      {
-         _id: new ObjectId(),
-         title: 'Final Notes / Escalation',
-         expectedTime: '1 min',
-         description: 'Record outcome and escalate issues if required.',
-         clusterId: cognitionCluster._id.toString(),
-         good: 'Daily check completed successfully.',
-         bad: 'Issues require escalation to OPS.'
+         _id: id(),
+         name: 'AI Engineering',
+         clusters_per_day: 2,
+         assigned: true
       }
    ];
 
-   await instructionsCollection.insertMany(instructions);
+   await teamCol.insertMany(teams);
 
-   const methods = [];
+   // -----------------------------
+   // TEAMPOOL (updated exclusivity model)
+   // -----------------------------
+   const teampools = [
+      // Exclusive pool for Platform Ops
+      {
+         _id: id(),
+         teamId: str(teams[0]._id),
+         poolId: str(pools[0]._id)
+      },
 
-   const addMethods = (instructionId, items) => {
-      items.forEach((content) => {
-         methods.push({
-            _id: new ObjectId(),
-            content,
-            instructionId: instructionId.toString()
-         });
-      });
-   };
+      // Shared pool (both teams)
+      {
+         _id: id(),
+         teamId: str(teams[0]._id),
+         poolId: str(pools[2]._id)
+      },
+      {
+         _id: id(),
+         teamId: str(teams[1]._id),
+         poolId: str(pools[2]._id)
+      },
 
-   addMethods(instructions[0]._id, [
-      'SSH to login1.cognition.gla.alces.network and verify a normal prompt appears.',
-      'SSH to a random selection of user-facing nodes.',
-      'Confirm home directories and shared filesystems are accessible.'
-   ]);
-
-   addMethods(instructions[1]._id, [
-      'Run: quota -s',
-      'Run: df -h ~',
-      'Perform block and metadata filesystem tests using dd and touch.',
-      'Create a large test file and verify quota reporting updates correctly.'
-   ]);
-
-   addMethods(instructions[2]._id, [
-      'Run: lfs quota /mnt/scratch/users/$USER',
-      'Verify scratch directory contents are accessible.',
-      'Perform large file write and metadata performance tests.',
-      'Confirm filesystem performance and quota reporting are acceptable.'
-   ]);
-
-   addMethods(instructions[3]._id, [
-      'Run: sinfo -Nl',
-      'Review partition information using scontrol show partitions.',
-      'Inspect nodes using scontrol show node.',
-      'Review running jobs and investigate a sample job where possible.'
-   ]);
-
-   addMethods(instructions[4]._id, [
-      'Review node status using sinfo.',
-      'SSH to a selection of GPU nodes and verify responsiveness.',
-      'Submit an interactive GPU job and run nvidia-smi health checks.',
-      'Inspect a node currently running a GPU workload.'
-   ]);
-
-   addMethods(instructions[5]._id, [
-      'Run a simple CPU test job with srun.',
-      'Monitor queue status using squeue -u $USER.',
-      'Submit a small batch script and confirm successful completion.'
-   ]);
-
-   addMethods(instructions[6]._id, ['Run: module avail', 'Run: which srun', 'Run: squeue']);
-
-   addMethods(instructions[7]._id, [
-      'Check for active jobs using squeue -u $USER.',
-      'Remove temporary files from home and scratch storage.',
-      'Run quota and verify usage has returned to normal.'
-   ]);
-
-   addMethods(instructions[8]._id, [
-      'If all checks pass, log: "Daily user check complete – no issues".',
-      'For any RED item, escalate to OPS with exact command output.'
-   ]);
-
-   await methodsCollection.insertMany(methods);
-
-   console.log('✅ Cognition test data seeded');
-
-   // Additional users
-   const additionalUsers = [
-      { _id: new ObjectId(), name: 'Sarah' },
-      { _id: new ObjectId(), name: 'Jamie' },
-      { _id: new ObjectId(), name: 'Priya' }
+      // Exclusive pool for AI Engineering
+      {
+         _id: id(),
+         teamId: str(teams[1]._id),
+         poolId: str(pools[1]._id)
+      }
+   ];
+   teampoolCol.insertMany(teampools);
+   // -----------------------------
+   // PEOPLE (5)
+   // -----------------------------
+   const people = [
+      { _id: id(), name: 'Oscar', teamId: str(teams[0]._id) },
+      { _id: id(), name: 'Alex', teamId: str(teams[0]._id) },
+      { _id: id(), name: 'Calum', teamId: str(teams[0]._id) },
+      { _id: id(), name: 'Sarah', teamId: str(teams[1]._id) },
+      { _id: id(), name: 'Priya', teamId: str(teams[1]._id) }
    ];
 
-   // Additional team
-   const aiResearchTeam = {
-      _id: new ObjectId(),
-      name: 'AI Research',
-      clusters_per_day: 1
-   };
+   await personCol.insertMany(people);
 
-   await teamsCollection.insertOne(aiResearchTeam);
+   // -----------------------------
+   // CLUSTERS (5)
+   // -----------------------------
+   const clusters = [
+      { _id: id(), name: 'Compute Stability' },
+      { _id: id(), name: 'Storage Integrity' },
+      { _id: id(), name: 'Inference Reliability' },
+      { _id: id(), name: 'Training Pipeline' },
+      { _id: id(), name: 'Network & Services' }
+   ];
 
-   const additionalUsersWithTeam = additionalUsers.map((u) => ({
-      ...u,
-      teamId: aiResearchTeam._id.toString()
-   }));
+   await clusterCol.insertMany(clusters);
 
-   await peopleCollection.insertMany(additionalUsersWithTeam);
-
-   // Additional cluster
-   const inferenceCluster = {
-      _id: new ObjectId(),
-      name: 'Inference',
-      teamId: aiResearchTeam._id.toString()
-   };
-
-   await clustersCollection.insertOne(inferenceCluster);
-
-   // Additional instructions
-   const inferenceInstructions = [
+   // -----------------------------
+   // INSTRUCTION TEMPLATES (shared pattern)
+   // 6 per cluster = 30 total
+   // -----------------------------
+   const templateSet = [
       {
-         _id: new ObjectId(),
-         title: 'Inference API Health Check',
-         expectedTime: '2-3 mins',
-         description: 'Verify inference endpoints are responding normally.',
-         clusterId: inferenceCluster._id.toString(),
-         good: 'All endpoints return successful responses.',
-         bad: 'Errors, timeouts, or degraded performance detected.'
+         title: 'Health Check',
+         time: '2-3 mins',
+         description: 'Verify system health and responsiveness.',
+         good: 'System responds normally.',
+         bad: 'Latency, errors, or downtime detected.'
       },
       {
-         _id: new ObjectId(),
-         title: 'GPU Utilisation Review',
-         expectedTime: '3-4 mins',
-         description: 'Check serving GPUs are healthy and available.',
-         clusterId: inferenceCluster._id.toString(),
-         good: 'GPU resources are healthy and within expected usage.',
-         bad: 'Unavailable devices or abnormal utilisation.'
+         title: 'Load Verification',
+         time: '3-4 mins',
+         description: 'Check system behaviour under typical load.',
+         good: 'Stable performance under load.',
+         bad: 'Degradation or throttling observed.'
       },
       {
-         _id: new ObjectId(),
-         title: 'Sample Inference Test',
-         expectedTime: '2-3 mins',
-         description: 'Run a test request through the production model.',
-         clusterId: inferenceCluster._id.toString(),
-         good: 'Inference completes successfully with expected output.',
-         bad: 'Request fails or produces unexpected results.'
+         title: 'Resource Audit',
+         time: '3-5 mins',
+         description: 'Inspect resource usage and availability.',
+         good: 'Resources within expected thresholds.',
+         bad: 'Overutilisation or missing resources.'
+      },
+      {
+         title: 'Failure Simulation',
+         time: '4-5 mins',
+         description: 'Simulate faults and verify recovery.',
+         good: 'System recovers cleanly.',
+         bad: 'Failure propagation or stuck states.'
+      },
+      {
+         title: 'Performance Test',
+         time: '5-6 mins',
+         description: 'Measure throughput and latency.',
+         good: 'Performance meets baseline.',
+         bad: 'Slow or inconsistent performance.'
+      },
+      {
+         title: 'Final Validation',
+         time: '2 mins',
+         description: 'Confirm system readiness.',
+         good: 'All checks pass.',
+         bad: 'Issues remain unresolved.'
       }
    ];
 
-   await instructionsCollection.insertMany(inferenceInstructions);
+   // -----------------------------
+   // INSTRUCTIONS + METHODS
+   // -----------------------------
+   const allInstructions = [];
+   const allMethods = [];
 
-   // Methods
-   addMethods(inferenceInstructions[0]._id, [
-      'Call the health endpoint for each inference service.',
-      'Verify response times are within expected limits.'
-   ]);
+   const clusterMap = {
+      'Compute Stability': [
+         'CPU Node Check',
+         'Scheduler Health',
+         'Job Execution',
+         'Node Failure Recovery',
+         'Benchmark Run',
+         'System Wrap-up'
+      ],
+      'Storage Integrity': [
+         'Filesystem Check',
+         'Quota Validation',
+         'IO Performance',
+         'Metadata Stress',
+         'Disk Health',
+         'Cleanup Validation'
+      ],
+      'Inference Reliability': [
+         'API Health',
+         'Model Latency',
+         'GPU Availability',
+         'Request Consistency',
+         'Error Rate Check',
+         'Service Wrap-up'
+      ],
+      'Training Pipeline': [
+         'Pipeline Start',
+         'Dataset Validation',
+         'Training Stability',
+         'Checkpointing',
+         'GPU Utilisation',
+         'Completion Review'
+      ],
+      'Network & Services': [
+         'Network Latency',
+         'Service Discovery',
+         'DNS Health',
+         'External API Check',
+         'Firewall Rules',
+         'Final Check'
+      ]
+   };
 
-   addMethods(inferenceInstructions[1]._id, [
-      'Run nvidia-smi on serving nodes.',
-      'Check for hardware errors or unavailable devices.'
-   ]);
+   for (const cluster of clusters) {
+      const titles = clusterMap[cluster.name];
 
-   addMethods(inferenceInstructions[2]._id, [
-      'Submit a standard inference request.',
-      'Confirm the response is returned successfully.'
-   ]);
+      const instructions = makeInstructions(
+         cluster._id,
+         cluster.name,
+         templateSet.map((t, i) => ({
+            ...t,
+            title: titles[i]
+         }))
+      );
+
+      allInstructions.push(...instructions);
+
+      for (const inst of instructions) {
+         allMethods.push(
+            ...makeMethods(inst._id, [
+               `Run primary diagnostic for: ${inst.title}`,
+               `Validate expected behaviour for ${inst.clusterId}`,
+               `Log system response and timing metrics`
+            ])
+         );
+      }
+   }
+
+   await instructionCol.insertMany(allInstructions);
+   await methodCol.insertMany(allMethods);
+
+   console.log('✅ Fresh seed data generated (no reports, no schedules)');
 };
