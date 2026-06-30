@@ -43,7 +43,7 @@ async function isWorkingDay(db, date) {
  */
 async function generateScheduleForDay(db, date) {
    const teams = await getTeams(db);
-   
+
    for (let i=0; i<teams.length; i++) {
       const team = teams[i]
       // get pools for team
@@ -83,7 +83,8 @@ async function generateScheduleForDay(db, date) {
          return aTime - bTime;
       });
 
-      const selectedClusters = clusters.slice(0, team.clusters_per_day);
+
+      const selectedClusters = clusters.slice(0, team.clustersPerDay);
 
       // for each of them assign a random person from that team to it checking for the flag
 
@@ -105,25 +106,28 @@ async function generateScheduleForDay(db, date) {
          const personIndex = Math.floor(Math.random() * freshAvailable.length);
          const person = freshAvailable[personIndex];
 
-         await db.collection('schedule').insertOne({
+         const scheduleObj = {
             personId: person._id.toString(),
             clusterId: cluster._id.toString(),
             day: date
-         });
+         }
+
+         await db.collection('schedule').insertOne(scheduleObj);
 
          person.scheduled = true;
       }
+
+      console.log(people)
 
       await db.collection('person').bulkWrite(
          people.map(p => ({
             updateOne: {
                filter: { _id: p._id },
-               update: { $set: { scheduled: p.scheduled } }
+               update: { $set: { scheduled: p.scheduled ?? false } }
             }
          }))
       );
    }
-
 }
 
 /**
@@ -149,7 +153,7 @@ async function generateUpToDay(db, date) {
       !latestDay || latestDay < today
          ? today
          : latestDay;
-
+   
    const dates = [];
    const cursor = new Date(startDate);
    cursor.setHours(0, 0, 0, 0);
@@ -176,7 +180,7 @@ async function generateUpToDay(db, date) {
  *
  * @param {import('mongodb').Db} db - MongoDB database instance.
  * @param {Date|string|number} date - Date to build the schedule for.
- * @returns {Promise<Record<string, string[]>>} Dictionary mapping person IDs to cluster IDs.
+ * @returns {Promise<Array>} Array of objects containing person IDs and cluster IDs.
  */
 async function getScheduleForDay(db, date) {
    // Normalise date
@@ -190,14 +194,33 @@ async function getScheduleForDay(db, date) {
       .find({ day: startOfDay })
       .toArray();
    
+   
    // Generate schedule for day if not
    if (scheduleForDay.length === 0) {
       await generateUpToDay(db, date)
-   }
-   
-   // Format response
 
-   // Return response
+      scheduleForDay = await db
+      .collection('schedule')
+      .find({ day: startOfDay })
+      .toArray();
+   }
+
+   // Format response
+   const response = scheduleForDay.map((entry) => ({
+      personId: entry.personId,
+      clusterId: entry.clusterId
+   }))
+
+   const scheduleDict = {};
+
+   for (let i = 0; i < response.length; i++) {
+      const person = response[i].personId;
+      const cluster = response[i].clusterId;
+
+      (scheduleDict[person] ??= []).push(cluster);
+   }
+
+   return scheduleDict;
 }
 
 /**
@@ -210,16 +233,6 @@ async function getScheduleForDay(db, date) {
 async function getScheduleForDayOLD(db, date) {
    const people = await this.getPeopleForDay(db, date);
    const clusters = await this.getClustersForDay(db, date);
-   const scheduleDict = {};
-
-   for (let i = 0; i < people.length; i++) {
-      const person = people[i];
-      const cluster = clusters[i];
-
-      (scheduleDict[person] ??= []).push(cluster);
-   }
-
-   return scheduleDict;
 }
 
 module.exports = getScheduleForDay;
