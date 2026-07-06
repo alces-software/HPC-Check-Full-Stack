@@ -1,4 +1,3 @@
-const seedrandom = require('seedrandom');
 require('dotenv').config;
 
 /**
@@ -59,6 +58,7 @@ async function generateScheduleForDay(db, date) {
          .find({ poolId: { $in: poolIds } })
          .toArray();
       
+      
       const lastUsage = await db.collection('schedule').aggregate([
          {
             $match: {
@@ -78,56 +78,79 @@ async function generateScheduleForDay(db, date) {
       );
 
       clusters.sort((a, b) => {
-         const aTime = lastMap.get(a._id.toString())?.getTime() ?? 0;
-         const bTime = lastMap.get(b._id.toString())?.getTime() ?? 0;
+         const aTime = lastMap.get(a._id.toString())?.getTime() ?? -Infinity;
+         const bTime = lastMap.get(b._id.toString())?.getTime() ?? -Infinity;
          return aTime - bTime;
       });
-
 
       const selectedClusters = clusters.slice(0, team.clustersPerDay);
 
       // for each of them assign a random person from that team to it checking for the flag
-
-      const people = await db
-         .collection('person')
-         .find({ teamId: team.id })
-         .toArray();
-
       for (const cluster of selectedClusters) {
+         const person = await getNextPerson(db, team.id)
 
-         const available = people.filter(p => !p.scheduled);
-
-         if (available.length === 0) {
-            people.forEach(p => p.scheduled = false);
-         }
-
-         const freshAvailable = people.filter(p => !p.scheduled);
-
-         const personIndex = Math.floor(Math.random() * freshAvailable.length);
-         const person = freshAvailable[personIndex];
-
-         const scheduleObj = {
+         await db.collection('schedule').insertOne({
             personId: person._id.toString(),
             clusterId: cluster._id.toString(),
             day: date
-         }
-
-         await db.collection('schedule').insertOne(scheduleObj);
-
-         person.scheduled = true;
+         });
       }
-
-      console.log(people)
-
-      await db.collection('person').bulkWrite(
-         people.map(p => ({
-            updateOne: {
-               filter: { _id: p._id },
-               update: { $set: { scheduled: p.scheduled ?? false } }
-            }
-         }))
-      );
    }
+}
+
+/**
+ * Gets the next random person in a team
+ *
+ * @param {import('mongodb').Db} db - MongoDB database instance.
+ * @param {Date|string|number} date - Date to build the schedule for.
+ */
+async function getNextPerson(db, teamId) {
+   console.log(`Getting next person for team: ${teamId}`)
+   let people = await db.collection('person')
+      .find({
+         teamId: teamId,
+         $or: [
+            { scheduled: false },
+            { scheduled: { $exists: false }}
+         ],
+      })
+      .toArray();
+   
+   if (people.length === 0) {
+      console.log("People assigned, unscheduling people...")
+      await db.collection('person')
+         .updateMany(
+            { teamId: teamId },
+            {
+               $set: {
+                  scheduled: false
+               }
+            }
+         )
+      people = await db.collection('person')
+         .find({
+            teamId: teamId,
+            $or: [
+               { scheduled: false },
+               { scheduled: { $exists: false }}
+            ],
+         })
+         .toArray();
+   }
+   
+   const person = people[Math.floor(Math.random() * people.length)];
+
+   console.log(person);
+
+   await db.collection('person')
+      .updateOne(
+         { _id: person._id },
+         { $set: {
+            scheduled: true
+         } }
+      )
+
+   return (person);
 }
 
 /**
@@ -144,14 +167,15 @@ async function generateUpToDay(db, date) {
       .collection('schedule')
       .findOne({}, { sort: { day: -1 } });
 
-   const today = new Date();
-   today.setHours(0, 0, 0, 0);
+   const yesterday = new Date();
+   yesterday.setDate(yesterday.getDate() - 1);
+   yesterday.setHours(0, 0, 0, 0);
 
    const latestDay = latest?.day ? new Date(latest.day) : null;
 
    const startDate =
-      !latestDay || latestDay < today
-         ? today
+      !latestDay || latestDay < yesterday
+         ? yesterday
          : latestDay;
    
    const dates = [];
@@ -171,7 +195,7 @@ async function generateUpToDay(db, date) {
    }
 
    for (let i=0; i<dates.length; i++){
-      generateScheduleForDay(db, dates[i])
+      await generateScheduleForDay(db, dates[i]);
    }
 }
 
@@ -221,18 +245,6 @@ async function getScheduleForDay(db, date) {
    }
 
    return scheduleDict;
-}
-
-/**
- * Build the schedule for a specific calendar date.
- *
- * @param {import('mongodb').Db} db - MongoDB database instance.
- * @param {Date|string|number} date - Date to build the schedule for.
- * @returns {Promise<Record<string, string[]>>} Dictionary mapping person IDs to cluster IDs.
- */
-async function getScheduleForDayOLD(db, date) {
-   const people = await this.getPeopleForDay(db, date);
-   const clusters = await this.getClustersForDay(db, date);
 }
 
 module.exports = getScheduleForDay;
