@@ -4,7 +4,51 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
-import { FaClipboardList } from 'react-icons/fa';
+import { FaClipboardList, FaRegCopy, FaCheck } from 'react-icons/fa';
+
+function getNodeText(node) {
+   if (node === null || node === undefined || typeof node === 'boolean') return '';
+   if (typeof node === 'string' || typeof node === 'number') return String(node);
+   if (Array.isArray(node)) return node.map(getNodeText).join('');
+   if (node.props?.children) return getNodeText(node.props.children);
+
+   return '';
+}
+
+function CopyablePre({ children }) {
+   const [copied, setCopied] = useState(false);
+   const code = getNodeText(children).replace(/\n$/, '');
+
+   async function copyCode() {
+      try {
+         await navigator.clipboard.writeText(code);
+         setCopied(true);
+         setTimeout(() => setCopied(false), 1500);
+      } catch (err) {
+         console.error('Failed to copy code:', err);
+      }
+   }
+
+   return (
+      <div className="not-prose relative my-4 overflow-hidden rounded-xl border border-white/10 bg-slate-950">
+         <button
+            type="button"
+            onClick={copyCode}
+            className="absolute right-2 top-2 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-200 transition hover:bg-white/10"
+            aria-label={copied ? 'Copied code to clipboard' : 'Copy code to clipboard'}
+            title={copied ? 'Copied' : 'Copy'}
+         >
+            {copied ? (
+               <FaCheck className="h-3.5 w-3.5 text-green-300" aria-hidden="true" />
+            ) : (
+               <FaRegCopy className="h-3.5 w-3.5" aria-hidden="true" />
+            )}
+         </button>
+
+         <pre className="overflow-x-auto p-4 pr-20 text-sm text-slate-100">{children}</pre>
+      </div>
+   );
+}
 
 export default function Form() {
    const [completedSteps, setCompletedSteps] = useState({});
@@ -366,7 +410,13 @@ export default function Form() {
                                                 </span>
 
                                                 <div className="prose prose-invert max-w-none overflow-x-auto">
-                                                   <ReactMarkdown>{method.content}</ReactMarkdown>
+                                                   <ReactMarkdown
+                                                      components={{
+                                                         pre: CopyablePre
+                                                      }}
+                                                   >
+                                                      {method.content}
+                                                   </ReactMarkdown>
                                                 </div>
                                              </div>
                                           </>
