@@ -1,10 +1,11 @@
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const { startPopulateClosedDays, startDailyOverviewBuilder } = require('./services/cron/cron');
 const { Database } = require('./db/db');
 const { seedData } = require('./scripts/testData');
-const Scheduler = require('./schedule/scheduler');
+const populateClosedDays = require('./schedule/populateClosedDays');
 
 (async () => {
    const app = express();
@@ -49,7 +50,7 @@ const Scheduler = require('./schedule/scheduler');
    startDailyOverviewBuilder(databaseConnection);
 
    // Check for closed days on boot
-   await Scheduler.populateClosedDays(databaseConnection);
+   await populateClosedDays(databaseConnection);
 
    // Makes the app listen to the port
    const PORT = process.env.PORT || 3000;
