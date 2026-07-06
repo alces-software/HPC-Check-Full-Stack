@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { startWeeklySchedule } = require('./services/cron/weekly-schedule');
+const { startPopulateClosedDays, startDailyOverviewBuilder } = require('./services/cron/cron');
 const { Database } = require('./db/db');
 const { seedData } = require('./scripts/testData');
 const Scheduler = require('./schedule/scheduler');
@@ -20,8 +20,6 @@ const Scheduler = require('./schedule/scheduler');
       await databaseObject.generateDb();
       await seedData(databaseConnection);
    }
-
-   await Scheduler.populateClosedDays(databaseConnection);
 
    console.log('Connected to database');
 
@@ -46,8 +44,12 @@ const Scheduler = require('./schedule/scheduler');
    // Register team routes
    app.use('/', require('./endpoints/team/routes')(databaseConnection));
 
-   // Start new weekly schedule cron job
-   startWeeklySchedule(databaseConnection);
+   // Start cron jobs
+   startPopulateClosedDays(databaseConnection);
+   startDailyOverviewBuilder(databaseConnection);
+
+   // Check for closed days on boot
+   await Scheduler.populateClosedDays(databaseConnection);
 
    // Makes the app listen to the port
    const PORT = process.env.PORT || 3000;
