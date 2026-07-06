@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
    return (
-      <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
          <body className="h-full text-white flex flex-col">
             <div className="fixed inset-0 -z-10 bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900" />
 

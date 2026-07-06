@@ -12,8 +12,12 @@ module.exports = (db) => {
          const { name } = req.params || {};
 
          // Check name
+         if (typeof name !== 'string') {
+            return res.status(400).json({ success: false, error: "The name provided is not a string" });
+         }
+
          if (!name) {
-            return res.status(400).json({ success: false, error: 'Missing hpc name' });
+            return res.status(400).json({ success: false, error: 'Missing cluster name' });
          }
 
          const sanitizedName = String(name).trim();
@@ -31,7 +35,7 @@ module.exports = (db) => {
          });
 
          if (!results) {
-            return res.status(404).json({ success: false, error: "HPC doesn't exist" });
+            return res.status(404).json({ success: false, error: "The cluster doesn't exist" });
          }
 
          return res.status(200).json({

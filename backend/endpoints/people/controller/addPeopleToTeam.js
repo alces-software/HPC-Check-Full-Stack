@@ -15,6 +15,10 @@ module.exports = (db) => {
          const { teamId } = req.body || {};
 
          // Check id
+         if (typeof id !== 'string') {
+            return res.status(400).json({ success: false, error: "The persons id provided is not a string" });
+         }
+
          if (!id) {
             return res.status(400).json({ success: false, error: "Missing person's id" });
          }
@@ -32,6 +36,10 @@ module.exports = (db) => {
          }
 
          // Check team id
+         if (typeof teamId !== 'string') {
+            return res.status(400).json({ success: false, error: "The team id provided is not a string" });
+         }
+
          if (!teamId) {
             return res.status(400).json({ success: false, error: "Missing team's id" });
          }
