@@ -14,6 +14,10 @@ module.exports = (db) => {
          const { clusterId, personId, startTime, endTime, results } = req.body || {};
 
          // Check cluster id
+         if (typeof clusterId !== 'string') {
+            return res.status(400).json({ success: false, error: "The cluster id provided is not a string" });
+         }
+
          if (!clusterId) {
             return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }
@@ -41,6 +45,10 @@ module.exports = (db) => {
          }
 
          // Check person id
+         if (typeof personId !== 'string') {
+            return res.status(400).json({ success: false, error: "The persons id provided is not a string" });
+         }
+
          if (!personId) {
             return res.status(400).json({ success: false, error: 'Missing persons id' });
          }
@@ -68,11 +76,19 @@ module.exports = (db) => {
          }
 
          // Check start time
+         if (typeof id !== 'number') {
+            return res.status(400).json({ success: false, error: "The start time provided is not a number" });
+         }
+
          if (!startTime) {
             return res.status(400).json({ success: false, error: 'Missing start time' });
          }
 
          // Check end time
+         if (typeof id !== 'number') {
+            return res.status(400).json({ success: false, error: "The end time provided is not a number" });
+         }
+
          if (!endTime) {
             return res.status(400).json({ success: false, error: 'Missing end time' });
          }

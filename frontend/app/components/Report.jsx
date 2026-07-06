@@ -153,23 +153,26 @@ export default function Report() {
                   </p>
                </div>
                <div className="flex gap-2">
-                  <button
-                     type="button"
-                     onClick={handleCopy}
-                     className={`cursor-pointer rounded-lg border p-2 transition-all duration-300 ${
-                        copied
-                           ? 'border-green-400/40 bg-green-500/20 text-green-300'
-                           : 'border-white/10 bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white'
-                     }`}
-                     title={copied ? 'Copied!' : 'Copy report link'}
-                     aria-label={copied ? 'Copied!' : 'Copy report link'}
-                  >
-                     {copied ? (
-                        <IoCheckmark className="h-5 w-5 animate-pulse" />
-                     ) : (
-                        <IoCopy className="h-5 w-5" />
+                  {navigator.clipboard !== undefined &&
+                     typeof navigator.clipboard.writeText === 'function' && (
+                        <button
+                           type="button"
+                           onClick={handleCopy}
+                           className={`cursor-pointer rounded-lg border p-2 transition-all duration-300 ${
+                              copied
+                                 ? 'border-green-400/40 bg-green-500/20 text-green-300'
+                                 : 'border-white/10 bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white'
+                           }`}
+                           title={copied ? 'Copied!' : 'Copy report link'}
+                           aria-label={copied ? 'Copied!' : 'Copy report link'}
+                        >
+                           {copied ? (
+                              <IoCheckmark className="h-5 w-5 animate-pulse" />
+                           ) : (
+                              <IoCopy className="h-5 w-5" />
+                           )}
+                        </button>
                      )}
-                  </button>
 
                   {typeof navigator.share === 'function' && (
                      <button
