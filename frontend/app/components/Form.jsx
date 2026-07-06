@@ -250,7 +250,7 @@ export default function Form() {
          <div className="relative z-10 w-full max-w-5xl">
             <form
                onSubmit={handleSubmit}
-               className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl"
+               className="rounded-3xl border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl md:p-10"
             >
                {/* Header */}
                <div className="mb-10 text-center">
@@ -278,7 +278,7 @@ export default function Form() {
                      return (
                         <section
                            key={step.id}
-                           className="rounded-2xl border border-white/10 bg-white/5 p-6"
+                           className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6"
                         >
                            {/* <h2>{index + 1}</h2>
                            <h2 className="mb-4 flex items-center justify-between text-xl font-semibold text-white">
@@ -305,7 +305,7 @@ export default function Form() {
 
                            <p className="mb-4 text-slate-300">{step.description}</p>
 
-                           <details className="mb-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">
+                           <details className="mb-4 rounded-xl border border-white/10 bg-slate-900/40 p-3 md:p-4">
                               <summary className="cursor-pointer font-medium text-blue-300">
                                  View Methods
                               </summary>
@@ -326,14 +326,14 @@ export default function Form() {
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
                                              />
 
-                                             <div className="mt-3 flex justify-end gap-3">
+                                             <div className="mt-3 flex flex-col gap-3 md:flex-row md:justify-end">
                                                 <button
                                                    type="button"
                                                    onClick={() => {
                                                       setEditingMethodId(null);
                                                       setEditedMethodContent('');
                                                    }}
-                                                   className="mt-8 cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+                                                   className="mt-8 w-full cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
                                                 >
                                                    Cancel
                                                 </button>
@@ -352,7 +352,7 @@ export default function Form() {
 
                                                       updateMethod(method.id, sanitizedContent);
                                                    }}
-                                                   className="mt-8 cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+                                                   className="mt-8 w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
                                                 >
                                                    Save Changes
                                                 </button>
@@ -373,14 +373,14 @@ export default function Form() {
                                        )}
 
                                        {isEditing && !(editingMethodId === method.id) && (
-                                          <div className="flex justify-end gap-3">
+                                          <div className="flex flex-col gap-3 md:flex-row md:justify-end">
                                              <button
                                                 type="button"
                                                 onClick={() => {
                                                    setEditingMethodId(method.id);
                                                    setEditedMethodContent(method.content);
                                                 }}
-                                                className="mt-8 cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+                                                className="mt-8 w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
                                              >
                                                 Edit Method
                                              </button>
@@ -395,7 +395,7 @@ export default function Form() {
                                                       deleteMethod(method.id);
                                                    }
                                                 }}
-                                                className="mt-8 cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+                                                className="mt-8 w-full cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
                                              >
                                                 Delete Method
                                              </button>
@@ -434,13 +434,13 @@ export default function Form() {
                                                    placeholder="Enter method..."
                                                    className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
                                                 />
-                                                <div className="mt-3 flex justify-end gap-3">
+                                                <div className="mt-3 flex flex-col gap-3 md:flex-row md:justify-end">
                                                    <button
                                                       type="button"
                                                       onClick={() => {
                                                          setAddMethodStepID(null);
                                                       }}
-                                                      className="cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+                                                      className="w-full cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
                                                    >
                                                       Cancel
                                                    </button>
@@ -456,7 +456,7 @@ export default function Form() {
                                                             addNewMethod(step.id, sanitizedContent);
                                                          }
                                                       }}
-                                                      className="cursor-pointer rounded-xl border border-green-300/25 bg-green-500/15 px-5 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/25 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-300/45 focus:ring-offset-2 focus:ring-offset-green-950 active:translate-y-0"
+                                                      className="w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/15 px-5 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/25 hover:text-white focus:outline-none focus:ring-2 focus:ring-green-300/45 focus:ring-offset-2 focus:ring-offset-green-950 active:translate-y-0 md:w-auto"
                                                    >
                                                       Add Method
                                                    </button>
