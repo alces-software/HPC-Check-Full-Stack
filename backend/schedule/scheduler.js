@@ -20,6 +20,59 @@ async function getTeams(db) {
    return response
 }
 
+async function getTeamsOrderedByEffectiveCapacity(db) {
+    const teams = await getTeams(db);
+
+    const teamStats = await Promise.all(
+        teams.map(async (team) => {
+            // Pools this team belongs to
+            const pools = await db
+                .collection("teampool")
+                .find({ teamId: team.id })
+                .toArray();
+
+            const poolIds = pools.map(p => p.poolId);
+
+            // All clusters available to this team
+            const clusters = await db
+                .collection("cluster")
+                .find({ poolId: { $in: poolIds } })
+                .toArray();
+
+            let exclusiveCount = 0;
+
+            // Count clusters that are only available to this team
+            for (const cluster of clusters) {
+                const otherTeams = await db
+                    .collection("teampool")
+                    .find({
+                        poolId: cluster.poolId,
+                        teamId: { $ne: team.id }
+                    })
+                    .limit(1)
+                    .toArray();
+
+                if (otherTeams.length === 0) {
+                    exclusiveCount++;
+                }
+            }
+
+            return {
+                ...team,
+                effectiveCapacity: team.capacity - exclusiveCount
+            };
+        })
+    );
+
+    // Shuffle first so equal capacities become random
+    teamStats.sort(() => Math.random() - 0.5);
+
+    // Then stable sort by descending effective capacity
+    teamStats.sort((a, b) => b.effectiveCapacity - a.effectiveCapacity);
+
+    return teamStats;
+}
+
 async function isWorkingDay(db, date) {
    const day = new Date(date);
    day.setHours(0, 0, 0, 0);
@@ -41,7 +94,7 @@ async function isWorkingDay(db, date) {
  * @param {Date} date - MongoDB database instance.
  */
 async function generateScheduleForDay(db, date) {
-   const teams = await getTeams(db);
+   const teams = await getTeamsOrderedByEffectiveCapacity(db);
 
    for (let i=0; i<teams.length; i++) {
       const team = teams[i]
@@ -105,7 +158,6 @@ async function generateScheduleForDay(db, date) {
  * @param {Date|string|number} date - Date to build the schedule for.
  */
 async function getNextPerson(db, teamId) {
-   console.log(`Getting next person for team: ${teamId}`)
    let people = await db.collection('person')
       .find({
          teamId: teamId,
@@ -117,7 +169,6 @@ async function getNextPerson(db, teamId) {
       .toArray();
    
    if (people.length === 0) {
-      console.log("People assigned, unscheduling people...")
       await db.collection('person')
          .updateMany(
             { teamId: teamId },
@@ -139,8 +190,6 @@ async function getNextPerson(db, teamId) {
    }
    
    const person = people[Math.floor(Math.random() * people.length)];
-
-   console.log(person);
 
    await db.collection('person')
       .updateOne(
