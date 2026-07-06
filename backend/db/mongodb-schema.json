@@ -1,30 +1,5 @@
 [
    {
-      "name": "scheduleHistory",
-      "validator": {
-         "$jsonSchema": {
-            "bsonType": "object",
-            "required": ["_id", "clusterId", "personId", "day"],
-            "properties": {
-               "_id": {
-                  "bsonType": "objectId"
-               },
-               "clusterId": {
-                  "bsonType": "string"
-               },
-               "personId": {
-                  "bsonType": "string"
-               },
-               "day": {
-                  "bsonType": "int"
-               }
-            }
-         }
-      },
-      "validationLevel": "moderate",
-      "validationAction": "error"
-   },
-   {
       "name": "closedDay",
       "validator": {
          "$jsonSchema": {
@@ -118,7 +93,7 @@
                "name": {
                   "bsonType": "string"
                },
-               "teamId": {
+               "poolId": {
                   "bsonType": "string"
                }
             }
@@ -140,8 +115,11 @@
                "name": {
                   "bsonType": "string"
                },
-               "team": {
+               "teamId": {
                   "bsonType": "string"
+               },
+               "scheduled": {
+                  "bsonType": "bool"
                }
             }
          }
@@ -245,7 +223,77 @@
                },
                "clusters_per_day": {
                   "bsonType": "int"
+               },
+               "assigned": {
+                  "bsonType": "bool"
                }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "pool",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "name"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "name": {
+                  "bsonType": "string"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "teampool",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "teamId", "poolId"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "teamId": {
+                  "bsonType": "string"
+               },
+               "poolId": {
+                  "bsonType": "string"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
+      "name": "schedule",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "personId", "clusterId", "day"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "personId": {
+                  "bsonType": "string"
+               },
+               "clusterId": {
+                  "bsonType": "string"
+               },
+               "day": {
+                  "bsonType": "date"
+               }
+
             }
          }
       },

@@ -1,51 +1,6 @@
-const { ObjectId } = require('mongodb');
-const Scheduler = require('../../schedule/scheduler');
-
-async function getTeams(db) {
-   const teams = await db
-      .collection('team')
-      .find({}, { projection: { _id: 1 } })
-      .toArray()
-      .then((results) => results.map((data) => data._id.toString()));
-   return teams;
-}
-
-async function initialiseSchedulers(db, team) {
-   let schedulers;
-   const peopleDocs = await db.collection('person').find({ teamId: team }).toArray();
-
-   const peopleNames = peopleDocs.map((p) => p.name);
-   const peopleIds = peopleDocs.map((p) => p._id.toString());
-
-   const clusterDocs = await db.collection('cluster').find({ teamId: team }).toArray();
-
-   const clusterNames = clusterDocs.map((c) => c.name);
-   const clusterIds = clusterDocs.map((c) => c._id.toString());
-
-   const teamInfo = await db.collection('team').findOne({ _id: new ObjectId(team) });
-
-   schedulers = {
-      idScheduler: new Scheduler(
-         peopleIds,
-         clusterIds,
-         Number(teamInfo.clusters_per_day) || 1,
-         new Date('2026-06-08'),
-         team
-      ),
-      nameScheduler: new Scheduler(
-         peopleNames,
-         clusterNames,
-         Number(teamInfo.clusters_per_day) || 1,
-         new Date('2026-06-08'),
-         team
-      )
-   };
-
-   return schedulers;
-}
+const getScheduleForDay = require('../../schedule/scheduler');
 
 async function getDaily(db, day) {
-   const teams = await getTeams(db);
 
    const schedule = {};
 
@@ -75,19 +30,16 @@ async function getDaily(db, day) {
 
    const overrideMap = new Map(overrides.map((o) => [o.personId, o.newPersonId]));
 
-   for (const team of teams) {
-      const { idScheduler } = await initialiseSchedulers(db, team);
-      const idSchedule = await idScheduler.getScheduleForDay(db, new Date(day));
+   const dailySchedule = await getScheduleForDay(db, new Date(day));
 
-      for (const [personId, clusters] of Object.entries(idSchedule)) {
-         const finalPersonId = overrideMap.get(personId) ?? personId;
+   for (const [personId, clusters] of Object.entries(dailySchedule)) {
+      const finalPersonId = overrideMap.get(personId) ?? personId;
 
-         if (!schedule[finalPersonId]) {
-            schedule[finalPersonId] = [];
-         }
-
-         schedule[finalPersonId].push(...clusters);
+      if (!schedule[finalPersonId]) {
+         schedule[finalPersonId] = [];
       }
+
+      schedule[finalPersonId].push(...clusters);
    }
 
    return schedule;
@@ -105,7 +57,7 @@ async function getWeekly(db, date = new Date()) {
 
    monday.setDate(monday.getDate() + diff);
 
-   for (let i = 0; i < days.length; i++) {
+   for (let i = days.length - 1; i >= 0; i--) {
       const currentDate = new Date(monday);
       currentDate.setDate(monday.getDate() + i);
 

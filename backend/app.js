@@ -4,7 +4,7 @@ const cors = require('cors');
 const { startWeeklySchedule } = require('./services/cron/weekly-schedule');
 const { Database } = require('./db/db');
 const { seedData } = require('./scripts/testData');
-const Scheduler = require('./schedule/scheduler');
+const populateClosedDays = require('./schedule/populateClosedDays');
 
 (async () => {
    const app = express();
@@ -21,7 +21,7 @@ const Scheduler = require('./schedule/scheduler');
       await seedData(databaseConnection);
    }
 
-   await Scheduler.populateClosedDays(databaseConnection);
+   await populateClosedDays(databaseConnection);
 
    console.log('Connected to database');
 
