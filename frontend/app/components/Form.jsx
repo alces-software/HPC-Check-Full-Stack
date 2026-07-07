@@ -82,37 +82,23 @@ export default function Form() {
    }, [getSteps]);
 
    useEffect(() => {
-
       async function getBonusChallenge() {
-
          try {
-
             const res = await fetch(
-
                `${process.env.NEXT_PUBLIC_API_URL}/bonus-challenge/random`
-
             );
-
             const data = await res.json();
 
             if (!data.success) {
-
                setBonusChallenge(null);
-
                return;
-
             }
-
             setBonusChallenge(data.body);
 
          } catch (error) {
-
             console.error('Failed to fetch bonus challenge:', error);
-
             setBonusChallenge(null);
-
          }
-
       }
 
       getBonusChallenge();
@@ -163,7 +149,14 @@ export default function Form() {
                passed,
                note: String(note || '')
             };
-         })
+         }),
+         bonusChallengeResult:
+         bonusChallenge && bonusCompleted
+         ?{
+            bonusChallengeId: bonusChallenge.id,
+            completed: bonusCompleted
+         }
+         :null
       };
 
       try {
@@ -630,8 +623,6 @@ export default function Form() {
                      </div>
                   </section>
                )}
-
-               {/* submit */}
 
                {/* submit */}
                <button

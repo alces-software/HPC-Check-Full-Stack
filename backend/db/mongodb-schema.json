@@ -270,6 +270,21 @@
                },
                "passed": {
                   "bsonType": "bool"
+               },
+               "bonusChallengeResult": {
+                  "bsonType": "object",
+                  "required": [
+                     "bonusChallengeId",
+                     "completed"
+                  ],
+                  "properties": {
+                     "bonusChallengeId": {
+                     "bsonType": "string"
+                     },
+                     "completed": {
+                        "bsonType": "bool"
+                     }
+                  }
                }
             }
          }

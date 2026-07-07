@@ -11,7 +11,7 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { clusterId, personId, startTime, endTime, results } = req.body || {};
+         const { clusterId, personId, startTime, endTime, results, bonusChallengeResult } = req.body || {};
 
          // Check cluster id
          if (!clusterId) {
@@ -94,6 +94,61 @@ module.exports = (db) => {
                .json({ success: false, error: 'The results array provided is empty' });
          }
 
+         let sanitizedBonusChallengeResult = null;
+
+         if (bonusChallengeResult) {
+            if (typeof bonusChallengeResult !== 'object') {
+               return res.status(400).json({
+                  success: false,
+                  error: 'Bonus challenge result must be an object'
+               });
+            }
+
+            const { bonusChallengeId, completed } = bonusChallengeResult;
+
+            if (!bonusChallengeId) {
+               return res.status(400).json({
+                  success: false,
+                  error: 'Missing bonus challenge id'
+               });
+            }
+
+            const sanitizedBonusChallengeId = String(bonusChallengeId).trim();
+
+            if (!ObjectId.isValid(sanitizedBonusChallengeId)) {
+               return res.status(400).json({
+                  success: false,
+                  error: 'Invalid bonus challenge id'
+               });
+            }
+
+            if (completed !== true) {
+               return res.status(400).json({
+                  success: false,
+                  error: 'Bonus challenge must be marked as complete'
+               });
+            }
+
+            const bonusChallengeExists = await db.collection('bonusChallenge').findOne({
+               _id: new ObjectId(sanitizedBonusChallengeId),
+               active: true
+            });
+
+            if (!bonusChallengeExists) {
+               return res.status(404).json({
+                  success: false,
+                  error: 'Bonus challenge does not exist or is inactive'
+               });
+            }
+
+            sanitizedBonusChallengeResult = {
+               bonusChallengeId: sanitizedBonusChallengeId,
+               completed: true
+            };
+         }
+
+
+
          // Check to make sure no report has been submitted for the cluster on that day
          const startOfDay = new Date();
          startOfDay.setHours(0, 0, 0, 0);
@@ -116,15 +171,21 @@ module.exports = (db) => {
          }
 
          // Add the report to the database
+         const reportData = {
+            clusterId: sanitizedClusterId,
+            personId: sanitizedPersonId,
+            startDate: Long.fromNumber(startTime),
+            endDate: Long.fromNumber(endTime),
+            passed: results.every((r) => r.passed),
+
+            ...(sanitizedBonusChallengeResult && {
+               bonusChallengeResult: sanitizedBonusChallengeResult
+            })
+         };
+
          const reportId = await db
             .collection('report')
-            .insertOne({
-               clusterId: sanitizedClusterId,
-               personId: sanitizedPersonId,
-               startDate: Long.fromNumber(startTime),
-               endDate: Long.fromNumber(endTime),
-               passed: results.every((r) => r.passed)
-            })
+            .insertOne(reportData)
             .then((i) => i.insertedId.toString());
 
          if (!ObjectId.isValid(reportId)) {

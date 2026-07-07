@@ -138,14 +138,14 @@ module.exports.seedData = async (db) => {
          _id: id(),
          title: 'Job Tracker',
          description:
-            'identify the state of one of your jobs, or confirm that you have no active jobs.',
+            'Identify the state of one of your jobs, or confirm that you have no active jobs.',
          active: true
       },
       {
          _id: id(),
          title: 'Partition Explorer',
          description:
-            'identify a partition with idle or mixed nodes.',
+            'Identify a partition with idle or mixed nodes.',
          active: true
       },
       {

@@ -67,6 +67,14 @@ module.exports = (db) => {
                }))
             );
 
+         let bonusChallenge = null;
+         const bonusChallengeResult = report.bonusChallengeResult;
+         if (bonusChallengeResult && ObjectId.isValid(bonusChallengeResult.bonusChallengeId)){
+            bonusChallenge = await db.collection('bonusChallenge').findOne({
+               _id: new ObjectId(bonusChallengeResult.bonusChallengeId)
+            });
+         }
+        
          return res.status(200).json({
             success: true,
             body: {
@@ -82,7 +90,15 @@ module.exports = (db) => {
                   instructionId: result.instructionId,
                   passed: result.passed,
                   note: result.note
-               }))
+               })),
+               bonusChallengeResult: 
+               bonusChallengeResult && bonusChallenge
+               ?{
+                  title: bonusChallenge.title,
+                  description: bonusChallenge.description,
+                  completed: bonusChallengeResult.completed
+               }
+               :null
             }
          });
       } catch (error) {
