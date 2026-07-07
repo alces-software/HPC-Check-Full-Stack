@@ -56,9 +56,14 @@ module.exports = db => {
                 .find({ _id: { $in: poolIds } })
                 .toArray();
 
+            const response = pools.map(({ _id, ...pool }) => ({
+                id: _id,
+                ...pool,
+            }));
+
             return res.json({
                 success: true,
-                body: pools
+                body: response,
             });
 
         } catch (error) {

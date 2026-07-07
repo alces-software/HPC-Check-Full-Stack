@@ -211,6 +211,37 @@ export default function TeamSettingsPage () {
         }
     };
 
+    async function handleRemovePool(poolId) {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool/team/${poolId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    teamId: teamId,
+                }),
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.message || 'Failed to remove pool from team.');
+            }
+
+            const removedPool = teamPools.find(pool => pool.id === poolId);
+            if (removedPool) {
+                setPools(previousPools => [...previousPools, removedPool]);
+            }
+
+            setTeamPools(previousPools => previousPools.filter(pool => pool.id !== poolId));
+            showStatus('Pool removed from team.');
+        } catch (err) {
+            console.error(err);
+            showStatus('Failed to remove pool from team.', 'error');
+        }
+    };
+
     const showStatus = (message, type = 'success') => {
         setStatusMessage(message);
         setStatusType(type);
@@ -473,6 +504,15 @@ export default function TeamSettingsPage () {
                                                         {pool.id}
                                                     </p>
                                                 </div>
+
+                                                <button
+                                                    type='button'
+                                                    onClick={() => handleRemovePool(pool.id)}
+                                                    className='ml-3 rounded-full border border-red-400/40 bg-red-500/10 px-2.5 py-1 text-sm text-red-200 transition hover:bg-red-500/20'
+                                                    aria-label={`Remove ${pool.name} from team`}
+                                                >
+                                                    ×
+                                                </button>
                                             </div>
                                         ))
                                     )}
