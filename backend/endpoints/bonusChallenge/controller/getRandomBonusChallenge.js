@@ -41,7 +41,7 @@ module.exports = (db) => {
                .json({ success: false, error: 'No active bonus challenges found' });
          }
 
-         return res.status(200).json({ success: true, body: bonusChallenge });
+         return res.status(200).json({ success: true, body: bonusChallenge[0] });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }
