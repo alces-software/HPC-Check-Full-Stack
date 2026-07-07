@@ -40,7 +40,7 @@ module.exports = (db) => {
 
          // Delete from the database
          await db.collection('method').findOneAndDelete({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          return res.status(200).json({ success: true });

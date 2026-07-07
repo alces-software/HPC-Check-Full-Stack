@@ -10,32 +10,32 @@ const styles = StyleSheet.create({
       backgroundColor: '#0f172a',
       color: '#ffffff',
       fontSize: 11,
-      fontFamily: 'Helvetica',
+      fontFamily: 'Helvetica'
    },
 
    header: {
       marginBottom: 24,
       paddingBottom: 16,
       borderBottomWidth: 1,
-      borderBottomColor: '#334155',
+      borderBottomColor: '#334155'
    },
 
    title: {
       fontSize: 26,
       fontWeight: 'bold',
-      marginBottom: 8,
+      marginBottom: 8
    },
 
    subtitle: {
       fontSize: 11,
       color: '#cbd5e1',
-      marginBottom: 4,
+      marginBottom: 4
    },
 
    statusRow: {
       flexDirection: 'row',
       gap: 8,
-      marginTop: 10,
+      marginTop: 10
    },
 
    pill: {
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
       paddingHorizontal: 10,
       paddingVertical: 5,
       borderRadius: 999,
-      fontSize: 10,
+      fontSize: 10
    },
 
    stepCard: {
@@ -55,21 +55,21 @@ const styles = StyleSheet.create({
       backgroundColor: '#1e293b',
       borderRadius: 12,
       padding: 16,
-      marginBottom: 16,
+      marginBottom: 16
    },
 
    stepHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       gap: 12,
-      marginBottom: 8,
+      marginBottom: 8
    },
 
    stepTitle: {
       fontSize: 16,
       fontWeight: 'bold',
       color: '#ffffff',
-      flex: 1,
+      flex: 1
    },
 
    expectedTime: {
@@ -80,20 +80,20 @@ const styles = StyleSheet.create({
       backgroundColor: '#1e3a8a',
       paddingHorizontal: 8,
       paddingVertical: 4,
-      borderRadius: 999,
+      borderRadius: 999
    },
 
    description: {
       color: '#cbd5e1',
       lineHeight: 1.5,
-      marginBottom: 12,
+      marginBottom: 12
    },
 
    sectionLabel: {
       fontSize: 11,
       fontWeight: 'bold',
       color: '#ffffff',
-      marginBottom: 8,
+      marginBottom: 8
    },
 
    methodItem: {
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
       borderRadius: 8,
       backgroundColor: '#0f172a',
       borderWidth: 1,
-      borderColor: '#334155',
+      borderColor: '#334155'
    },
 
    methodNumber: {
@@ -115,20 +115,20 @@ const styles = StyleSheet.create({
       color: '#bfdbfe',
       textAlign: 'center',
       fontSize: 9,
-      paddingTop: 4,
+      paddingTop: 4
    },
 
    methodContent: {
       flex: 1,
       color: '#cbd5e1',
       lineHeight: 1.5,
-      fontSize: 10,
+      fontSize: 10
    },
 
    outcomeGrid: {
       flexDirection: 'row',
       gap: 10,
-      marginTop: 10,
+      marginTop: 10
    },
 
    goodBox: {
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
       borderColor: '#22c55e',
       backgroundColor: '#14532d',
       borderRadius: 8,
-      padding: 10,
+      padding: 10
    },
 
    badBox: {
@@ -146,27 +146,27 @@ const styles = StyleSheet.create({
       borderColor: '#ef4444',
       backgroundColor: '#450a0a',
       borderRadius: 8,
-      padding: 10,
+      padding: 10
    },
 
    goodLabel: {
       color: '#bbf7d0',
       fontSize: 9,
       fontWeight: 'bold',
-      marginBottom: 4,
+      marginBottom: 4
    },
 
    badLabel: {
       color: '#fecaca',
       fontSize: 9,
       fontWeight: 'bold',
-      marginBottom: 4,
+      marginBottom: 4
    },
 
    outcomeText: {
       color: '#cbd5e1',
       fontSize: 10,
-      lineHeight: 1.4,
+      lineHeight: 1.4
    },
 
    footer: {
@@ -176,19 +176,19 @@ const styles = StyleSheet.create({
       right: 36,
       fontSize: 9,
       color: '#64748b',
-      textAlign: 'center',
+      textAlign: 'center'
    },
 
    markdownParagraph: {
       color: '#cbd5e1',
       lineHeight: 1.5,
       fontSize: 10,
-      marginBottom: 6,
+      marginBottom: 6
    },
 
    markdownBold: {
       fontWeight: 'bold',
-      color: '#ffffff',
+      color: '#ffffff'
    },
 
    markdownCode: {
@@ -203,15 +203,15 @@ const styles = StyleSheet.create({
       marginTop: 8,
       marginBottom: 10,
 
-      lineHeight: 1.5,
+      lineHeight: 1.5
    },
 
    markdownListItem: {
       color: '#cbd5e1',
       lineHeight: 1.5,
       fontSize: 10,
-      marginBottom: 4,
-   },
+      marginBottom: 4
+   }
 });
 
 function MarkdownText({ children }) {

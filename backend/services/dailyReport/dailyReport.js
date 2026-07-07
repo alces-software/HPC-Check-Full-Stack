@@ -14,8 +14,8 @@ module.exports = async (db) => {
    const reportExists = await db.collection('overviewReport').findOne({
       date: {
          $gte: startOfDay,
-         $lte: endOfDay,
-      },
+         $lte: endOfDay
+      }
    });
 
    if (reportExists) {
@@ -30,8 +30,8 @@ module.exports = async (db) => {
       .then((res) =>
          res.map((data) => ({
             id: data._id.toString(),
-            name: data.name,
-         })),
+            name: data.name
+         }))
       );
 
    // Get clusters
@@ -42,8 +42,8 @@ module.exports = async (db) => {
       .then((res) =>
          res.map((data) => ({
             id: data._id.toString(),
-            name: data.name,
-         })),
+            name: data.name
+         }))
       );
 
    // Get the reports from the current day
@@ -52,22 +52,22 @@ module.exports = async (db) => {
       .find({
          startDate: {
             $gte: startOfDay,
-            $lte: endOfDay,
-         },
+            $lte: endOfDay
+         }
       })
       .toArray()
       .then((res) =>
          res.map(({ _id, clusterId }) => ({
             id: _id.toString(),
-            clusterId: clusterId,
-         })),
+            clusterId: clusterId
+         }))
       );
 
    const rotaDaily = await getDaily(db).then((res) =>
       Object.entries(res).map(([key, value]) => ({
          id: key,
-         clusterId: value,
-      })),
+         clusterId: value
+      }))
    );
    const missingReports = [];
    if (rotaDaily.length != reports.length) {
@@ -79,7 +79,7 @@ module.exports = async (db) => {
                   clusterId: id,
                   personId: person.id,
                   person: people.find((p) => p.id === person.id)?.name,
-                  cluster: cluster.find((c) => c.id === id)?.name,
+                  cluster: cluster.find((c) => c.id === id)?.name
                });
             });
          }
@@ -89,6 +89,6 @@ module.exports = async (db) => {
    await db.collection('overviewReport').insertOne({
       date: Long.fromNumber(new Date().getTime()),
       reports: reports.map((report) => report.id),
-      missing: missingReports,
+      missing: missingReports
    });
 };

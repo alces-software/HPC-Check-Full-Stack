@@ -30,7 +30,7 @@ module.exports = (db) => {
 
          // Check if team exists
          const existingTeam = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!existingTeam) {
@@ -41,7 +41,7 @@ module.exports = (db) => {
          const hasPeople = await db
             .collection('person')
             .find({
-               teamId: sanitizedId,
+               teamId: sanitizedId
             })
             .toArray();
 
@@ -53,7 +53,7 @@ module.exports = (db) => {
          const hasClusters = await db
             .collection('teampool')
             .find({
-               teamId: sanitizedId,
+               teamId: sanitizedId
             })
             .toArray();
 
@@ -63,7 +63,7 @@ module.exports = (db) => {
 
          // Delete the team
          await db.collection('team').deleteOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          return res.status(200).json({ success: true });

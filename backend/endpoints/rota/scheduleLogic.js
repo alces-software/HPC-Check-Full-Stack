@@ -10,7 +10,7 @@ async function getDaily(db, day = new Date()) {
    endOfDay.setHours(23, 59, 59, 999);
 
    const isClosed = await db.collection('closedDay').findOne({
-      day: targetDate,
+      day: targetDate
    });
 
    if (isClosed) {
@@ -22,8 +22,8 @@ async function getDaily(db, day = new Date()) {
       .find({
          date: {
             $gte: targetDate,
-            $lte: endOfDay,
-         },
+            $lte: endOfDay
+         }
       })
       .toArray();
 
@@ -68,5 +68,5 @@ async function getWeekly(db, date = new Date()) {
 
 module.exports = {
    getWeekly,
-   getDaily,
+   getDaily
 };

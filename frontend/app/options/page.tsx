@@ -1,7 +1,7 @@
 import Options from '../components/Options';
 
 export const metadata = {
-   title: 'Options',
+   title: 'Options'
 };
 
 export default function OptionsPage() {

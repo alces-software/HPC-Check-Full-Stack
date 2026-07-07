@@ -21,8 +21,8 @@ module.exports = (db) => {
             .then((res) =>
                res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name,
-               })),
+                  name: data.name
+               }))
             );
 
          // Get clusters
@@ -33,8 +33,8 @@ module.exports = (db) => {
             .then((res) =>
                res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name,
-               })),
+                  name: data.name
+               }))
             );
 
          // Get the overview report for that day or provided day
@@ -47,8 +47,8 @@ module.exports = (db) => {
          const overviewReport = await db.collection('overviewReport').findOne({
             date: {
                $gte: startOfDay.getTime(),
-               $lte: endOfDay.getTime(),
-            },
+               $lte: endOfDay.getTime()
+            }
          });
 
          if (!overviewReport) {
@@ -61,7 +61,7 @@ module.exports = (db) => {
          const reports = await Promise.all(
             (overviewReport.reports ?? []).map(async (id) => {
                const report = await db.collection('report').findOne({
-                  _id: new ObjectId(id),
+                  _id: new ObjectId(id)
                });
 
                if (!report) return null;
@@ -81,9 +81,9 @@ module.exports = (db) => {
 
                      return {
                         title: instruction.title,
-                        ...data,
+                        ...data
                      };
-                  }),
+                  })
                );
 
                return {
@@ -95,10 +95,10 @@ module.exports = (db) => {
                      title: r.title,
                      instructionId: r.instructionId,
                      passed: r.passed,
-                     note: r.note,
-                  })).filter((r) => r.note || !r.passed),
+                     note: r.note
+                  })).filter((r) => r.note || !r.passed)
                };
-            }),
+            })
          );
 
          return res.status(200).json({
@@ -107,8 +107,8 @@ module.exports = (db) => {
                id: overviewReport._id.toString(),
                date: overviewReport.date,
                reports: reports,
-               missing: overviewReport.missing,
-            },
+               missing: overviewReport.missing
+            }
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

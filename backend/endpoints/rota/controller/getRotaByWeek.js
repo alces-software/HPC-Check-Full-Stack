@@ -19,7 +19,7 @@ module.exports = (db) => {
 
          if (!date || isNaN(dateObj.getTime())) {
             return res.status(400).json({
-               error: 'Invalid date',
+               error: 'Invalid date'
             });
          }
 
@@ -53,11 +53,11 @@ module.exports = (db) => {
                     .collection('cluster')
                     .find({ _id: { $in: clusterObjectIds } })
                     .toArray()
-               : [],
+               : []
          ]);
 
          const peopleMap = new Map(
-            people.map((p) => [p._id.toString(), { name: p.name, teamId: p.teamId }]),
+            people.map((p) => [p._id.toString(), { name: p.name, teamId: p.teamId }])
          );
 
          const clusterMap = new Map(clusters.map((c) => [c._id.toString(), c.name]));
@@ -78,25 +78,25 @@ module.exports = (db) => {
                            teamId: person?.teamId ?? null,
                            clusters: (cIds || []).map((id) => ({
                               id,
-                              name: clusterMap.get(id) ?? id,
-                           })),
-                        },
+                              name: clusterMap.get(id) ?? id
+                           }))
+                        }
                      ];
-                  }),
-               ),
-            ]),
+                  })
+               )
+            ])
          );
 
          return res.status(200).json({
             success: true,
-            body: enriched,
+            body: enriched
          });
       } catch (error) {
          console.error('rota enriched error:', error);
 
          return res.status(500).json({
             success: false,
-            error: error.message,
+            error: error.message
          });
       }
    };

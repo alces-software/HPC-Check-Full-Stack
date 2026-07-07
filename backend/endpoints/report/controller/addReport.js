@@ -38,7 +38,7 @@ module.exports = (db) => {
          }
 
          const clusterExists = await db.collection('cluster').findOne({
-            _id: new ObjectId(sanitizedClusterId),
+            _id: new ObjectId(sanitizedClusterId)
          });
 
          if (!clusterExists) {
@@ -71,7 +71,7 @@ module.exports = (db) => {
          }
 
          const personExists = await db.collection('person').findOne({
-            _id: new ObjectId(sanitizedPersonId),
+            _id: new ObjectId(sanitizedPersonId)
          });
 
          if (!personExists) {
@@ -125,7 +125,7 @@ module.exports = (db) => {
             if (typeof bonusChallengeResult !== 'object') {
                return res.status(400).json({
                   success: false,
-                  error: 'Bonus challenge result must be an object',
+                  error: 'Bonus challenge result must be an object'
                });
             }
 
@@ -134,7 +134,7 @@ module.exports = (db) => {
             if (!bonusChallengeId) {
                return res.status(400).json({
                   success: false,
-                  error: 'Missing bonus challenge id',
+                  error: 'Missing bonus challenge id'
                });
             }
 
@@ -143,32 +143,32 @@ module.exports = (db) => {
             if (!ObjectId.isValid(sanitizedBonusChallengeId)) {
                return res.status(400).json({
                   success: false,
-                  error: 'Invalid bonus challenge id',
+                  error: 'Invalid bonus challenge id'
                });
             }
 
             if (completed !== true) {
                return res.status(400).json({
                   success: false,
-                  error: 'Bonus challenge must be marked as complete',
+                  error: 'Bonus challenge must be marked as complete'
                });
             }
 
             const bonusChallengeExists = await db.collection('bonusChallenge').findOne({
                _id: new ObjectId(sanitizedBonusChallengeId),
-               active: true,
+               active: true
             });
 
             if (!bonusChallengeExists) {
                return res.status(404).json({
                   success: false,
-                  error: 'Bonus challenge does not exist or is inactive',
+                  error: 'Bonus challenge does not exist or is inactive'
                });
             }
 
             sanitizedBonusChallengeResult = {
                bonusChallengeId: sanitizedBonusChallengeId,
-               completed: true,
+               completed: true
             };
          }
 
@@ -183,8 +183,8 @@ module.exports = (db) => {
             clusterId: sanitizedClusterId,
             startDate: {
                $gte: startOfDay.getTime(),
-               $lte: endOfDay.getTime(),
-            },
+               $lte: endOfDay.getTime()
+            }
          });
 
          if (reportExists) {
@@ -202,8 +202,8 @@ module.exports = (db) => {
             passed: results.every((r) => r.passed),
 
             ...(sanitizedBonusChallengeResult && {
-               bonusChallengeResult: sanitizedBonusChallengeResult,
-            }),
+               bonusChallengeResult: sanitizedBonusChallengeResult
+            })
          };
 
          const reportId = await db
@@ -214,7 +214,7 @@ module.exports = (db) => {
          if (!ObjectId.isValid(reportId)) {
             return res.status(500).json({
                success: false,
-               error: 'Something went wrong adding the report to the database',
+               error: 'Something went wrong adding the report to the database'
             });
          }
 
@@ -225,7 +225,7 @@ module.exports = (db) => {
                instructionId: r.instructionId,
                reportId: reportId,
                passed: r.passed,
-               note: r.note,
+               note: r.note
             });
          });
 

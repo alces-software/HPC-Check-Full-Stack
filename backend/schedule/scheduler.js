@@ -14,8 +14,8 @@ async function getTeams(db) {
       .then((res) =>
          res.map((data) => ({
             id: data._id.toString(),
-            clustersPerDay: data.clusters_per_day,
-         })),
+            clustersPerDay: data.clusters_per_day
+         }))
       );
    return response;
 }
@@ -44,7 +44,7 @@ async function getTeamsOrderedByEffectiveCapacity(db) {
                .collection('teampool')
                .find({
                   poolId: cluster.poolId,
-                  teamId: { $ne: team.id },
+                  teamId: { $ne: team.id }
                })
                .limit(1)
                .toArray();
@@ -56,9 +56,9 @@ async function getTeamsOrderedByEffectiveCapacity(db) {
 
          return {
             ...team,
-            effectiveCapacity: team.capacity - exclusiveCount,
+            effectiveCapacity: team.capacity - exclusiveCount
          };
-      }),
+      })
    );
 
    // Shuffle first so equal capacities become random
@@ -108,15 +108,15 @@ async function generateScheduleForDay(db, date) {
          .aggregate([
             {
                $match: {
-                  clusterId: { $in: clusters.map((c) => c._id.toString()) },
-               },
+                  clusterId: { $in: clusters.map((c) => c._id.toString()) }
+               }
             },
             {
                $group: {
                   _id: '$clusterId',
-                  lastDay: { $max: '$day' },
-               },
-            },
+                  lastDay: { $max: '$day' }
+               }
+            }
          ])
          .toArray();
 
@@ -137,7 +137,7 @@ async function generateScheduleForDay(db, date) {
          await db.collection('schedule').insertOne({
             personId: person._id.toString(),
             clusterId: cluster._id.toString(),
-            day: date,
+            day: date
          });
       }
    }
@@ -155,7 +155,7 @@ async function getNextPerson(db, teamId) {
       .collection('person')
       .find({
          teamId: teamId,
-         $or: [{ scheduled: false }, { scheduled: { $exists: false } }],
+         $or: [{ scheduled: false }, { scheduled: { $exists: false } }]
       })
       .toArray();
 
@@ -165,15 +165,15 @@ async function getNextPerson(db, teamId) {
          { teamId: teamId },
          {
             $set: {
-               scheduled: false,
-            },
-         },
+               scheduled: false
+            }
+         }
       );
       people = await db
          .collection('person')
          .find({
             teamId: teamId,
-            $or: [{ scheduled: false }, { scheduled: { $exists: false } }],
+            $or: [{ scheduled: false }, { scheduled: { $exists: false } }]
          })
          .toArray();
    }
@@ -184,9 +184,9 @@ async function getNextPerson(db, teamId) {
       { _id: person._id },
       {
          $set: {
-            scheduled: true,
-         },
-      },
+            scheduled: true
+         }
+      }
    );
 
    return person;
@@ -259,7 +259,7 @@ async function getScheduleForDay(db, date) {
    // Format response
    const response = scheduleForDay.map((entry) => ({
       personId: entry.personId,
-      clusterId: entry.clusterId,
+      clusterId: entry.clusterId
    }));
 
    const scheduleDict = {};

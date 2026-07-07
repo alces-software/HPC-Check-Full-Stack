@@ -100,7 +100,7 @@ export default function ResultsPage() {
             if (mode === 'week') {
                const params = new URLSearchParams({
                   page: String(page),
-                  limit: '20',
+                  limit: '20'
                });
 
                if (startDate && endDate) {
@@ -112,7 +112,7 @@ export default function ResultsPage() {
             } else {
                const params = new URLSearchParams({
                   page: String(page),
-                  limit: '20',
+                  limit: '20'
                });
 
                if (startDate && endDate) {
@@ -194,7 +194,7 @@ export default function ResultsPage() {
                            'cursor-pointer border-b-2 pb-2 text-sm font-semibold tracking-wide transition',
                            mode === 'cluster'
                               ? 'border-blue-400 text-white'
-                              : 'border-transparent text-slate-400 hover:text-white',
+                              : 'border-transparent text-slate-400 hover:text-white'
                         ].join(' ')}
                      >
                         Cluster
@@ -206,7 +206,7 @@ export default function ResultsPage() {
                            'cursor-pointer border-b-2 pb-2 text-sm font-semibold tracking-wide transition',
                            mode === 'week'
                               ? 'border-blue-400 text-white'
-                              : 'border-transparent text-slate-400 hover:text-white',
+                              : 'border-transparent text-slate-400 hover:text-white'
                         ].join(' ')}
                      >
                         Weekly
@@ -357,7 +357,7 @@ export default function ResultsPage() {
                                        'active:scale-[0.99]',
                                        passed
                                           ? 'border-green-400/30 bg-green-500/20'
-                                          : 'border-red-400/30 bg-red-500/20',
+                                          : 'border-red-400/30 bg-red-500/20'
                                     ].join(' ')}
                                  >
                                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
@@ -365,7 +365,7 @@ export default function ResultsPage() {
                                           <div
                                              className={[
                                                 'mt-1 h-3 w-3 rounded-full shrink-0',
-                                                passed ? 'bg-green-400' : 'bg-red-400',
+                                                passed ? 'bg-green-400' : 'bg-red-400'
                                              ].join(' ')}
                                           />
 
@@ -380,7 +380,7 @@ export default function ResultsPage() {
                                                       'text-[11px] px-2 py-0.5 rounded-full border',
                                                       passed
                                                          ? 'border-green-400/30 bg-green-500/20 text-green-300'
-                                                         : 'border-red-400/30 bg-red-500/20 text-red-300',
+                                                         : 'border-red-400/30 bg-red-500/20 text-red-300'
                                                    ].join(' ')}
                                                 >
                                                    {passed ? 'Passed' : 'Failed'}

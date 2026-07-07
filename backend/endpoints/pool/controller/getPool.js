@@ -30,7 +30,7 @@ module.exports = (db) => {
 
          // Get the pool from the database
          const results = await db.collection('pool').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!results) {
@@ -41,8 +41,8 @@ module.exports = (db) => {
             success: true,
             body: {
                id: sanitizedId,
-               name: results.name,
-            },
+               name: results.name
+            }
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

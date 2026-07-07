@@ -58,7 +58,7 @@ export default function Schedule() {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
-      year: 'numeric',
+      year: 'numeric'
    });
 
    const days = [
@@ -66,7 +66,7 @@ export default function Schedule() {
       ['tue', 'Tuesday', 1],
       ['wed', 'Wednesday', 2],
       ['thu', 'Thursday', 3],
-      ['fri', 'Friday', 4],
+      ['fri', 'Friday', 4]
    ];
 
    const fetchWeek = useCallback(async () => {
@@ -75,7 +75,7 @@ export default function Schedule() {
          const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/rota/week/${
                weekBeginning.toISOString().split('T')[0]
-            }`,
+            }`
          );
 
          const data = await res.json();
@@ -117,7 +117,7 @@ export default function Schedule() {
                start: formatDateParam(queryStart),
                end: formatDateParam(queryEnd),
                page: '1',
-               limit: '1000',
+               limit: '1000'
             });
 
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/report/week?${params}`);
@@ -163,7 +163,7 @@ export default function Schedule() {
 
       setTeamCache((prev) => ({
          ...prev,
-         [teamId]: data.body,
+         [teamId]: data.body
       }));
 
       return data.body;
@@ -179,8 +179,8 @@ export default function Schedule() {
             body: JSON.stringify({
                personId: swapTarget.personId,
                newPersonId,
-               date: swapTarget.date,
-            }),
+               date: swapTarget.date
+            })
          });
 
          setSwapTarget(null);
@@ -284,7 +284,7 @@ export default function Schedule() {
                   const formattedDate = dayDate.toLocaleDateString('en-GB', {
                      day: 'numeric',
                      month: 'long',
-                     year: 'numeric',
+                     year: 'numeric'
                   });
 
                   const isToday = today.toDateString() === dayDate.toDateString();
@@ -350,7 +350,7 @@ export default function Schedule() {
                                                    title={`Swap ${name}`}
                                                    onClick={async () => {
                                                       const teamMembers = await getTeamMembers(
-                                                         person.teamId,
+                                                         person.teamId
                                                       );
 
                                                       setSwapTarget({
@@ -358,7 +358,7 @@ export default function Schedule() {
                                                          personId: person.id,
                                                          teamId: person.teamId,
                                                          date: date.toISOString().split('T')[0],
-                                                         options: teamMembers,
+                                                         options: teamMembers
                                                       });
 
                                                       setSelectedSwapPerson(null);
@@ -375,7 +375,7 @@ export default function Schedule() {
                                           <div className="flex flex-wrap gap-2">
                                              {person.clusters.map((cluster) => {
                                                 const hasReport = Boolean(
-                                                   reportStatus[`${cluster.id}:${dayStartMs}`],
+                                                   reportStatus[`${cluster.id}:${dayStartMs}`]
                                                 );
 
                                                 return (
@@ -413,7 +413,7 @@ export default function Schedule() {
                                           </div>
                                        </div>
                                     );
-                                 },
+                                 }
                               )
                            )}
                         </div>

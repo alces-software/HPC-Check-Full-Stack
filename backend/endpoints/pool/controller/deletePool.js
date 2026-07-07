@@ -24,19 +24,19 @@ module.exports = (db) => {
 
          // Check if pool exits
          const existingPerson = await db.collection('pool').findOne({
-            _id: new ObjectId(id),
+            _id: new ObjectId(id)
          });
 
          if (!existingPerson) {
             return res.status(409).json({
                success: false,
-               error: "Pool doesn't exist",
+               error: "Pool doesn't exist"
             });
          }
 
          // Check if pool has clusters
          const hasClusters = await db.collection('cluster').findOne({
-            poolId: id,
+            poolId: id
          });
 
          if (hasClusters) {
@@ -47,7 +47,7 @@ module.exports = (db) => {
 
          // Check if pool is assigned to a team
          const isAssigned = await db.collection('teampool').findOne({
-            poolId: id,
+            poolId: id
          });
 
          if (isAssigned) {
@@ -58,7 +58,7 @@ module.exports = (db) => {
 
          // Delete the pool from the database
          await db.collection('pool').deleteOne({
-            _id: new ObjectId(id),
+            _id: new ObjectId(id)
          });
 
          return res.status(200).json({ success: true });

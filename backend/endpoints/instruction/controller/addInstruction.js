@@ -132,7 +132,7 @@ module.exports = (db) => {
 
          // Check if cluster exists
          const clusterExists = await db.collection('cluster').findOne({
-            _id: new ObjectId(sanitizedClusterId),
+            _id: new ObjectId(sanitizedClusterId)
          });
 
          if (!clusterExists) {
@@ -149,7 +149,7 @@ module.exports = (db) => {
             clusterId: sanitizedClusterId,
             good: sanitizedGood,
             bad: sanitizedBad,
-            position: currentTotalInstructions + 1,
+            position: currentTotalInstructions + 1
          });
 
          return res.status(200).json({ success: true });

@@ -36,7 +36,7 @@ module.exports = (db) => {
 
          // Get the team
          const response = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!response) {
@@ -49,7 +49,7 @@ module.exports = (db) => {
          // Return the team information
          return res.status(200).json({
             success: true,
-            body: response,
+            body: response
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

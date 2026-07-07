@@ -52,7 +52,7 @@ module.exports = (db) => {
 
          const teamPoolResults = await db.collection('teampool').findOne({
             teamId: sanitizedTeamId,
-            poolId: sanitizedId,
+            poolId: sanitizedId
          });
 
          if (!teamPoolResults) {
@@ -63,11 +63,11 @@ module.exports = (db) => {
 
          await db.collection('teampool').deleteOne({
             teamId: sanitizedTeamId,
-            poolId: sanitizedId,
+            poolId: sanitizedId
          });
 
          return res.status(200).json({
-            success: true,
+            success: true
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

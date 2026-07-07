@@ -40,7 +40,7 @@ module.exports = (db) => {
 
          // Check if instruction exists
          const instructionExists = await db.collection('instruction').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!instructionExists) {
@@ -51,14 +51,14 @@ module.exports = (db) => {
          const response = await db
             .collection('method')
             .find({
-               instructionId: sanitizedId,
+               instructionId: sanitizedId
             })
             .toArray()
             .then((res) =>
                res.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
-                  ...rest,
-               })),
+                  ...rest
+               }))
             );
 
          return res.status(200).json({ success: true, body: response });

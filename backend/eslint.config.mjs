@@ -11,10 +11,10 @@ export default defineConfig([
       languageOptions: {
          sourceType: 'module', // ✅ FIX: allows import/export
          globals: {
-            ...globals.node,
-         },
-      },
+            ...globals.node
+         }
+      }
    },
 
-   eslintConfigPrettier,
+   eslintConfigPrettier
 ]);

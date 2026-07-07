@@ -28,8 +28,8 @@ module.exports = (db) => {
          const existingHpc = await db.collection('cluster').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
-               $options: 'i',
-            },
+               $options: 'i'
+            }
          });
 
          if (existingHpc) {
@@ -40,7 +40,7 @@ module.exports = (db) => {
          const clusterId = await db
             .collection('cluster')
             .insertOne({
-               name: sanitizedName,
+               name: sanitizedName
             })
             .then((res) => res.insertedId.toString());
 

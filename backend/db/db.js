@@ -61,7 +61,7 @@ module.exports.Database = class {
          name: collection.name,
          validator: collection.options?.validator || null,
          validationLevel: collection.options?.validationLevel || null,
-         validationAction: collection.options?.validationAction || null,
+         validationAction: collection.options?.validationAction || null
       }));
 
       fs.writeFileSync('mongodb-schema.json', JSON.stringify(exportData, null, 2));
@@ -83,7 +83,7 @@ module.exports.Database = class {
          await db.createCollection(collectionDef.name, {
             validator: collectionDef.validator ?? undefined,
             validationLevel: collectionDef.validationLevel ?? undefined,
-            validationAction: collectionDef.validationAction ?? undefined,
+            validationAction: collectionDef.validationAction ?? undefined
          });
 
          console.log(`Created collection "${collectionDef.name}"`);

@@ -47,7 +47,7 @@ module.exports = (db) => {
 
          // Get the cluster
          const results = await db.collection('cluster').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!results) {
@@ -55,7 +55,7 @@ module.exports = (db) => {
          }
 
          const poolResults = await db.collection('pool').findOne({
-            _id: new ObjectId(sanitizedPoolId),
+            _id: new ObjectId(sanitizedPoolId)
          });
 
          if (!poolResults) {
@@ -70,17 +70,17 @@ module.exports = (db) => {
             { _id: new ObjectId(sanitizedId) },
             {
                $unset: {
-                  poolId: '',
-               },
-            },
+                  poolId: ''
+               }
+            }
          );
 
          return res.status(200).json({
             success: true,
             body: {
                id: sanitizedId,
-               name: results.name,
-            },
+               name: results.name
+            }
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

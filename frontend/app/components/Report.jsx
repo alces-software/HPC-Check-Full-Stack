@@ -37,7 +37,7 @@ export default function Report() {
       async function getReportData() {
          try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/report/id/${id}`).then(
-               (r) => r.json(),
+               (r) => r.json()
             );
 
             if (!res.success) return;
@@ -48,26 +48,26 @@ export default function Report() {
                data.results.map(async (result) => {
                   try {
                      const instructionRes = await fetch(
-                        `${process.env.NEXT_PUBLIC_API_URL}/instruction/specific/${result.instructionId}`,
+                        `${process.env.NEXT_PUBLIC_API_URL}/instruction/specific/${result.instructionId}`
                      );
 
                      const instructionData = await instructionRes.json();
 
                      return {
                         ...result,
-                        title: instructionData?.body?.title || instructionData?.title || 'Unknown',
+                        title: instructionData?.body?.title || instructionData?.title || 'Unknown'
                      };
                   } catch {
                      return { ...result, title: 'Unknown' };
                   }
-               }),
+               })
             );
 
             data.duration = calculateDuration(new Date(data.startTime), new Date(data.endTime));
 
             setReport({
                ...data,
-               results: resultsWithTitles,
+               results: resultsWithTitles
             });
          } catch (error) {
             console.error('Failed to load report:', error);
@@ -92,7 +92,7 @@ export default function Report() {
          navigator
             .share({
                title: `${report.cluster} report`,
-               url: window.location.href,
+               url: window.location.href
             })
             .catch(() => {});
          setShared(true);
@@ -210,7 +210,7 @@ export default function Report() {
 
                               <span
                                  className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-bold uppercase ${outcomeStyle(
-                                    result.passed,
+                                    result.passed
                                  )}`}
                               >
                                  {result.passed ? 'PASS' : 'FAIL'}
@@ -241,7 +241,7 @@ export default function Report() {
                                  <td className="px-6 py-4">
                                     <span
                                        className={`rounded-full border px-3 py-1 text-xs font-bold uppercase ${outcomeStyle(
-                                          result.passed,
+                                          result.passed
                                        )}`}
                                     >
                                        {result.passed ? 'PASS' : 'FAIL'}

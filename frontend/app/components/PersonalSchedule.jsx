@@ -53,7 +53,7 @@ export default function PersonalSchedule() {
                todaysClusters.map(async (cluster) => {
                   try {
                      const response = await fetch(
-                        `${process.env.NEXT_PUBLIC_API_URL}/report/today/cluster/${cluster.id}`,
+                        `${process.env.NEXT_PUBLIC_API_URL}/report/today/cluster/${cluster.id}`
                      );
 
                      const json = await response.json();
@@ -65,17 +65,17 @@ export default function PersonalSchedule() {
                      console.error(
                         'Failed to load completed report for cluster',
                         cluster.id,
-                        error,
+                        error
                      );
                      return null;
                   }
-               }),
+               })
             );
 
             const completedIdsSet = new Set(completedClusterIds.filter(Boolean));
 
             const filteredClusters = todaysClusters.filter(
-               (cluster) => !completedIdsSet.has(cluster.id),
+               (cluster) => !completedIdsSet.has(cluster.id)
             );
 
             setClusters(filteredClusters);

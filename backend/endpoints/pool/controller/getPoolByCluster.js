@@ -30,7 +30,7 @@ module.exports = (db) => {
 
          // Get the cluster from the database
          const results = await db.collection('cluster').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!results) {
@@ -45,8 +45,8 @@ module.exports = (db) => {
             success: true,
             body: {
                id: sanitizedId,
-               pool: results.poolId,
-            },
+               pool: results.poolId
+            }
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

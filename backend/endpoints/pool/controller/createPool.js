@@ -26,8 +26,8 @@ module.exports = (db) => {
          const existingPerson = await db.collection('pool').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
-               $options: 'i',
-            },
+               $options: 'i'
+            }
          });
 
          if (existingPerson) {
@@ -38,14 +38,14 @@ module.exports = (db) => {
 
          // Add pool to the database
          const result = await db.collection('pool').insertOne({
-            name: sanitizedName,
+            name: sanitizedName
          });
 
          return res.status(200).json({
             success: true,
             body: {
-               newId: result.insertedId,
-            },
+               newId: result.insertedId
+            }
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

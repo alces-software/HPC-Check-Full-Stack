@@ -132,7 +132,7 @@ export default function TeamSettingsPage() {
 
       if (data.body && data.body.length === 1) {
          alert(
-            `You cannot add ${userToAdd.name} as they are the only remaining member in their team.`,
+            `You cannot add ${userToAdd.name} as they are the only remaining member in their team.`
          );
          return;
       }
@@ -143,12 +143,12 @@ export default function TeamSettingsPage() {
             {
                method: 'PATCH',
                headers: {
-                  'Content-Type': 'application/json',
+                  'Content-Type': 'application/json'
                },
                body: JSON.stringify({
-                  teamId: teamId,
-               }),
-            },
+                  teamId: teamId
+               })
+            }
          );
 
          const data = await res.json();
@@ -181,11 +181,11 @@ export default function TeamSettingsPage() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool/team/${selectedPoolId}`, {
             method: 'POST',
             headers: {
-               'Content-Type': 'application/json',
+               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-               teamId: teamId,
-            }),
+               teamId: teamId
+            })
          });
 
          const data = await res.json();
@@ -213,11 +213,11 @@ export default function TeamSettingsPage() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool/team/${poolId}`, {
             method: 'DELETE',
             headers: {
-               'Content-Type': 'application/json',
+               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-               teamId: teamId,
-            }),
+               teamId: teamId
+            })
          });
 
          const data = await res.json().catch(() => ({}));
@@ -264,12 +264,12 @@ export default function TeamSettingsPage() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`, {
             method: 'PATCH',
             headers: {
-               'Content-Type': 'application/json',
+               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                id: teamId,
-               clusters_per_day: clustersPerDay,
-            }),
+               clusters_per_day: clustersPerDay
+            })
          });
 
          const data = await res.json();
@@ -280,7 +280,7 @@ export default function TeamSettingsPage() {
 
          setTeam((prev) => ({
             ...prev,
-            clusters_per_day: clustersPerDay,
+            clusters_per_day: clustersPerDay
          }));
 
          setStatusMessage('Settings updated successfully.');

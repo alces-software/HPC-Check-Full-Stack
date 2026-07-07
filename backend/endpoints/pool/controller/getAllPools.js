@@ -16,8 +16,8 @@ module.exports = (db) => {
             .then((res) =>
                res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name,
-               })),
+                  name: data.name
+               }))
             );
 
          return res.status(200).json({ success: true, body: response });

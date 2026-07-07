@@ -24,19 +24,19 @@ module.exports = (db) => {
 
          // Check if person exists
          const existingPerson = await db.collection('person').findOne({
-            _id: new ObjectId(id),
+            _id: new ObjectId(id)
          });
 
          if (!existingPerson) {
             return res.status(409).json({
                success: false,
-               error: "Person doesn't exists",
+               error: "Person doesn't exists"
             });
          }
 
          // Check if person has reports
          const hasReports = await db.collection('report').findOne({
-            personId: id,
+            personId: id
          });
 
          if (hasReports) {
@@ -45,7 +45,7 @@ module.exports = (db) => {
 
          // Delete the person from the database
          await db.collection('person').deleteOne({
-            _id: new ObjectId(id),
+            _id: new ObjectId(id)
          });
 
          return res.status(200).json({ success: true });

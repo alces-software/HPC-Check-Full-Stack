@@ -29,7 +29,7 @@ module.exports = (db) => {
          }
 
          const poolResults = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedId),
+            _id: new ObjectId(sanitizedId)
          });
 
          if (!poolResults) {
@@ -54,12 +54,12 @@ module.exports = (db) => {
 
          const response = pools.map(({ _id, ...pool }) => ({
             id: _id,
-            ...pool,
+            ...pool
          }));
 
          return res.json({
             success: true,
-            body: response,
+            body: response
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

@@ -1,7 +1,7 @@
 import Name from '../components/Name';
 
 export const metadata = {
-   title: 'Select Name',
+   title: 'Select Name'
 };
 
 export default function NamePage() {

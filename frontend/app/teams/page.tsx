@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import TeamPage from '../components/TeamsSettingsPage';
 
 export const metadata = {
-   title: 'Team Options',
+   title: 'Team Options'
 };
 
 export default async function Teams() {
