@@ -91,8 +91,6 @@ export default function Schedule() {
       fetchWeek();
    }, [fetchWeek, weekBeginning]);
 
-
-
    useEffect(() => {
       if (!schedule) {
          return;
@@ -385,9 +383,8 @@ export default function Schedule() {
                                                       key={cluster.id}
                                                       className={`flex items-center gap-2 rounded-full ${
                                                          hasReport
-                                                         ? 'bg-green-500/20 px-3 py-1 text-sm text-green-200'
-                                                         : 'bg-blue-500/20 px-3 py-1 text-sm text-blue-200'
-
+                                                            ? 'bg-green-500/20 px-3 py-1 text-sm text-green-200'
+                                                            : 'bg-blue-500/20 px-3 py-1 text-sm text-blue-200'
                                                       }`}
                                                    >
                                                       {cluster.name}

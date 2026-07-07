@@ -67,6 +67,7 @@ export default function Header() {
       { href: '/schedule', label: 'Schedule' },
       { href: '/name', label: 'Submit Report' },
       { href: '/results', label: 'Results' },
+      { href: '/overview', label: 'Overview' },
       { href: '/options', label: 'Administration' }
    ];
 

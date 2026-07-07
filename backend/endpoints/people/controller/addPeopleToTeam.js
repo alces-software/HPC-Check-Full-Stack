@@ -16,7 +16,9 @@ module.exports = (db) => {
 
          // Check id
          if (typeof id !== 'string') {
-            return res.status(400).json({ success: false, error: "The persons id provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The persons id provided is not a string' });
          }
 
          if (!id) {
@@ -37,7 +39,9 @@ module.exports = (db) => {
 
          // Check team id
          if (typeof teamId !== 'string') {
-            return res.status(400).json({ success: false, error: "The team id provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The team id provided is not a string' });
          }
 
          if (!teamId) {

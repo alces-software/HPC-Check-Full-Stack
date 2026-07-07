@@ -4,25 +4,15 @@ import Link from 'next/link';
 import { FaChartBar, FaRegCalendarAlt, FaRegEdit } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
 import { IoIosSettings } from 'react-icons/io';
+import { GrOverview } from 'react-icons/gr';
 
 function PortalIcon() {
    return (
-      <svg viewBox="0 0 80 80" className="h-20 w-20">
-         <defs>
-            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-               <feDropShadow
-                  dx="4"
-                  dy="4"
-                  stdDeviation="2"
-                  floodOpacity="0.25"
-               />
-            </filter>
-         </defs>
-
-         <rect x="10" y="10" width="30" height="30" rx="5" className="fill-green-300" filter="url(#shadow)" />
-         <rect x="44" y="10" width="30" height="30" rx="5" className="fill-blue-300 " filter="url(#shadow)" />
-         <rect x="10" y="44" width="30" height="30" rx="5" className="fill-purple-300" filter="url(#shadow)" />
-         <rect x="44" y="44" width="30" height="30" rx="5" className="fill-amber-300" filter="url(#shadow)" />
+      <svg viewBox="0 0 80 80" className="h-20 w-20" aria-hidden="true">
+         <rect x="10" y="10" width="30" height="30" rx="5" className="fill-green-300" />
+         <rect x="44" y="10" width="30" height="30" rx="5" className="fill-blue-300" />
+         <rect x="10" y="44" width="30" height="30" rx="5" className="fill-purple-300" />
+         <rect x="44" y="44" width="30" height="30" rx="5" className="fill-amber-300" />
       </svg>
    );
 }
@@ -117,6 +107,23 @@ export default function Home() {
 
                      <div className="mt-6 flex items-center gap-1 font-semibold text-amber-300 transition-transform group-hover:translate-x-2">
                         Open Administration
+                        <IoIosArrowForward aria-hidden="true" />
+                     </div>
+                  </Link>
+
+                  {/* Overview */}
+                  <Link
+                     href="/overview"
+                     className="group cursor-pointer rounded-2xl border border-pink-400/20 bg-pink-500/10 p-8 text-left transition-all duration-300 hover:-translate-y-2 hover:border-pink-400/50 hover:bg-pink-500/20 hover:shadow-2xl"
+                  >
+                     <GrOverview className="mb-4 text-6xl text-pink-300" aria-hidden="true" />
+
+                     <h2 className="mb-2 text-2xl font-bold text-white">Overview</h2>
+
+                     <p className="text-slate-300">View a break down of a days reports.</p>
+
+                     <div className="mt-6 flex items-center gap-1 font-semibold text-pink-300 transition-transform group-hover:translate-x-2">
+                        Open Overview
                         <IoIosArrowForward aria-hidden="true" />
                      </div>
                   </Link>

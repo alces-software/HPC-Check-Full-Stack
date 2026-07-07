@@ -13,7 +13,9 @@ module.exports = (db) => {
 
          // Check day
          if (typeof id !== 'string') {
-            return res.status(400).json({ success: false, error: "The day provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The day provided is not a string' });
          }
 
          if (!day) {
@@ -32,7 +34,9 @@ module.exports = (db) => {
          const existing = await collection.findOne({ day: date });
 
          if (existing) {
-            return res.status(409).json({ success: false, error: 'Office already marked closed for this day' });
+            return res
+               .status(409)
+               .json({ success: false, error: 'Office already marked closed for this day' });
          }
 
          await collection.insertOne({ day: date });
