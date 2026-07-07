@@ -14,6 +14,10 @@ module.exports = (db) => {
          const { id, ...rest } = req.body || {};
 
          // Check id
+         if (typeof id !== 'string') {
+            return res.status(400).json({ success: false, error: "The instruction provided is not a string" });
+         }
+
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing instruction id' });
          }
@@ -31,7 +35,7 @@ module.exports = (db) => {
          // Check updates
          const updates = Object.fromEntries(
             Object.entries(rest)
-               .filter(([, v]) => v != null)
+               .filter(([k, v]) => v != null && k != '_id')
                .map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v])
          );
 

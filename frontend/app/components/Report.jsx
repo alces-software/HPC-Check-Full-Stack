@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { IoCopy, IoShare, IoCheckmark } from 'react-icons/io5';
 
 export default function Report() {
    const searchParams = useSearchParams();
    const id = searchParams.get('id');
    const [report, setReport] = useState(null);
+   const [copied, setCopied] = useState(false);
+   const [shared, setShared] = useState(false);
 
    function calculateDuration(start, end) {
       const diffMs = end.getTime() - start.getTime();
@@ -74,6 +77,31 @@ export default function Report() {
       getReportData();
    }, [id]);
 
+   const handleCopy = async () => {
+      try {
+         await navigator.clipboard.writeText(window.location.href);
+         setCopied(true);
+         setTimeout(() => setCopied(false), 1500);
+      } catch (err) {
+         console.error('Failed to copy:', err);
+      }
+   };
+
+   const handleShare = async () => {
+      try {
+         navigator
+            .share({
+               title: `${report.cluster} report`,
+               url: window.location.href
+            })
+            .catch(() => {});
+         setShared(true);
+         setTimeout(() => setShared(false), 1500);
+      } catch (err) {
+         console.error('Failed to share:', err);
+      }
+   };
+
    if (!report) {
       return (
          <main className="flex justify-center py-10">
@@ -103,24 +131,69 @@ export default function Report() {
       <main className="space-y-8">
          <div className="rounded-2xl border border-white/10 bg-white/10 p-6 shadow-2xl backdrop-blur-xl md:p-8">
             {/* Header */}
-            <div className="mb-6 md:mb-8">
-               <h1 className="text-3xl font-bold text-white md:text-4xl">HPC Test Results</h1>
+            <div className="mb-6 flex items-start justify-between md:mb-8">
+               <div>
+                  <h1 className="text-3xl font-bold text-white md:text-4xl">HPC Test Results</h1>
 
-               <p className="mt-2 text-slate-300">
-                  Results for {formatDate(new Date(report.startTime))} on {report.cluster}
-               </p>
+                  <p className="mt-2 text-slate-300">
+                     Results for {formatDate(new Date(report.startTime))} on {report.cluster}
+                  </p>
 
-               <p className="mt-2 text-slate-300">
-                  Checks:
-                  <span
-                     className={`ml-2 rounded-full border px-2 py-1 text-xs font-semibold uppercase tracking-wide ${report.passed
-                        ? 'border-green-400/30 bg-green-500/20 text-green-300'
-                        : 'border-red-400/30 bg-red-500/20 text-red-300'
+                  <p className="mt-2 text-slate-300">
+                     Checks:
+                     <span
+                        className={`ml-2 rounded-full border px-2 py-1 text-xs font-semibold uppercase tracking-wide ${
+                           report.passed
+                              ? 'border-green-400/30 bg-green-500/20 text-green-300'
+                              : 'border-red-400/30 bg-red-500/20 text-red-300'
                         }`}
-                  >
-                     {report.passed ? 'Passed' : 'Failed'}
-                  </span>
-               </p>
+                     >
+                        {report.passed ? 'Passed' : 'Failed'}
+                     </span>
+                  </p>
+               </div>
+               <div className="flex gap-2">
+                  {navigator.clipboard !== undefined &&
+                     typeof navigator.clipboard.writeText === 'function' && (
+                        <button
+                           type="button"
+                           onClick={handleCopy}
+                           className={`cursor-pointer rounded-lg border p-2 transition-all duration-300 ${
+                              copied
+                                 ? 'border-green-400/40 bg-green-500/20 text-green-300'
+                                 : 'border-white/10 bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white'
+                           }`}
+                           title={copied ? 'Copied!' : 'Copy report link'}
+                           aria-label={copied ? 'Copied!' : 'Copy report link'}
+                        >
+                           {copied ? (
+                              <IoCheckmark className="h-5 w-5 animate-pulse" />
+                           ) : (
+                              <IoCopy className="h-5 w-5" />
+                           )}
+                        </button>
+                     )}
+
+                  {typeof navigator.share === 'function' && (
+                     <button
+                        type="button"
+                        onClick={handleShare}
+                        className={`cursor-pointer rounded-lg border p-2 transition-all duration-300 ${
+                           shared
+                              ? 'border-green-400/40 bg-green-500/20 text-green-300'
+                              : 'border-white/10 bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white'
+                        }`}
+                        title={shared ? 'Shared!' : 'Share report'}
+                        aria-label={shared ? 'Shared!' : 'Share report'}
+                     >
+                        {shared ? (
+                           <IoCheckmark className="h-5 w-5 animate-pulse" />
+                        ) : (
+                           <IoShare className="h-5 w-5" />
+                        )}
+                     </button>
+                  )}
+               </div>
             </div>
 
             {/* TABLE */}
