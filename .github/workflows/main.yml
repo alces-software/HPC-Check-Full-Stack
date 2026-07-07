@@ -22,14 +22,14 @@ jobs:
         with:
           node-version: 20
 
-      - name: Format app
-        working-directory: app
+      - name: Format frontend
+        working-directory: frontend
         run: |
           npm ci
           npm run format
 
-      - name: Format api
-        working-directory: api
+      - name: Format backend
+        working-directory: backend
         run: |
           npm ci
           npm run format
