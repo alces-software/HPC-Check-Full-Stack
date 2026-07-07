@@ -10,7 +10,7 @@ module.exports = (db) => {
    return async (req, res) => {
       try {
          if (Math.random() >= 0.4) {
-            return res.status(200).json({ success: true, body: null });
+            return res.status(200).json({ success: true });
          }
 
          const bonusChallenge = await db
