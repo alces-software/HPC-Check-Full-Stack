@@ -8,7 +8,7 @@ const path = require('path');
  */
 module.exports.templateIt = async (clusterId, db) => {
    const templateData = JSON.parse(
-      await fs.readFile(path.join(__dirname, 'templateInfo.json'), 'utf8')
+      await fs.readFile(path.join(__dirname, 'templateInfo.json'), 'utf8'),
    );
 
    for (const instruction of templateData.instructions) {
@@ -18,7 +18,7 @@ module.exports.templateIt = async (clusterId, db) => {
          description: instruction.description,
          clusterId,
          good: instruction.good,
-         bad: instruction.bad
+         bad: instruction.bad,
       });
 
       const instructionId = result.insertedId.toString();
@@ -26,7 +26,7 @@ module.exports.templateIt = async (clusterId, db) => {
       for (const method of instruction.methods) {
          await db.collection('method').insertOne({
             content: method.content,
-            instructionId
+            instructionId,
          });
       }
    }

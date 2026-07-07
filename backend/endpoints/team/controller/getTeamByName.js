@@ -32,8 +32,8 @@ module.exports = (db) => {
          const response = await db.collection('team').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
-               $options: 'i'
-            }
+               $options: 'i',
+            },
          });
 
          if (!response) {
@@ -46,7 +46,7 @@ module.exports = (db) => {
          // Return team information
          return res.status(200).json({
             success: true,
-            body: response
+            body: response,
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

@@ -17,7 +17,7 @@ export default function Header() {
    const loadClusters = useCallback(async () => {
       try {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc`, {
-            cache: 'no-store'
+            cache: 'no-store',
          });
 
          const data = await res.json();
@@ -32,7 +32,7 @@ export default function Header() {
    const loadTeams = useCallback(async () => {
       try {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`, {
-            cache: 'no-store'
+            cache: 'no-store',
          });
 
          const data = await res.json();
@@ -68,7 +68,7 @@ export default function Header() {
       { href: '/name', label: 'Submit Report' },
       { href: '/results', label: 'Results' },
       { href: '/overview', label: 'Overview' },
-      { href: '/options', label: 'Administration' }
+      { href: '/options', label: 'Administration' },
    ];
 
    const isClustersActive = pathname.startsWith('/clusters');
@@ -118,7 +118,7 @@ export default function Header() {
                            href={item.href}
                            className={[
                               'text-md font-medium transition',
-                              isActive ? 'text-blue-300' : 'text-slate-200 hover:text-blue-300'
+                              isActive ? 'text-blue-300' : 'text-slate-200 hover:text-blue-300',
                            ].join(' ')}
                         >
                            {item.label}
@@ -132,7 +132,9 @@ export default function Header() {
                         type="button"
                         className={[
                            'flex cursor-pointer items-center gap-1 text-md font-medium transition',
-                           isClustersActive ? 'text-blue-300' : 'text-slate-200 hover:text-blue-300'
+                           isClustersActive
+                              ? 'text-blue-300'
+                              : 'text-slate-200 hover:text-blue-300',
                         ].join(' ')}
                      >
                         Clusters
@@ -158,7 +160,7 @@ export default function Header() {
                                           'block rounded-xl px-4 py-3 text-md transition',
                                           isClusterItemActive
                                              ? 'bg-blue-500/20 text-blue-200'
-                                             : 'text-slate-200 hover:bg-blue-500/20 hover:text-white'
+                                             : 'text-slate-200 hover:bg-blue-500/20 hover:text-white',
                                        ].join(' ')}
                                     >
                                        <span className="block font-medium">{cluster.name}</span>
@@ -176,7 +178,7 @@ export default function Header() {
                         type="button"
                         className={[
                            'flex cursor-pointer items-center gap-1 text-md font-medium transition',
-                           isTeamsActive ? 'text-blue-300' : 'text-slate-200 hover:text-blue-300'
+                           isTeamsActive ? 'text-blue-300' : 'text-slate-200 hover:text-blue-300',
                         ].join(' ')}
                      >
                         Teams
@@ -201,7 +203,7 @@ export default function Header() {
                                           'block rounded-xl px-4 py-3 text-md transition',
                                           isTeamItemActive
                                              ? 'bg-blue-500/20 text-blue-200'
-                                             : 'text-slate-200 hover:bg-blue-500/20 hover:text-white'
+                                             : 'text-slate-200 hover:bg-blue-500/20 hover:text-white',
                                        ].join(' ')}
                                     >
                                        <span className="block font-medium">{team.name}</span>
@@ -231,7 +233,7 @@ export default function Header() {
                                  'block rounded-xl px-4 py-3 text-sm font-medium transition',
                                  isActive
                                     ? 'bg-blue-500/20 text-blue-200'
-                                    : 'text-slate-200 hover:bg-blue-500/15 hover:text-white'
+                                    : 'text-slate-200 hover:bg-blue-500/15 hover:text-white',
                               ].join(' ')}
                            >
                               {item.label}
@@ -247,14 +249,14 @@ export default function Header() {
                               'flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition',
                               isClustersActive
                                  ? 'bg-blue-500/20 text-blue-200'
-                                 : 'text-slate-200 hover:bg-blue-500/15 hover:text-white'
+                                 : 'text-slate-200 hover:bg-blue-500/15 hover:text-white',
                            ].join(' ')}
                         >
                            Clusters
                            <IoChevronDown
                               className={[
                                  'transition',
-                                 mobileClustersOpen ? 'rotate-180' : ''
+                                 mobileClustersOpen ? 'rotate-180' : '',
                               ].join(' ')}
                               aria-hidden="true"
                            />
@@ -294,13 +296,13 @@ export default function Header() {
                               'flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition',
                               isTeamsActive
                                  ? 'bg-blue-500/20 text-blue-200'
-                                 : 'text-slate-200 hover:bg-blue-500/15 hover:text-white'
+                                 : 'text-slate-200 hover:bg-blue-500/15 hover:text-white',
                            ].join(' ')}
                         >
                            Teams
                            <IoChevronDown
                               className={['transition', mobileTeamsOpen ? 'rotate-180' : ''].join(
-                                 ' '
+                                 ' ',
                               )}
                               aria-hidden="true"
                            />

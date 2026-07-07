@@ -42,14 +42,14 @@ module.exports = (db) => {
          const instructions = await db
             .collection('instruction')
             .find({
-               clusterId: sanitizedId
+               clusterId: sanitizedId,
             })
             .toArray()
             .then((res) =>
                res.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
-                  ...rest
-               }))
+                  ...rest,
+               })),
             );
 
          // Get all the methods associated with the instruction
@@ -57,14 +57,14 @@ module.exports = (db) => {
             const methods = await db
                .collection('method')
                .find({
-                  instructionId: i.id
+                  instructionId: i.id,
                })
                .toArray()
                .then((res) =>
                   res.map(({ _id, ...rest }) => ({
                      id: _id.toString(),
-                     ...rest
-                  }))
+                     ...rest,
+                  })),
                );
 
             i.methods = [];

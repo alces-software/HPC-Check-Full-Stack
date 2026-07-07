@@ -38,7 +38,7 @@ module.exports = (db) => {
          const updates = Object.fromEntries(
             Object.entries(rest)
                .filter(([k, v]) => v != null && k != '_id')
-               .map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v])
+               .map(([k, v]) => [k, typeof v === 'string' ? v.trim() : v]),
          );
 
          if (Object.keys(updates).length === 0) {
@@ -79,10 +79,10 @@ module.exports = (db) => {
                   updateOne: {
                      filter: { _id: i._id },
                      update: {
-                        $set: { position: index + 1 }
-                     }
-                  }
-               }))
+                        $set: { position: index + 1 },
+                     },
+                  },
+               })),
             );
          }
 

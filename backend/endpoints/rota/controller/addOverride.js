@@ -50,7 +50,7 @@ module.exports = (db) => {
 
          const existingOverride = await overrides.findOne({
             date: overrideDate,
-            newPersonId: personId
+            newPersonId: personId,
          });
 
          const originalPersonId = existingOverride ? existingOverride.personId : personId;
@@ -60,7 +60,7 @@ module.exports = (db) => {
          if (!(personId in scheduleOnDate)) {
             return res.status(404).json({
                success: false,
-               error: 'Person is not scheduled on that date'
+               error: 'Person is not scheduled on that date',
             });
          }
 
@@ -70,14 +70,14 @@ module.exports = (db) => {
                { personId: originalPersonId },
                { newPersonId: originalPersonId },
                { personId: newPersonId },
-               { newPersonId: newPersonId }
-            ]
+               { newPersonId: newPersonId },
+            ],
          });
 
          const overrideDoc = {
             personId: originalPersonId,
             newPersonId,
-            date: overrideDate
+            date: overrideDate,
          };
 
          await overrides.insertOne(overrideDoc);

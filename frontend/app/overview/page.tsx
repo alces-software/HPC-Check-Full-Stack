@@ -1,7 +1,7 @@
 import Overview from '../components/Overview';
 
 export const metadata = {
-   title: 'Reports Overview'
+   title: 'Reports Overview',
 };
 
 export default function PersonalSchedulePage() {

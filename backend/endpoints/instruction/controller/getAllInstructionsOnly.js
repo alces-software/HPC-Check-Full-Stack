@@ -40,14 +40,14 @@ module.exports = (db) => {
          const response = await db
             .collection('instruction')
             .find({
-               clusterId: sanitizedId
+               clusterId: sanitizedId,
             })
             .toArray()
             .then((res) =>
                res.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
-                  ...rest
-               }))
+                  ...rest,
+               })),
             );
 
          return res

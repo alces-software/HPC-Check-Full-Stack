@@ -1,7 +1,7 @@
 import Schedule from '../components/Schedule';
 
 export const metadata = {
-   title: 'Schedule'
+   title: 'Schedule',
 };
 
 export default function SchedulePage() {

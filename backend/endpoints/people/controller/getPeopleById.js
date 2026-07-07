@@ -38,7 +38,7 @@ module.exports = (db) => {
 
          // Get the person from the database
          const response = await db.collection('person').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(sanitizedId),
          });
 
          if (!response) {
@@ -50,7 +50,7 @@ module.exports = (db) => {
 
          return res.status(200).json({
             success: true,
-            body: response
+            body: response,
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

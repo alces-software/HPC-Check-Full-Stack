@@ -100,8 +100,8 @@ export default function Options() {
          const res = await fetch(`${url}/${id}`, {
             method: 'DELETE',
             headers: {
-               'Content-Type': 'application/json'
-            }
+               'Content-Type': 'application/json',
+            },
          });
 
          const json = await res.json();
@@ -151,11 +151,11 @@ export default function Options() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people`, {
             method: 'POST',
             headers: {
-               'Content-Type': 'application/json'
+               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-               name: userName
-            })
+               name: userName,
+            }),
          });
 
          const json = await res.json();
@@ -194,11 +194,11 @@ export default function Options() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`, {
             method: 'POST',
             headers: {
-               'Content-Type': 'application/json'
+               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-               name: nameToAdd
-            })
+               name: nameToAdd,
+            }),
          });
 
          const data = await res.json();
@@ -225,11 +225,11 @@ export default function Options() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc`, {
             method: 'POST',
             headers: {
-               'Content-Type': 'application/json'
+               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-               name: clusterName
-            })
+               name: clusterName,
+            }),
          });
 
          const json = await res.json();
@@ -255,11 +255,11 @@ export default function Options() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool`, {
             method: 'POST',
             headers: {
-               'Content-Type': 'application/json'
+               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-               name: poolName
-            })
+               name: poolName,
+            }),
          });
 
          const json = await res.json();
@@ -291,7 +291,7 @@ export default function Options() {
 
       requestConfirmation(
          `Are you sure you want to add the cluster "${clusterName}"?`,
-         confirmAddCluster
+         confirmAddCluster,
       );
    };
 
@@ -401,7 +401,8 @@ export default function Options() {
                   </p>
                </div>
 
-               {portalEl && confirmPrompt &&
+               {portalEl &&
+                  confirmPrompt &&
                   createPortal(
                      <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
                         <div className="mb-6 rounded-2xl border border-yellow-400/20 bg-yellow-500/10 p-5 text-slate-100 shadow-2xl backdrop-blur-xl">
@@ -426,7 +427,7 @@ export default function Options() {
                            </div>
                         </div>
                      </div>,
-                     portalEl
+                     portalEl,
                   )}
 
                {statusMessage && (

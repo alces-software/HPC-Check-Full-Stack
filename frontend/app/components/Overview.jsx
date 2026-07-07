@@ -36,8 +36,8 @@ export default function Overview() {
             const res = await fetch(
                `${process.env.NEXT_PUBLIC_API_URL}/report/overview` +
                   `?${new URLSearchParams({
-                     date: date
-                  }).toString()}`
+                     date: date,
+                  }).toString()}`,
             );
             const data = await res.json();
             setReport(data?.body ?? {});
@@ -189,7 +189,7 @@ export default function Overview() {
                                           </span>
                                           {calculateDuration(
                                              new Date(element.startDate),
-                                             new Date(element.endDate)
+                                             new Date(element.endDate),
                                           )}
                                        </div>
                                     </div>

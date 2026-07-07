@@ -16,11 +16,11 @@ async function populateClosedDays(db) {
             filter: { day },
             update: {
                $setOnInsert: {
-                  day
-               }
+                  day,
+               },
             },
-            upsert: true
-         }
+            upsert: true,
+         },
       };
    });
 

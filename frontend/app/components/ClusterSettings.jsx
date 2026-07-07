@@ -7,7 +7,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FaDatabase, FaUser } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
-import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react'
 
 export default function ClusterSettingsPage() {
    const searchParams = useSearchParams();
@@ -125,7 +125,7 @@ export default function ClusterSettingsPage() {
 
          try {
             const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/report/cluster/${clusterId}`
+               `${process.env.NEXT_PUBLIC_API_URL}/report/cluster/${clusterId}`,
             );
 
             const data = await res.json();
@@ -147,7 +147,7 @@ export default function ClusterSettingsPage() {
             const formatted = date.toLocaleDateString('en-GB', {
                day: '2-digit',
                month: '2-digit',
-               year: '2-digit'
+               year: '2-digit',
             });
 
             setRecentCheckDate(formatted);
@@ -165,8 +165,8 @@ export default function ClusterSettingsPage() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method/${methodId}`, {
             method: 'DELETE',
             headers: {
-               'Content-Type': 'application/json'
-            }
+               'Content-Type': 'application/json',
+            },
          });
 
          if (!res.ok) {
@@ -185,12 +185,12 @@ export default function ClusterSettingsPage() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method`, {
             method: 'POST',
             headers: {
-               'Content-Type': 'application/json'
+               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                id: instructionId,
-               content
-            })
+               content,
+            }),
          });
 
          const data = await res.json();
@@ -214,12 +214,12 @@ export default function ClusterSettingsPage() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method`, {
             method: 'PATCH',
             headers: {
-               'Content-Type': 'application/json'
+               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                id: methodId,
-               content: content
-            })
+               content: content,
+            }),
          });
 
          const data = await res.json();
@@ -248,8 +248,8 @@ export default function ClusterSettingsPage() {
                title,
                description,
                expectedTime,
-               position
-            })
+               position,
+            }),
          });
 
          const data = await res.json();
@@ -283,8 +283,8 @@ export default function ClusterSettingsPage() {
                clusterId,
                title,
                description,
-               expectedTime
-            })
+               expectedTime,
+            }),
          });
 
          const data = await res.json();
@@ -307,7 +307,7 @@ export default function ClusterSettingsPage() {
       try {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/instruction/${id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
          });
 
          const data = await res.json();
@@ -391,7 +391,7 @@ export default function ClusterSettingsPage() {
                            'cursor-pointer border-b-2 pb-2 text-sm font-semibold tracking-wide transition',
                            activeTab === 'instructions'
                               ? 'border-blue-400 text-white'
-                              : 'border-transparent text-slate-400 hover:text-white'
+                              : 'border-transparent text-slate-400 hover:text-white',
                         ].join(' ')}
                      >
                         Instructions
@@ -404,7 +404,7 @@ export default function ClusterSettingsPage() {
                            'cursor-pointer border-b-2 pb-2 text-sm font-semibold tracking-wide transition',
                            activeTab === 'results'
                               ? 'border-blue-400 text-white'
-                              : 'border-transparent text-slate-400 hover:text-white'
+                              : 'border-transparent text-slate-400 hover:text-white',
                         ].join(' ')}
                      >
                         Recent results
@@ -599,7 +599,7 @@ export default function ClusterSettingsPage() {
                                                          editedInstructionTitle.trim(),
                                                          editedInstructionDescription.trim(),
                                                          editedInstructionExpectedTime.trim(),
-                                                         editedInstructionPosition
+                                                         editedInstructionPosition,
                                                       )
                                                    }
                                                    className="w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 cursor-pointer md:w-auto"
@@ -637,10 +637,10 @@ export default function ClusterSettingsPage() {
                                              setEditingInstructionId(step.id);
                                              setEditedInstructionTitle(step.title || '');
                                              setEditedInstructionDescription(
-                                                step.description || ''
+                                                step.description || '',
                                              );
                                              setEditedInstructionExpectedTime(
-                                                step.expectedTime || ''
+                                                step.expectedTime || '',
                                              );
                                              setEditedInstructionPosition(step.position || 1);
                                           }}
@@ -653,7 +653,7 @@ export default function ClusterSettingsPage() {
                                           type="button"
                                           onClick={() => {
                                              const confirmed = window.confirm(
-                                                'Delete this instruction? This will remove all methods too.'
+                                                'Delete this instruction? This will remove all methods too.',
                                              );
 
                                              if (confirmed) {
@@ -717,7 +717,7 @@ export default function ClusterSettingsPage() {
 
                                                             updateMethod(
                                                                method.id,
-                                                               sanitizedContent
+                                                               sanitizedContent,
                                                             );
                                                          }}
                                                          className="w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/20 hover:text-white md:w-auto"
@@ -757,7 +757,7 @@ export default function ClusterSettingsPage() {
                                                       type="button"
                                                       onClick={() => {
                                                          const confirmed = window.confirm(
-                                                            'Are you sure you want to delete this method?'
+                                                            'Are you sure you want to delete this method?',
                                                          );
 
                                                          if (confirmed) {
@@ -940,7 +940,7 @@ export default function ClusterSettingsPage() {
                                              'active:scale-[0.99]',
                                              passed
                                                 ? 'border-green-400/30 bg-green-500/20'
-                                                : 'border-red-400/30 bg-red-500/20'
+                                                : 'border-red-400/30 bg-red-500/20',
                                           ].join(' ')}
                                        >
                                           <div className="flex items-start justify-between gap-4">
@@ -948,7 +948,7 @@ export default function ClusterSettingsPage() {
                                                 <div
                                                    className={[
                                                       'mt-1 h-3 w-3 shrink-0 rounded-full',
-                                                      passed ? 'bg-green-400' : 'bg-red-400'
+                                                      passed ? 'bg-green-400' : 'bg-red-400',
                                                    ].join(' ')}
                                                 />
 
@@ -963,7 +963,7 @@ export default function ClusterSettingsPage() {
                                                             'rounded-full border px-2 py-0.5 text-[11px]',
                                                             passed
                                                                ? 'border-green-400/30 bg-green-500/20 text-green-300'
-                                                               : 'border-red-400/30 bg-red-500/20 text-red-300'
+                                                               : 'border-red-400/30 bg-red-500/20 text-red-300',
                                                          ].join(' ')}
                                                       >
                                                          {passed ? 'Passed' : 'Failed'}

@@ -182,7 +182,7 @@ export default function Form() {
    function toggleStep(stepId) {
       setCompletedSteps((prev) => ({
          ...prev,
-         [stepId]: !prev[stepId]
+         [stepId]: !prev[stepId],
       }));
    }
 
@@ -221,23 +221,23 @@ export default function Form() {
             return {
                instructionId: step.id,
                passed,
-               note: String(note || '')
+               note: String(note || ''),
             };
          }),
          bonusChallengeResult:
             bonusChallenge && bonusCompleted
                ? {
                     bonusChallengeId: bonusChallenge.id,
-                    completed: bonusCompleted
+                    completed: bonusCompleted,
                  }
-               : null
+               : null,
       };
 
       try {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/report`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
          });
 
          const data = await res.json();
@@ -272,8 +272,8 @@ export default function Form() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method/${methodId}`, {
             method: 'DELETE',
             headers: {
-               'Content-Type': 'application/json'
-            }
+               'Content-Type': 'application/json',
+            },
          });
 
          if (!res.ok) {
@@ -292,12 +292,12 @@ export default function Form() {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method`, {
             method: 'POST',
             headers: {
-               'Content-Type': 'application/json'
+               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                id: instructionId,
-               content: content
-            })
+               content: content,
+            }),
          });
 
          const data = await res.json();
@@ -325,12 +325,12 @@ export default function Form() {
          const res = await fetch(url, {
             method: 'PATCH',
             headers: {
-               'Content-Type': 'application/json'
+               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                id: methodId,
-               content: content
-            })
+               content: content,
+            }),
          });
 
          const data = await res.json();
@@ -488,7 +488,7 @@ export default function Form() {
                                                       ) : (
                                                          <ReactMarkdown
                                                             components={{
-                                                               pre: CopyablePre
+                                                               pre: CopyablePre,
                                                             }}
                                                          >
                                                             {method.content}
@@ -516,7 +516,7 @@ export default function Form() {
                                                    type="button"
                                                    onClick={() => {
                                                       const confirmed = window.confirm(
-                                                         'Are you sure you want to delete this method?'
+                                                         'Are you sure you want to delete this method?',
                                                       );
                                                       if (confirmed) {
                                                          deleteMethod(method.id);

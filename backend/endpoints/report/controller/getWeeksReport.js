@@ -21,8 +21,8 @@ module.exports = (db) => {
             .then((res) =>
                res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name
-               }))
+                  name: data.name,
+               })),
             );
 
          // Get clusters
@@ -33,8 +33,8 @@ module.exports = (db) => {
             .then((res) =>
                res.map((data) => ({
                   id: data._id.toString(),
-                  name: data.name
-               }))
+                  name: data.name,
+               })),
             );
 
          const d = new Date();
@@ -57,8 +57,8 @@ module.exports = (db) => {
          const query = {
             startDate: {
                $gte: start.getTime(),
-               $lte: end.getTime()
-            }
+               $lte: end.getTime(),
+            },
          };
 
          const [totalCount, results] = await Promise.all([
@@ -69,7 +69,7 @@ module.exports = (db) => {
                .sort({ startDate: -1 })
                .skip(skip)
                .limit(limit)
-               .toArray()
+               .toArray(),
          ]);
 
          const totalPages = Math.ceil(totalCount / limit);
@@ -80,7 +80,7 @@ module.exports = (db) => {
                id: _id.toString(),
                person: people.find((p) => p.id === rest.personId)?.name,
                cluster: cluster.find((c) => c.id === rest.clusterId)?.name,
-               ...rest
+               ...rest,
             })),
             pagination: {
                totalCount,
@@ -88,8 +88,8 @@ module.exports = (db) => {
                limit,
                totalPages,
                hasNextPage: page < totalPages,
-               hasPrevPage: page > 1
-            }
+               hasPrevPage: page > 1,
+            },
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

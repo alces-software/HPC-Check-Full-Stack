@@ -18,21 +18,21 @@ module.exports = (db) => {
             .aggregate([
                {
                   $match: {
-                     active: true
-                  }
+                     active: true,
+                  },
                },
                {
                   $sample: {
-                     size: 1
-                  }
-               }
+                     size: 1,
+                  },
+               },
             ])
             .toArray()
             .then((res) =>
                res.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
-                  ...rest
-               }))
+                  ...rest,
+               })),
             );
 
          if (!bonusChallenge) {

@@ -40,7 +40,7 @@ module.exports = (db) => {
 
          // Get instruction
          const response = await db.collection('instruction').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(sanitizedId),
          });
 
          if (!response) {

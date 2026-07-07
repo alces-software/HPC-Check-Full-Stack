@@ -38,7 +38,7 @@ module.exports = (db) => {
 
          // Get methods
          const response = await db.collection('method').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(sanitizedId),
          });
 
          if (!response) {
