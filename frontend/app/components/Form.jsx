@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
-import { FaClipboardList, FaRegCopy, FaCheck } from 'react-icons/fa';
+import { FaClipboardList, FaRegCopy, FaCheck, FaLightbulb } from 'react-icons/fa';
 
 function getNodeText(node) {
    if (node === null || node === undefined || typeof node === 'boolean') return '';
@@ -55,6 +55,12 @@ export default function Form() {
 
    const [bonusChallenge, setBonusChallenge] = useState(null);
    const [bonusCompleted, setBonusCompleted] = useState(false);
+
+   //METHOD-HIDING SETTINGS
+   const [hiddenMethodIds, setHiddenMethodIds] = useState([]);
+   const [revealedMethodIds, setRevealedMethodIds] = useState([]);
+   const MAX_HIDDEN_METHODS = 2;
+   const HIDE_METHOD_CHANCE = 0.20;
 
    const [allClusters, setAllClusters] = useState([]);
    const [steps, setSteps] = useState([]);
@@ -112,13 +118,42 @@ export default function Form() {
 
       try {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`);
-
          const data = await res.json();
-         setSteps(data.body ?? []);
+
+         const loadedSteps = data.body ?? [];
+         const selectedHiddenMethodIds = chooseHiddenMethods(loadedSteps);
+
+         setSteps(loadedSteps);
+         setHiddenMethodIds(selectedHiddenMethodIds);
       } catch (err) {
          console.error(err);
       }
    }, [clusterId]);
+
+   function chooseHiddenMethods(loadedSteps) {
+      const hiddenIds = [];
+
+      for (const step of loadedSteps) {
+         for (const method of step.methods || []) {
+            if (hiddenIds.length >= MAX_HIDDEN_METHODS) {
+               return hiddenIds;
+            }
+
+            if (Math.random() < HIDE_METHOD_CHANCE) {
+               hiddenIds.push(method.id);
+            }
+         }
+      }
+      return hiddenIds;
+   }
+
+   function revealMethod(methodId) {
+      setRevealedMethodIds((currentIds) => {
+         if (currentIds.includes(methodId)) return currentIds;
+
+         return [...currentIds, methodId];
+      });
+   }
 
    useEffect(() => {
       getSteps();
@@ -192,9 +227,9 @@ export default function Form() {
          bonusChallengeResult:
             bonusChallenge && bonusCompleted
                ? {
-                    bonusChallengeId: bonusChallenge.id,
-                    completed: bonusCompleted
-                 }
+                  bonusChallengeId: bonusChallenge.id,
+                  completed: bonusCompleted
+               }
                : null
       };
 
@@ -317,6 +352,8 @@ export default function Form() {
       }
    }
 
+
+
    return (
       <main className="flex justify-center space-y-8">
          <div className="relative z-10 w-full max-w-6xl">
@@ -377,104 +414,124 @@ export default function Form() {
                               </summary>
 
                               <ul className="mt-4 space-y-2 text-slate-300">
-                                 {(step.methods || []).map((method, i) => (
-                                    <li key={method.id}>
-                                       {i > 0 && <hr className="border-white/10 mb-2" />}
+                                 {(step.methods || []).map((method, i) => {
+                                    const isMethodHidden = hiddenMethodIds.includes(method.id);
+                                    const isMethodRevealed = revealedMethodIds.includes(method.id)
+                                    return (
+                                       <li key={method.id}>
+                                          {i > 0 && <hr className="border-white/10 mb-2" />}
 
-                                       {editingMethodId === method.id ? (
-                                          <div className="mt-4">
-                                             <textarea
-                                                rows={6}
-                                                value={editedMethodContent}
-                                                onChange={(e) =>
-                                                   setEditedMethodContent(e.target.value)
-                                                }
-                                                className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
-                                             />
+                                          {editingMethodId === method.id ? (
+                                             <div className="mt-4">
+                                                <textarea
+                                                   rows={6}
+                                                   value={editedMethodContent}
+                                                   onChange={(e) =>
+                                                      setEditedMethodContent(e.target.value)
+                                                   }
+                                                   className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
+                                                />
 
-                                             <div className="mt-3 flex flex-col gap-3 md:flex-row md:justify-end">
-                                                <button
-                                                   type="button"
-                                                   onClick={() => {
-                                                      setEditingMethodId(null);
-                                                      setEditedMethodContent('');
-                                                   }}
-                                                   className="mt-8 w-full cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
-                                                >
-                                                   Cancel
-                                                </button>
-
-                                                <button
-                                                   type="button"
-                                                   onClick={() => {
-                                                      const sanitizedContent =
-                                                         editedMethodContent.trim();
-
-                                                      if (sanitizedContent === '') {
-                                                         alert('Please enter method content');
-                                                         return;
-                                                      }
-                                                      // alert(sanitizedContent)
-
-                                                      updateMethod(method.id, sanitizedContent);
-                                                   }}
-                                                   className="mt-8 w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
-                                                >
-                                                   Save Changes
-                                                </button>
-                                             </div>
-                                          </div>
-                                       ) : (
-                                          <>
-                                             <div className="flex gap-3">
-                                                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-xs font-semibold text-blue-300">
-                                                   {i + 1}
-                                                </span>
-
-                                                <div className="prose prose-invert max-w-none overflow-x-auto">
-                                                   <ReactMarkdown
-                                                      components={{
-                                                         pre: CopyablePre
+                                                <div className="mt-3 flex flex-col gap-3 md:flex-row md:justify-end">
+                                                   <button
+                                                      type="button"
+                                                      onClick={() => {
+                                                         setEditingMethodId(null);
+                                                         setEditedMethodContent('');
                                                       }}
+                                                      className="mt-8 w-full cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
                                                    >
-                                                      {method.content}
-                                                   </ReactMarkdown>
+                                                      Cancel
+                                                   </button>
+
+                                                   <button
+                                                      type="button"
+                                                      onClick={() => {
+                                                         const sanitizedContent =
+                                                            editedMethodContent.trim();
+
+                                                         if (sanitizedContent === '') {
+                                                            alert('Please enter method content');
+                                                            return;
+                                                         }
+                                                         // alert(sanitizedContent)
+
+                                                         updateMethod(method.id, sanitizedContent);
+                                                      }}
+                                                      className="mt-8 w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
+                                                   >
+                                                      Save Changes
+                                                   </button>
                                                 </div>
                                              </div>
-                                          </>
-                                       )}
+                                          ) : (
+                                             <>
+                                                <div className="flex gap-3">
+                                                   <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-xs font-semibold text-blue-300">
+                                                      {i + 1}
+                                                   </span>
 
-                                       {isEditing && !(editingMethodId === method.id) && (
-                                          <div className="flex flex-col gap-3 md:flex-row md:justify-end">
-                                             <button
-                                                type="button"
-                                                onClick={() => {
-                                                   setEditingMethodId(method.id);
-                                                   setEditedMethodContent(method.content);
-                                                }}
-                                                className="mt-8 w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
-                                             >
-                                                Edit Method
-                                             </button>
+                                                   <div className="prose prose-invert max-w-none overflow-x-auto">
+                                                      {isMethodHidden && !isMethodRevealed ? (
+                                                         <div className="flex items-center gap-3">
+                                                            <p className="text-yellow-200">
+                                                               Independent challenge — work this method out yourself.
+                                                            </p>
+                                                            <button
+                                                               type="button"
+                                                               onClick={() => revealMethod(method.id)}
+                                                               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20"
+                                                               aria-label="Reveal method guidance"
+                                                               title="Reveal guidance">
+                                                               <FaLightbulb />
+                                                            </button>
+                                                         </div>
+                                                      ) : (
+                                                         <ReactMarkdown
+                                                            components={{
+                                                               pre: CopyablePre
+                                                            }}
+                                                         >
+                                                            {method.content}
+                                                         </ReactMarkdown>
+                                                      )}
+                                                   </div>
+                                                </div>
+                                             </>
+                                          )}
 
-                                             <button
-                                                type="button"
-                                                onClick={() => {
-                                                   const confirmed = window.confirm(
-                                                      'Are you sure you want to delete this method?'
-                                                   );
-                                                   if (confirmed) {
-                                                      deleteMethod(method.id);
-                                                   }
-                                                }}
-                                                className="mt-8 w-full cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
-                                             >
-                                                Delete Method
-                                             </button>
-                                          </div>
-                                       )}
-                                    </li>
-                                 ))}
+                                          {isEditing && !(editingMethodId === method.id) && (
+                                             <div className="flex flex-col gap-3 md:flex-row md:justify-end">
+                                                <button
+                                                   type="button"
+                                                   onClick={() => {
+                                                      setEditingMethodId(method.id);
+                                                      setEditedMethodContent(method.content);
+                                                   }}
+                                                   className="mt-8 w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
+                                                >
+                                                   Edit Method
+                                                </button>
+
+                                                <button
+                                                   type="button"
+                                                   onClick={() => {
+                                                      const confirmed = window.confirm(
+                                                         'Are you sure you want to delete this method?'
+                                                      );
+                                                      if (confirmed) {
+                                                         deleteMethod(method.id);
+                                                      }
+                                                   }}
+                                                   className="mt-8 w-full cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
+                                                >
+                                                   Delete Method
+                                                </button>
+                                             </div>
+                                          )}
+                                       </li>
+                                    );
+                                 })}
 
                                  {!isEditing ? (
                                     <div className="flex flex-col justify-end">
