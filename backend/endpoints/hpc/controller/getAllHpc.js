@@ -14,10 +14,9 @@ module.exports = (db) => {
             .find({})
             .toArray()
             .then((res) =>
-               res.map((data) => ({
-                  id: data._id.toString(),
-                  name: data.name,
-                  teamId: data.teamId
+               res.map(({ _id, ...rest }) => ({
+                  id: _id.toString(),
+                  ...rest
                }))
             );
 

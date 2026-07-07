@@ -29,25 +29,24 @@ module.exports = (db) => {
          }
 
          // Get team
-         const results = await db.collection('team').findOne({
+         const response = await db.collection('team').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
                $options: 'i'
             }
          });
 
-         if (!results) {
+         if (!response) {
             return res.status(404).json({ success: false, error: "Team doesn't exist" });
          }
+
+         response.id = response._id.toString();
+         delete response._id;
 
          // Return team information
          return res.status(200).json({
             success: true,
-            body: {
-               id: results._id.toString(),
-               name: results.name,
-               clusters_per_day: results.clusters_per_day
-            }
+            body: response
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

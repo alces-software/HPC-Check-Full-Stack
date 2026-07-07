@@ -37,21 +37,20 @@ module.exports = (db) => {
          }
 
          // Get the cluster
-         const results = await db.collection('cluster').findOne({
+         const response = await db.collection('cluster').findOne({
             _id: new ObjectId(sanitizedId)
          });
 
-         if (!results) {
+         if (!response) {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
          }
 
+         response.id = sanitizedId;
+         delete response._id;
+
          return res.status(200).json({
             success: true,
-            body: {
-               id: sanitizedId,
-               name: results.name,
-               teamId: results.teamId
-            }
+            body: response
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

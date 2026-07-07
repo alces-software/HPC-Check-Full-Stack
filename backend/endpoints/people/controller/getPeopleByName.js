@@ -29,24 +29,23 @@ module.exports = (db) => {
          }
 
          // Check is someone exists
-         const results = await db.collection('person').findOne({
+         const response = await db.collection('person').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
                $options: 'i'
             }
          });
 
-         if (!results) {
+         if (!response) {
             return res.status(404).json({ success: false, error: "Person doesn't exist" });
          }
 
+         response.id = response._id.toString();
+         delete response._id;
+
          return res.status(200).json({
             success: true,
-            body: {
-               id: results._id.toString(),
-               name: results.name,
-               teamId: results.teamId
-            }
+            body: response
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

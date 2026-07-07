@@ -35,22 +35,21 @@ module.exports = (db) => {
          }
 
          // Get the team
-         const results = await db.collection('team').findOne({
+         const response = await db.collection('team').findOne({
             _id: new ObjectId(sanitizedId)
          });
 
-         if (!results) {
+         if (!response) {
             return res.status(404).json({ success: false, error: "Team doesn't exist" });
          }
+
+         response.id = response._id.toString();
+         delete response._id;
 
          // Return the team information
          return res.status(200).json({
             success: true,
-            body: {
-               id: sanitizedId,
-               name: results.name,
-               clusters_per_day: results.clusters_per_day
-            }
+            body: response
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
