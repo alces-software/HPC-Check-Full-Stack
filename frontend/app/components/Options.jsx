@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
-import { FaDatabase, FaUser, FaUsers } from 'react-icons/fa';
+import { FaDatabase, FaLayerGroup, FaUser, FaUsers } from 'react-icons/fa';
 import { IoIosSettings } from 'react-icons/io';
 
 export default function Options() {
@@ -13,16 +14,29 @@ export default function Options() {
 
    const [people, setPeople] = useState([]);
    const [clusters, setClusters] = useState([]);
+   const [pools, setPools] = useState([]);
 
    const [teams, setTeams] = useState([]);
 
    const [userError, setUserError] = useState('');
    const [clusterError, setClusterError] = useState('');
    const [teamError, setTeamError] = useState('');
+   const [poolError, setPoolError] = useState('');
 
    const [statusMessage, setStatusMessage] = useState('');
    const [statusType, setStatusType] = useState('success');
    const [confirmPrompt, setConfirmPrompt] = useState(null);
+   const [portalEl, setPortalEl] = useState(null);
+
+   useEffect(() => {
+      const el = document.createElement('div');
+      document.body.appendChild(el);
+      setPortalEl(el);
+
+      return () => {
+         if (el.parentNode) el.parentNode.removeChild(el);
+      };
+   }, []);
 
    const loadPeople = async () => {
       try {
@@ -46,6 +60,18 @@ export default function Options() {
       }
    };
 
+   const loadPools = async () => {
+      try {
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool`);
+         const data = await res.json();
+
+         setPools(data.body ?? []);
+      } catch (err) {
+         console.error('Failed to fetch pools:', err);
+         setPools([]);
+      }
+   };
+
    const loadTeams = async () => {
       try {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams`);
@@ -62,6 +88,7 @@ export default function Options() {
       async function initialize() {
          await loadPeople();
          await loadClusters();
+         await loadPools();
          await loadTeams();
       }
 
@@ -70,14 +97,11 @@ export default function Options() {
 
    const deleteItem = async (url, id) => {
       try {
-         const res = await fetch(url, {
+         const res = await fetch(`${url}/${id}`, {
             method: 'DELETE',
             headers: {
                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-               id: id
-            })
+            }
          });
 
          const json = await res.json();
@@ -226,6 +250,36 @@ export default function Options() {
       }
    };
 
+   const confirmAddPool = async () => {
+      try {
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+               name: poolName
+            })
+         });
+
+         const json = await res.json();
+
+         if (!json.success) {
+            setPoolError(json.error ?? json.message ?? 'Could not add this pool.');
+            showStatus('Failed to add pool.', 'error');
+            return;
+         }
+
+         setPoolName('');
+         await loadPools();
+         showStatus(`Added pool "${poolName}" successfully.`, 'success');
+      } catch (err) {
+         console.error(err);
+         setPoolError('Failed to communicate with the server.');
+         showStatus('Failed to add pool.', 'error');
+      }
+   };
+
    const handleAddCluster = () => {
       setClusterError('');
       clearStatus();
@@ -272,6 +326,21 @@ export default function Options() {
       });
    };
 
+   const handleDeletePool = (id, name) => {
+      clearStatus();
+
+      requestConfirmation(`Are you sure you want to delete ${name}?`, async () => {
+         try {
+            await deleteItem(`${process.env.NEXT_PUBLIC_API_URL}/pool`, id);
+
+            await loadPools();
+            showStatus(`Deleted pool "${name}" successfully.`, 'success');
+         } catch {
+            showStatus(`Failed to delete pool "${name}".`, 'error');
+         }
+      });
+   };
+
    const handleDeleteTeam = (id, name) => {
       clearStatus();
 
@@ -301,6 +370,20 @@ export default function Options() {
       requestConfirmation(`Are you sure you want to add the team "${teamName}"?`, confirmAddTeam);
    };
 
+   const [poolName, setPoolName] = useState('');
+
+   const handleAddPool = () => {
+      setPoolError('');
+      clearStatus();
+
+      if (!poolName.trim()) {
+         setPoolError('Please enter a pool name.');
+         return;
+      }
+
+      requestConfirmation(`Are you sure you want to add the pool "${poolName}"?`, confirmAddPool);
+   };
+
    return (
       <main className="flex justify-center space-y-8">
          <div className="relative z-10 w-full max-w-6xl">
@@ -317,29 +400,33 @@ export default function Options() {
                   </p>
                </div>
 
-               {confirmPrompt && (
-                  <div className="mb-6 rounded-2xl border border-yellow-400/20 bg-yellow-500/10 p-5 text-slate-100">
-                     <p className="mb-3 text-sm font-medium">{confirmPrompt.message}</p>
+               {portalEl && confirmPrompt &&
+                  createPortal(
+                     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+                        <div className="mb-6 rounded-2xl border border-yellow-400/20 bg-yellow-500/10 p-5 text-slate-100 shadow-2xl backdrop-blur-xl">
+                           <p className="mb-3 text-sm font-medium">{confirmPrompt.message}</p>
 
-                     <div className="flex flex-wrap gap-3">
-                        <button
-                           type="button"
-                           onClick={confirmPendingAction}
-                           className="rounded-xl bg-yellow-500 px-4 py-2 font-semibold text-slate-950 transition hover:bg-yellow-400 cursor-pointer"
-                        >
-                           Confirm
-                        </button>
+                           <div className="flex flex-wrap gap-3">
+                              <button
+                                 type="button"
+                                 onClick={confirmPendingAction}
+                                 className="rounded-xl bg-yellow-500 px-4 py-2 font-semibold text-slate-950 transition hover:bg-yellow-400 cursor-pointer"
+                              >
+                                 Confirm
+                              </button>
 
-                        <button
-                           type="button"
-                           onClick={cancelConfirmation}
-                           className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 text-white transition hover:bg-slate-800 cursor-pointer"
-                        >
-                           Cancel
-                        </button>
-                     </div>
-                  </div>
-               )}
+                              <button
+                                 type="button"
+                                 onClick={cancelConfirmation}
+                                 className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 text-white transition hover:bg-slate-800 cursor-pointer"
+                              >
+                                 Cancel
+                              </button>
+                           </div>
+                        </div>
+                     </div>,
+                     portalEl
+                  )}
 
                {statusMessage && (
                   <div
@@ -353,7 +440,7 @@ export default function Options() {
                   </div>
                )}
 
-               <div className="grid justify-items-center gap-6 lg:grid-cols-3 lg:justify-items-stretch">
+               <div className="grid justify-items-center gap-6 lg:grid-cols-2 lg:justify-items-stretch">
                   {/* Users */}
                   <div className="w-full max-w-sm rounded-2xl border border-blue-400/20 bg-blue-500/10 p-6 lg:max-w-none">
                      <FaUser className="mb-3 text-4xl text-blue-300" aria-hidden="true" />
@@ -481,6 +568,69 @@ export default function Options() {
                                        onClick={() => handleDeleteCluster(cluster.id, cluster.name)}
                                        className="ml-3 cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
                                        title="Delete cluster"
+                                    >
+                                       ✕
+                                    </button>
+                                 </div>
+                              ))
+                           )}
+                        </div>
+                     </div>
+                  </div>
+
+                  {/* Pools */}
+                  <div className="w-full max-w-sm rounded-2xl border border-cyan-400/20 bg-cyan-500/10 p-6 lg:max-w-none">
+                     <FaLayerGroup className="mb-3 text-4xl text-cyan-300" aria-hidden="true" />
+
+                     <h2 className="mb-2 text-2xl font-bold text-white">Add Pool</h2>
+
+                     <div className="space-y-3">
+                        <input
+                           type="text"
+                           value={poolName}
+                           onChange={(e) => setPoolName(e.target.value)}
+                           placeholder="Pool name"
+                           className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-left text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                        />
+
+                        <button
+                           onClick={handleAddPool}
+                           className="w-full rounded-xl bg-cyan-600 px-4 py-3 font-semibold text-white transition hover:bg-cyan-500 cursor-pointer"
+                        >
+                           Add Pool
+                        </button>
+
+                        {poolError && (
+                           <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                              {poolError}
+                           </div>
+                        )}
+                     </div>
+
+                     <div className="mt-6 border-t border-white/10 pt-4">
+                        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-300">
+                           Existing Pools
+                        </h3>
+
+                        <div className="max-h-64 space-y-2 overflow-y-auto">
+                           {pools.length === 0 ? (
+                              <p className="text-sm text-slate-400">No pools found.</p>
+                           ) : (
+                              pools.map((pool) => (
+                                 <div
+                                    key={pool.id}
+                                    className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
+                                 >
+                                    <div>
+                                       <p className="font-medium text-white">{pool.name}</p>
+
+                                       <p className="text-xs text-slate-400">{pool.id}</p>
+                                    </div>
+
+                                    <button
+                                       onClick={() => handleDeletePool(pool.id, pool.name)}
+                                       className="ml-3 cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
+                                       title="Delete pool"
                                     >
                                        ✕
                                     </button>

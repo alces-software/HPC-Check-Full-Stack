@@ -11,7 +11,7 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.body || {};
+         const { id } = req.params;
 
          // Check id
          if (!id) {

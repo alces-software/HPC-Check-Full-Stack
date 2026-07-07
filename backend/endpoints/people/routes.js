@@ -13,6 +13,6 @@ module.exports = (db) =>
       // POST
       .post('/people', require('./controller/addPeople')(db))
       // DELETE
-      .delete('/people', require('./controller/deletePeople')(db))
+      .delete('/people/:id', require('./controller/deletePeople')(db))
       // UPDATE
       .patch('/people/team/:id', require('./controller/addPeopleToTeam')(db));

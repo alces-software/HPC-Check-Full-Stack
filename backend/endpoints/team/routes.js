@@ -12,6 +12,6 @@ module.exports = db =>
         // POST
         .post('/teams', require('./controller/addTeam')(db))
         // DELETE
-        .delete('/teams', require('./controller/deleteTeam')(db))
+        .delete('/teams/:id', require('./controller/deleteTeam')(db))
         // UPDATE
         .patch('/teams', require('./controller/updateTeamSettings')(db));

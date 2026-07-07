@@ -12,6 +12,6 @@ module.exports = (db) =>
       // POST
       .post('/instruction', require('./controller/addInstruction')(db))
       // DELETE
-      .delete('/instruction', require('./controller/deleteInstruction')(db))
+      .delete('/instruction/:id', require('./controller/deleteInstruction')(db))
       // UPDATE
       .patch('/instruction', require('./controller/updateInstruction')(db));

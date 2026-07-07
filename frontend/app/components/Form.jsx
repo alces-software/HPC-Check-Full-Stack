@@ -159,14 +159,11 @@ export default function Form() {
    // DELETE METHOD
    async function deleteMethod(methodId) {
       try {
-         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method`, {
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method/${methodId}`, {
             method: 'DELETE',
             headers: {
                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-               id: methodId
-            })
+            }
          });
 
          if (!res.ok) {

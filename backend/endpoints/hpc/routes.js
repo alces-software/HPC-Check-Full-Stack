@@ -13,7 +13,7 @@ module.exports = db =>
         // POST
         .post('/hpc', require('./controller/addHpc')(db))
         // DELETE
-        .delete('/hpc', require('./controller/deleteHpc')(db))
+        .delete('/hpc/:id', require('./controller/deleteHpc')(db))
         // UPDATE
         .patch('/hpc/pool/add/:id', require('./controller/addHpcToPool')(db))
         .patch('/hpc/pool/remove/:id', require('./controller/removeHpcFromPool')(db));

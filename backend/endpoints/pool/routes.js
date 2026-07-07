@@ -14,4 +14,5 @@ module.exports = db =>
         .post('/pool', require('./controller/createPool')(db))
         .post('/pool/team/:id', require('./controller/addPoolToTeam')(db))
         // DELETE
+        .delete('/pool/:id', require('./controller/deletePool')(db))
         .delete('/pool/team/:id', require('./controller/removePoolFromTeam')(db));
