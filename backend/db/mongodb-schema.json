@@ -260,9 +260,6 @@
                },
                "clusters_per_day": {
                   "bsonType": "int"
-               },
-               "assigned": {
-                  "bsonType": "bool"
                }
             }
          }
