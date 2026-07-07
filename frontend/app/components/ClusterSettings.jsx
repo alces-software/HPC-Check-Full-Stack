@@ -7,7 +7,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FaDatabase, FaUser } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
-import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react'
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
 
 export default function ClusterSettingsPage() {
    const searchParams = useSearchParams();
