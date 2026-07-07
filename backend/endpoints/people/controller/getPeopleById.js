@@ -14,6 +14,12 @@ module.exports = (db) => {
          const { id } = req.params || {};
 
          // Check id
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The persons id provided is not a string' });
+         }
+
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing persons id' });
          }
@@ -31,21 +37,20 @@ module.exports = (db) => {
          }
 
          // Get the person from the database
-         const results = await db.collection('person').findOne({
+         const response = await db.collection('person').findOne({
             _id: new ObjectId(sanitizedId)
          });
 
-         if (!results) {
+         if (!response) {
             return res.status(404).json({ success: false, error: "Person doesn't exist" });
          }
 
+         response.id = sanitizedId;
+         delete response._id;
+
          return res.status(200).json({
             success: true,
-            body: {
-               id: sanitizedId,
-               name: results.name,
-               teamId: results.teamId
-            }
+            body: response
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

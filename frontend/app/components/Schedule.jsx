@@ -2,7 +2,34 @@
 
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { IoSwapHorizontal } from 'react-icons/io5';
-import { IoIosArrowForward } from 'react-icons/io';
+import { IoIosArrowForward, IoMdDoneAll } from 'react-icons/io';
+import { BsThreeDots } from 'react-icons/bs';
+
+function formatDateParam(date) {
+   const year = date.getFullYear();
+   const month = String(date.getMonth() + 1).padStart(2, '0');
+   const day = String(date.getDate()).padStart(2, '0');
+
+   return `${year}-${month}-${day}`;
+}
+
+function getDayStartMs(date) {
+   const dayStart = new Date(date);
+   dayStart.setHours(0, 0, 0, 0);
+
+   return dayStart.getTime();
+}
+
+function getReportTimestamp(value) {
+   if (typeof value === 'number') return value;
+   if (typeof value === 'string') return Number(value);
+   if (value?.$numberLong) return Number(value.$numberLong);
+   if (typeof value?.low === 'number' && typeof value?.high === 'number') {
+      return value.high * 4294967296 + (value.low >>> 0);
+   }
+
+   return NaN;
+}
 
 export default function Schedule() {
    const [weekOffset, setWeekOffset] = useState(0);
@@ -14,6 +41,7 @@ export default function Schedule() {
    const [selectedSwapPerson, setSelectedSwapPerson] = useState(null);
 
    const [teamCache, setTeamCache] = useState({});
+   const [reportStatus, setReportStatus] = useState({});
 
    const weekBeginning = useMemo(() => {
       const today = new Date();
@@ -29,7 +57,8 @@ export default function Schedule() {
    const formattedWeekBeginning = weekBeginning.toLocaleDateString('en-GB', {
       weekday: 'long',
       day: 'numeric',
-      month: 'long'
+      month: 'long',
+      year: 'numeric'
    });
 
    const days = [
@@ -61,6 +90,69 @@ export default function Schedule() {
    useEffect(() => {
       fetchWeek();
    }, [fetchWeek, weekBeginning]);
+
+   useEffect(() => {
+      if (!schedule) {
+         return;
+      }
+
+      let ignore = false;
+
+      async function fetchReportStatus() {
+         try {
+            const weekStart = new Date(weekBeginning);
+            weekStart.setHours(0, 0, 0, 0);
+
+            const weekEnd = new Date(weekBeginning);
+            weekEnd.setDate(weekBeginning.getDate() + 4);
+            weekEnd.setHours(23, 59, 59, 999);
+
+            const queryStart = new Date(weekStart);
+            queryStart.setDate(weekStart.getDate() - 1);
+
+            const queryEnd = new Date(weekEnd);
+            queryEnd.setDate(weekEnd.getDate() + 1);
+
+            const params = new URLSearchParams({
+               start: formatDateParam(queryStart),
+               end: formatDateParam(queryEnd),
+               page: '1',
+               limit: '1000'
+            });
+
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/report/week?${params}`);
+            const data = await res.json();
+
+            const status = {};
+
+            for (const report of data?.body ?? []) {
+               const reportStartMs = getReportTimestamp(report.startDate ?? report.startTime);
+
+               if (!report.clusterId == null || Number.isNaN(reportStartMs)) continue;
+               if (reportStartMs < weekStart.getTime() || reportStartMs > weekEnd.getTime()) {
+                  continue;
+               }
+
+               status[`${report.clusterId}:${getDayStartMs(new Date(reportStartMs))}`] = true;
+            }
+
+            if (!ignore) {
+               setReportStatus(status);
+            }
+         } catch (err) {
+            console.error('Failed to fetch report status:', err);
+            if (!ignore) {
+               setReportStatus({});
+            }
+         }
+      }
+
+      fetchReportStatus();
+
+      return () => {
+         ignore = true;
+      };
+   }, [schedule, weekBeginning]);
 
    async function getTeamMembers(teamId) {
       if (teamCache[teamId]) return teamCache[teamId];
@@ -121,6 +213,20 @@ export default function Schedule() {
 
                <div className="order-2 flex justify-center md:order-3 md:col-start-2 md:row-start-2 md:justify-end">
                   <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-sky-300/20 bg-sky-500/10 text-sky-200/90">
+                        <BsThreeDots className="h-4 w-4" aria-hidden="true" />
+                     </span>
+
+                     <span className="font-semibold text-white">Check pending</span>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-green-300/20 bg-green-500/10 text-green-400">
+                        <IoMdDoneAll className="h-4 w-4" aria-hidden="true" />
+                     </span>
+
+                     <span className="font-semibold text-white">Check complete</span>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10 text-amber-200/90">
                         <IoSwapHorizontal className="text-base" aria-hidden="true" />
                      </span>
@@ -168,6 +274,8 @@ export default function Schedule() {
                   const dayDate = new Date(weekBeginning);
                   dayDate.setDate(weekBeginning.getDate() + offset);
 
+                  const dayStartMs = getDayStartMs(dayDate);
+
                   const today = new Date();
                   today.setHours(0, 0, 0, 0);
 
@@ -175,7 +283,8 @@ export default function Schedule() {
 
                   const formattedDate = dayDate.toLocaleDateString('en-GB', {
                      day: 'numeric',
-                     month: 'short'
+                     month: 'long',
+                     year: 'numeric'
                   });
 
                   const isToday = today.toDateString() === dayDate.toDateString();
@@ -264,14 +373,43 @@ export default function Schedule() {
                                           </div>
 
                                           <div className="flex flex-wrap gap-2">
-                                             {person.clusters.map((cluster) => (
-                                                <span
-                                                   key={cluster.id}
-                                                   className="rounded-full bg-blue-500/20 px-3 py-1 text-sm text-blue-200"
-                                                >
-                                                   {cluster.name}
-                                                </span>
-                                             ))}
+                                             {person.clusters.map((cluster) => {
+                                                const hasReport = Boolean(
+                                                   reportStatus[`${cluster.id}:${dayStartMs}`]
+                                                );
+
+                                                return (
+                                                   <span
+                                                      key={cluster.id}
+                                                      className={`flex items-center gap-2 rounded-full ${
+                                                         hasReport
+                                                            ? 'bg-green-500/20 px-3 py-1 text-sm text-green-200'
+                                                            : 'bg-blue-500/20 px-3 py-1 text-sm text-blue-200'
+                                                      }`}
+                                                   >
+                                                      {cluster.name}
+                                                      <span
+                                                         className={`flex h-5 w-5 shrink-0 items-center justify-center  ${
+                                                            hasReport
+                                                               ? 'text-green-400'
+                                                               : 'text-blue-200/90'
+                                                         }`}
+                                                      >
+                                                         {hasReport ? (
+                                                            <IoMdDoneAll
+                                                               className="h-5 w-5"
+                                                               aria-hidden="true"
+                                                            />
+                                                         ) : (
+                                                            <BsThreeDots
+                                                               className="h-5 w-5"
+                                                               aria-hidden="true"
+                                                            />
+                                                         )}
+                                                      </span>
+                                                   </span>
+                                                );
+                                             })}
                                           </div>
                                        </div>
                                     );

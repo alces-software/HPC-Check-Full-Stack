@@ -17,7 +17,7 @@ async function getTeams(db) {
             clustersPerDay: data.clusters_per_day
          }))
       );
-   return response
+   return response;
 }
 
 async function getTeamsOrderedByEffectiveCapacity(db) {
@@ -80,10 +80,8 @@ async function isWorkingDay(db, date) {
    if (isWeekend) {
       return false;
    }
-   const response = await db
-      .collection('closedDay')
-      .findOne({day: day})
-   
+   const response = await db.collection('closedDay').findOne({ day: day });
+
    return !response;
 }
 
@@ -96,39 +94,36 @@ async function isWorkingDay(db, date) {
 async function generateScheduleForDay(db, date) {
    const teams = await getTeamsOrderedByEffectiveCapacity(db);
 
-   for (let i=0; i<teams.length; i++) {
-      const team = teams[i]
+   for (let i = 0; i < teams.length; i++) {
+      const team = teams[i];
       // get pools for team
-      const pools = await db
-         .collection('teampool')
-         .find({ teamId: team.id })
-         .toArray();
-      const poolIds = pools.map(p => p.poolId);
+      const pools = await db.collection('teampool').find({ teamId: team.id }).toArray();
+      const poolIds = pools.map((p) => p.poolId);
 
       // get the last team.clustersPerDay clusters that are in all the pools ordered by the last time they appeared in the schedule
       const clusters = await db
          .collection('cluster')
          .find({ poolId: { $in: poolIds } })
          .toArray();
-      
-      
-      const lastUsage = await db.collection('schedule').aggregate([
-         {
-            $match: {
-               clusterId: { $in: clusters.map(c => c._id.toString()) }
+
+      const lastUsage = await db
+         .collection('schedule')
+         .aggregate([
+            {
+               $match: {
+                  clusterId: { $in: clusters.map((c) => c._id.toString()) }
+               }
+            },
+            {
+               $group: {
+                  _id: '$clusterId',
+                  lastDay: { $max: '$day' }
+               }
             }
-         },
-         {
-            $group: {
-               _id: "$clusterId",
-               lastDay: { $max: "$day" }
-            }
-         }
-         ]).toArray();
-      
-      const lastMap = new Map(
-         lastUsage.map(x => [x._id, x.lastDay])
-      );
+         ])
+         .toArray();
+
+      const lastMap = new Map(lastUsage.map((x) => [x._id, x.lastDay]));
 
       clusters.sort((a, b) => {
          const aTime = lastMap.get(a._id.toString())?.getTime() ?? -Infinity;
@@ -140,7 +135,7 @@ async function generateScheduleForDay(db, date) {
 
       // for each of them assign a random person from that team to it checking for the flag
       for (const cluster of selectedClusters) {
-         const person = await getNextPerson(db, team.id)
+         const person = await getNextPerson(db, team.id);
 
          await db.collection('schedule').insertOne({
             personId: person._id.toString(),
@@ -158,48 +153,46 @@ async function generateScheduleForDay(db, date) {
  * @param {Date|string|number} date - Date to build the schedule for.
  */
 async function getNextPerson(db, teamId) {
-   let people = await db.collection('person')
+   console.log(`Getting next person for team: ${teamId}`);
+   let people = await db
+      .collection('person')
       .find({
          teamId: teamId,
-         $or: [
-            { scheduled: false },
-            { scheduled: { $exists: false }}
-         ],
+         $or: [{ scheduled: false }, { scheduled: { $exists: false } }]
       })
       .toArray();
-   
+
    if (people.length === 0) {
-      await db.collection('person')
-         .updateMany(
-            { teamId: teamId },
-            {
-               $set: {
-                  scheduled: false
-               }
+      console.log('People assigned, unscheduling people...');
+      await db.collection('person').updateMany(
+         { teamId: teamId },
+         {
+            $set: {
+               scheduled: false
             }
-         )
-      people = await db.collection('person')
+         }
+      );
+      people = await db
+         .collection('person')
          .find({
             teamId: teamId,
-            $or: [
-               { scheduled: false },
-               { scheduled: { $exists: false }}
-            ],
+            $or: [{ scheduled: false }, { scheduled: { $exists: false } }]
          })
          .toArray();
    }
-   
+
    const person = people[Math.floor(Math.random() * people.length)];
 
-   await db.collection('person')
-      .updateOne(
-         { _id: person._id },
-         { $set: {
+   await db.collection('person').updateOne(
+      { _id: person._id },
+      {
+         $set: {
             scheduled: true
-         } }
-      )
+         }
+      }
+   );
 
-   return (person);
+   return person;
 }
 
 /**
@@ -212,9 +205,7 @@ async function generateUpToDay(db, date) {
    const targetDate = new Date(date);
    targetDate.setHours(0, 0, 0, 0);
 
-   const latest = await db
-      .collection('schedule')
-      .findOne({}, { sort: { day: -1 } });
+   const latest = await db.collection('schedule').findOne({}, { sort: { day: -1 } });
 
    const yesterday = new Date();
    yesterday.setDate(yesterday.getDate() - 1);
@@ -222,11 +213,8 @@ async function generateUpToDay(db, date) {
 
    const latestDay = latest?.day ? new Date(latest.day) : null;
 
-   const startDate =
-      !latestDay || latestDay < yesterday
-         ? yesterday
-         : latestDay;
-   
+   const startDate = !latestDay || latestDay < yesterday ? yesterday : latestDay;
+
    const dates = [];
    const cursor = new Date(startDate);
    cursor.setHours(0, 0, 0, 0);
@@ -243,7 +231,7 @@ async function generateUpToDay(db, date) {
       cursor.setDate(cursor.getDate() + 1);
    }
 
-   for (let i=0; i<dates.length; i++){
+   for (let i = 0; i < dates.length; i++) {
       await generateScheduleForDay(db, dates[i]);
    }
 }
@@ -262,27 +250,20 @@ async function getScheduleForDay(db, date) {
    startOfDay.setHours(0, 0, 0, 0);
 
    // Check if schedule exists for day
-   let scheduleForDay = await db
-      .collection('schedule')
-      .find({ day: startOfDay })
-      .toArray();
-   
-   
+   let scheduleForDay = await db.collection('schedule').find({ day: startOfDay }).toArray();
+
    // Generate schedule for day if not
    if (scheduleForDay.length === 0) {
-      await generateUpToDay(db, date)
+      await generateUpToDay(db, date);
 
-      scheduleForDay = await db
-      .collection('schedule')
-      .find({ day: startOfDay })
-      .toArray();
+      scheduleForDay = await db.collection('schedule').find({ day: startOfDay }).toArray();
    }
 
    // Format response
    const response = scheduleForDay.map((entry) => ({
       personId: entry.personId,
       clusterId: entry.clusterId
-   }))
+   }));
 
    const scheduleDict = {};
 

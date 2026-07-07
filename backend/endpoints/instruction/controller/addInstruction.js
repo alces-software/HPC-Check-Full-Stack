@@ -14,6 +14,12 @@ module.exports = (db) => {
          const { title, expectedTime, description, clusterId, good, bad } = req.body || {};
 
          // Check title
+         if (typeof title !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The title provided is not a string' });
+         }
+
          if (!title) {
             return res.status(400).json({ success: false, error: 'Missing instruction title' });
          }
@@ -25,6 +31,12 @@ module.exports = (db) => {
          }
 
          // Check expected time
+         if (typeof expectedTime !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The expected time provided is not a string' });
+         }
+
          if (!expectedTime) {
             return res.status(400).json({ success: false, error: 'Missing expected time' });
          }
@@ -38,6 +50,12 @@ module.exports = (db) => {
          }
 
          // Check description
+         if (typeof description !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The description provided is not a string' });
+         }
+
          if (!description) {
             return res.status(400).json({ success: false, error: 'Missing description' });
          }
@@ -51,6 +69,12 @@ module.exports = (db) => {
          }
 
          // Check cluster id
+         if (typeof clusterId !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is not a string' });
+         }
+
          if (!clusterId) {
             return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }
@@ -68,6 +92,12 @@ module.exports = (db) => {
          }
 
          // Check good
+         if (typeof good !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The good provided is not a string' });
+         }
+
          if (!good) {
             return res.status(400).json({ success: false, error: 'Missing instruction title' });
          }
@@ -79,6 +109,12 @@ module.exports = (db) => {
          }
 
          // Check bad
+         if (typeof bad !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The bad provided is not a string' });
+         }
+
          if (!bad) {
             return res.status(400).json({ success: false, error: 'Missing instruction title' });
          }

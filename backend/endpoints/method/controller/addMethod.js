@@ -14,6 +14,12 @@ module.exports = (db) => {
          const { id, content } = req.body || {};
 
          // Check id
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The instruction id provided is not a string' });
+         }
+
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing instruction id' });
          }
@@ -33,6 +39,12 @@ module.exports = (db) => {
          }
 
          // Check content
+         if (typeof content !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The content provided is not a string' });
+         }
+
          if (!content) {
             return res.status(400).json({ success: false, error: 'Missing method content' });
          }

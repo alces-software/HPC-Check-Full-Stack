@@ -10,5 +10,6 @@ module.exports = (db) =>
       .get('/report/week', require('./controller/getWeeksReport')(db))
       .get('/report/cluster/:id', require('./controller/getReportByCluster')(db))
       .get('/report/id/:id', require('./controller/getReportById')(db))
+      .get('/report/overview', require('./controller/getDailyOverviewReport')(db))
       // POST
       .post('/report', require('./controller/addReport')(db));

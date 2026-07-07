@@ -18,6 +18,12 @@ module.exports = (db) => {
          const skip = (page - 1) * limit;
 
          // Check id
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is not a string' });
+         }
+
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }

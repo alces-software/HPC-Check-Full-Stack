@@ -11,9 +11,16 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { clusterId, personId, startTime, endTime, results } = req.body || {};
+         const { clusterId, personId, startTime, endTime, results, bonusChallengeResult } =
+            req.body || {};
 
          // Check cluster id
+         if (typeof clusterId !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is not a string' });
+         }
+
          if (!clusterId) {
             return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }
@@ -41,6 +48,12 @@ module.exports = (db) => {
          }
 
          // Check person id
+         if (typeof personId !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The persons id provided is not a string' });
+         }
+
          if (!personId) {
             return res.status(400).json({ success: false, error: 'Missing persons id' });
          }
@@ -68,11 +81,23 @@ module.exports = (db) => {
          }
 
          // Check start time
+         if (typeof startTime !== 'number') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The start time provided is not a number' });
+         }
+
          if (!startTime) {
             return res.status(400).json({ success: false, error: 'Missing start time' });
          }
 
          // Check end time
+         if (typeof endTime !== 'number') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The end time provided is not a number' });
+         }
+
          if (!endTime) {
             return res.status(400).json({ success: false, error: 'Missing end time' });
          }
@@ -92,6 +117,59 @@ module.exports = (db) => {
             return res
                .status(400)
                .json({ success: false, error: 'The results array provided is empty' });
+         }
+
+         // Check bonus challenge
+         let sanitizedBonusChallengeResult = null;
+         if (bonusChallengeResult) {
+            if (typeof bonusChallengeResult !== 'object') {
+               return res.status(400).json({
+                  success: false,
+                  error: 'Bonus challenge result must be an object'
+               });
+            }
+
+            const { bonusChallengeId, completed } = bonusChallengeResult;
+
+            if (!bonusChallengeId) {
+               return res.status(400).json({
+                  success: false,
+                  error: 'Missing bonus challenge id'
+               });
+            }
+
+            const sanitizedBonusChallengeId = String(bonusChallengeId).trim();
+
+            if (!ObjectId.isValid(sanitizedBonusChallengeId)) {
+               return res.status(400).json({
+                  success: false,
+                  error: 'Invalid bonus challenge id'
+               });
+            }
+
+            if (completed !== true) {
+               return res.status(400).json({
+                  success: false,
+                  error: 'Bonus challenge must be marked as complete'
+               });
+            }
+
+            const bonusChallengeExists = await db.collection('bonusChallenge').findOne({
+               _id: new ObjectId(sanitizedBonusChallengeId),
+               active: true
+            });
+
+            if (!bonusChallengeExists) {
+               return res.status(404).json({
+                  success: false,
+                  error: 'Bonus challenge does not exist or is inactive'
+               });
+            }
+
+            sanitizedBonusChallengeResult = {
+               bonusChallengeId: sanitizedBonusChallengeId,
+               completed: true
+            };
          }
 
          // Check to make sure no report has been submitted for the cluster on that day
@@ -116,15 +194,21 @@ module.exports = (db) => {
          }
 
          // Add the report to the database
+         const reportData = {
+            clusterId: sanitizedClusterId,
+            personId: sanitizedPersonId,
+            startDate: Long.fromNumber(startTime),
+            endDate: Long.fromNumber(endTime),
+            passed: results.every((r) => r.passed),
+
+            ...(sanitizedBonusChallengeResult && {
+               bonusChallengeResult: sanitizedBonusChallengeResult
+            })
+         };
+
          const reportId = await db
             .collection('report')
-            .insertOne({
-               clusterId: sanitizedClusterId,
-               personId: sanitizedPersonId,
-               startDate: Long.fromNumber(startTime),
-               endDate: Long.fromNumber(endTime),
-               passed: results.every((r) => r.passed)
-            })
+            .insertOne(reportData)
             .then((i) => i.insertedId.toString());
 
          if (!ObjectId.isValid(reportId)) {
