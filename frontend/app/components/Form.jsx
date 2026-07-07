@@ -60,7 +60,7 @@ export default function Form() {
    const [hiddenMethodIds, setHiddenMethodIds] = useState([]);
    const [revealedMethodIds, setRevealedMethodIds] = useState([]);
    const MAX_HIDDEN_METHODS = 2;
-   const HIDE_METHOD_CHANCE = 0.20;
+   const HIDE_METHOD_CHANCE = 0.2;
 
    const [allClusters, setAllClusters] = useState([]);
    const [steps, setSteps] = useState([]);
@@ -227,9 +227,9 @@ export default function Form() {
          bonusChallengeResult:
             bonusChallenge && bonusCompleted
                ? {
-                  bonusChallengeId: bonusChallenge.id,
-                  completed: bonusCompleted
-               }
+                    bonusChallengeId: bonusChallenge.id,
+                    completed: bonusCompleted
+                 }
                : null
       };
 
@@ -352,8 +352,6 @@ export default function Form() {
       }
    }
 
-
-
    return (
       <main className="flex justify-center space-y-8">
          <div className="relative z-10 w-full max-w-6xl">
@@ -416,7 +414,7 @@ export default function Form() {
                               <ul className="mt-4 space-y-2 text-slate-300">
                                  {(step.methods || []).map((method, i) => {
                                     const isMethodHidden = hiddenMethodIds.includes(method.id);
-                                    const isMethodRevealed = revealedMethodIds.includes(method.id)
+                                    const isMethodRevealed = revealedMethodIds.includes(method.id);
                                     return (
                                        <li key={method.id}>
                                           {i > 0 && <hr className="border-white/10 mb-2" />}
@@ -475,14 +473,18 @@ export default function Form() {
                                                       {isMethodHidden && !isMethodRevealed ? (
                                                          <div className="flex items-center gap-3">
                                                             <p className="text-yellow-200">
-                                                               Independent challenge — work this method out yourself.
+                                                               Independent challenge — work this
+                                                               method out yourself.
                                                             </p>
                                                             <button
                                                                type="button"
-                                                               onClick={() => revealMethod(method.id)}
+                                                               onClick={() =>
+                                                                  revealMethod(method.id)
+                                                               }
                                                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20"
                                                                aria-label="Reveal method guidance"
-                                                               title="Reveal guidance">
+                                                               title="Reveal guidance"
+                                                            >
                                                                <FaLightbulb />
                                                             </button>
                                                          </div>
