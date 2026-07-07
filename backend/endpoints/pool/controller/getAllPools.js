@@ -10,14 +10,13 @@ module.exports = db => {
     return async (req, res) => {
         try {
             const response = await db
-                .collection('cluster')
+                .collection('pool')
                 .find({})
                 .toArray()
                 .then(res =>
                     res.map(data => ({
                         id: data._id.toString(),
                         name: data.name,
-                        poolId: data.poolId,
                     })),
                 );
 

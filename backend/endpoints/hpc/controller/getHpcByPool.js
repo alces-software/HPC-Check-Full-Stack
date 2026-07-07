@@ -13,9 +13,8 @@ module.exports = db => {
         try {
             const { id } = req.params || {};
 
-            // Check id
             if (!id) {
-                return res.status(400).json({ success: false, error: 'Missing cluster id' });
+                return res.status(400).json({ success: false, error: 'Missing pool id' });
             }
 
             const sanitizedId = String(id).trim();
@@ -23,32 +22,30 @@ module.exports = db => {
             if (sanitizedId.length === 0) {
                 return res
                     .status(400)
-                    .json({ success: false, error: 'The cluster id provided is empty' });
+                    .json({ success: false, error: 'The pool id provided is empty' });
             }
 
             if (!ObjectId.isValid(sanitizedId)) {
                 return res
                     .status(400)
-                    .json({ success: false, error: 'Invalid cluster id provided' });
+                    .json({ success: false, error: 'Invalid pool id provided' });
             }
 
             // Get the cluster
-            const results = await db.collection('cluster').findOne({
-                _id: new ObjectId(sanitizedId),
-            });
-
-            if (!results) {
-                return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
-            }
-
-            return res.status(200).json({
-                success: true,
-                body: {
-                    id: sanitizedId,
-                    name: results.name,
-                    poolId: results.poolId,
-                },
-            });
+            const data = await db
+                .collection('cluster')
+                .find({
+                    poolId: sanitizedId,
+                })
+                .toArray()
+                .then(res =>
+                    res.map(({ _id, ...rest }) => ({
+                        id: _id.toString(),
+                        ...rest,
+                    })),
+                );
+            
+            return res.status(200).json({ success: true, body: data });
         } catch (error) {
             return res.status(500).json({ success: false, error: error.message });
         }

@@ -46,6 +46,9 @@ const populateClosedDays = require('./schedule/populateClosedDays');
    // Register team routes
    app.use('/', require('./endpoints/team/routes')(databaseConnection));
 
+   // Register pool routes
+   app.use('/', require('./endpoints/pool/routes')(databaseConnection));
+
    // Start new weekly schedule cron job
    startWeeklySchedule(databaseConnection);
 

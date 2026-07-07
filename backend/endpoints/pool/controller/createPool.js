@@ -9,39 +9,44 @@ module.exports = db => {
      */
     return async (req, res) => {
         try {
-            const { name } = req.params || {};
+            const { name } = req.body || {};
 
             // Check name
             if (!name) {
-                return res.status(400).json({ success: false, error: 'Missing hpc name' });
+                return res.status(400).json({ success: false, error: "Missing pool's name" });
             }
 
             const sanitizedName = String(name).trim();
 
-            if (sanitizedName.length == 0) {
+            if (sanitizedName.length === 0) {
                 return res
                     .status(400)
                     .json({ success: false, error: 'The name provided is empty' });
             }
 
-            // Get the cluster
-            const results = await db.collection('cluster').findOne({
+            // Make sure the person exists
+            const existingPerson = await db.collection('pool').findOne({
                 name: {
                     $regex: `^${sanitizedName}$`,
                     $options: 'i',
                 },
             });
 
-            if (!results) {
-                return res.status(404).json({ success: false, error: "HPC doesn't exist" });
+            if (existingPerson) {
+                return res
+                    .status(409)
+                    .json({ success: false, error: 'Pool with this name already exits' });
             }
+
+            // Add pool to the database
+            const result = await db.collection('pool').insertOne({
+                name: sanitizedName,
+            });
 
             return res.status(200).json({
                 success: true,
                 body: {
-                    id: results._id.toString(),
-                    name: results.name,
-                    poolId: results.poolId,
+                    newId: result.insertedId,
                 },
             });
         } catch (error) {
