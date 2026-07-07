@@ -253,6 +253,24 @@ export default function Report() {
                </div>
             </div>
 
+            {/* Bonus Challenge */}
+            {report.bonusChallengeResult?.completed && (
+               <section className="mt-6 overflow-hidden rounded-2xl border border-yellow-400/30 bg-yellow-500/10">
+                  <div className="flex items-center gap-2 px-5 py-4">
+                     <span className="text-yellow-300">★</span>
+
+                     <p className="text-sm font-semibold uppercase tracking-wide text-yellow-300">
+                        Bonus Challenge Completed
+                     </p>
+
+                     <span className="text-sm font-semibold text-white">
+                        — {report.bonusChallengeResult.title}
+                     </span>
+                  </div>
+               </section>
+            )}
+
+
             {/* FOOTER */}
             <div className="mt-6 border-t border-white/10 pt-6">
                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

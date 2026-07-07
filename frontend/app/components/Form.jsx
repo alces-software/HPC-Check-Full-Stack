@@ -52,6 +52,11 @@ function CopyablePre({ children }) {
 
 export default function Form() {
    const [completedSteps, setCompletedSteps] = useState({});
+
+   const [bonusChallenge, setBonusChallenge] = useState(null);
+   const [bonusCompleted, setBonusCompleted] = useState(false);
+
+
    const [allClusters, setAllClusters] = useState([]);
    const [steps, setSteps] = useState([]);
    const [allNames, setAllNames] = useState([]);
@@ -120,6 +125,30 @@ export default function Form() {
       getSteps();
    }, [getSteps]);
 
+   useEffect(() => {
+      async function getBonusChallenge() {
+         try {
+            const res = await fetch(
+               `${process.env.NEXT_PUBLIC_API_URL}/bonus-challenge/random`
+            );
+            const data = await res.json();
+
+            if (!data.success) {
+               setBonusChallenge(null);
+               return;
+            }
+            setBonusChallenge(data.body);
+
+         } catch (error) {
+            console.error('Failed to fetch bonus challenge:', error);
+            setBonusChallenge(null);
+         }
+      }
+
+      getBonusChallenge();
+
+   }, []);
+
    function toggleStep(stepId) {
       setCompletedSteps((prev) => ({
          ...prev,
@@ -164,7 +193,14 @@ export default function Form() {
                passed,
                note: String(note || '')
             };
-         })
+         }),
+         bonusChallengeResult:
+         bonusChallenge && bonusCompleted
+         ?{
+            bonusChallengeId: bonusChallenge.id,
+            completed: bonusCompleted
+         }
+         :null
       };
 
       try {
@@ -585,16 +621,58 @@ export default function Form() {
                               }
                               rows={4}
                               placeholder={isCompleted ? 'Notes (optional)' : 'What went wrong?'}
-                              className={`mt-4 w-full rounded-xl border p-3 text-white ${
-                                 isCompleted
-                                    ? 'border-white/10 bg-slate-900/50'
-                                    : 'border-red-500/30 bg-red-900/20'
-                              }`}
+                              className={`mt-4 w-full rounded-xl border p-3 text-white ${isCompleted
+                                 ? 'border-white/10 bg-slate-900/50'
+                                 : 'border-red-500/30 bg-red-900/20'
+                                 }`}
                            />
                         </section>
                      );
                   })}
                </div>
+               {/* Bonus challenges */}
+               {bonusChallenge && (
+                  <section className="mt-8 rounded-2xl border border-yellow-400/30 bg-yellow-500/10 p-4 md:p-6">
+                     <div className="flex items-start gap-3">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-yellow-400/30 bg-yellow-400/20 text-sm font-bold text-yellow-200">
+                           ★
+                        </span>
+
+                        <div>
+                           <p className="text-sm font-semibold uppercase tracking-wide text-yellow-300">
+                              Bonus Challenge
+                           </p>
+
+                           <h2 className="mt-1 text-xl font-semibold text-white">
+                              {bonusChallenge.title}
+                           </h2>
+
+                           <p className="mt-2 text-slate-200">
+                              {bonusChallenge.description}
+                           </p>
+                        </div>
+                     </div>
+
+                     <div className="mt-5 flex items-center justify-between">
+                        <span className="font-medium text-white">
+                           <strong>
+                              {bonusCompleted ? 'Bonus Completed' : 'Complete Bonus Challenge'}
+                           </strong>
+                        </span>
+
+                        <label className="relative inline-flex cursor-pointer items-center">
+                           <input
+                              type="checkbox"
+                              checked={bonusCompleted}
+                              onChange={() => setBonusCompleted((current) => !current)}
+                              className="peer sr-only"
+                           />
+
+                           <span className="h-7 w-14 rounded-full bg-slate-600 transition after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:bg-yellow-400 peer-checked:after:translate-x-7" />
+                        </label>
+                     </div>
+                  </section>
+               )}
 
                {/* submit */}
                <button
