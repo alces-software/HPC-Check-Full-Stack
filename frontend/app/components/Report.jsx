@@ -270,7 +270,6 @@ export default function Report() {
                </section>
             )}
 
-
             {/* FOOTER */}
             <div className="mt-6 border-t border-white/10 pt-6">
                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

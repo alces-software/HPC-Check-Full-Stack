@@ -11,7 +11,8 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { clusterId, personId, startTime, endTime, results, bonusChallengeResult } = req.body || {};
+         const { clusterId, personId, startTime, endTime, results, bonusChallengeResult } =
+            req.body || {};
 
          // Check cluster id
          if (typeof clusterId !== 'string') {
@@ -118,8 +119,8 @@ module.exports = (db) => {
                .json({ success: false, error: 'The results array provided is empty' });
          }
 
+         // Check bonus challenge
          let sanitizedBonusChallengeResult = null;
-
          if (bonusChallengeResult) {
             if (typeof bonusChallengeResult !== 'object') {
                return res.status(400).json({
@@ -170,8 +171,6 @@ module.exports = (db) => {
                completed: true
             };
          }
-
-
 
          // Check to make sure no report has been submitted for the cluster on that day
          const startOfDay = new Date();

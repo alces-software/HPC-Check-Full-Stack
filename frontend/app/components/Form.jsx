@@ -56,7 +56,6 @@ export default function Form() {
    const [bonusChallenge, setBonusChallenge] = useState(null);
    const [bonusCompleted, setBonusCompleted] = useState(false);
 
-
    const [allClusters, setAllClusters] = useState([]);
    const [steps, setSteps] = useState([]);
    const [allNames, setAllNames] = useState([]);
@@ -128,9 +127,7 @@ export default function Form() {
    useEffect(() => {
       async function getBonusChallenge() {
          try {
-            const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/bonus-challenge/random`
-            );
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bonus-challenge/random`);
             const data = await res.json();
 
             if (!data.success) {
@@ -138,7 +135,6 @@ export default function Form() {
                return;
             }
             setBonusChallenge(data.body);
-
          } catch (error) {
             console.error('Failed to fetch bonus challenge:', error);
             setBonusChallenge(null);
@@ -146,7 +142,6 @@ export default function Form() {
       }
 
       getBonusChallenge();
-
    }, []);
 
    function toggleStep(stepId) {
@@ -195,12 +190,12 @@ export default function Form() {
             };
          }),
          bonusChallengeResult:
-         bonusChallenge && bonusCompleted
-         ?{
-            bonusChallengeId: bonusChallenge.id,
-            completed: bonusCompleted
-         }
-         :null
+            bonusChallenge && bonusCompleted
+               ? {
+                    bonusChallengeId: bonusChallenge.id,
+                    completed: bonusCompleted
+                 }
+               : null
       };
 
       try {
@@ -621,10 +616,11 @@ export default function Form() {
                               }
                               rows={4}
                               placeholder={isCompleted ? 'Notes (optional)' : 'What went wrong?'}
-                              className={`mt-4 w-full rounded-xl border p-3 text-white ${isCompleted
-                                 ? 'border-white/10 bg-slate-900/50'
-                                 : 'border-red-500/30 bg-red-900/20'
-                                 }`}
+                              className={`mt-4 w-full rounded-xl border p-3 text-white ${
+                                 isCompleted
+                                    ? 'border-white/10 bg-slate-900/50'
+                                    : 'border-red-500/30 bg-red-900/20'
+                              }`}
                            />
                         </section>
                      );
@@ -647,9 +643,7 @@ export default function Form() {
                               {bonusChallenge.title}
                            </h2>
 
-                           <p className="mt-2 text-slate-200">
-                              {bonusChallenge.description}
-                           </p>
+                           <p className="mt-2 text-slate-200">{bonusChallenge.description}</p>
                         </div>
                      </div>
 
