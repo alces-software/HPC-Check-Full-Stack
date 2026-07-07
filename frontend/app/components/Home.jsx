@@ -7,11 +7,22 @@ import { IoIosSettings } from 'react-icons/io';
 
 function PortalIcon() {
    return (
-      <svg viewBox="0 0 80 80" className="h-20 w-20" aria-hidden="true">
-         <rect x="10" y="10" width="26" height="26" rx="5" className="fill-green-300" />
-         <rect x="44" y="10" width="26" height="26" rx="5" className="fill-blue-300" />
-         <rect x="10" y="44" width="26" height="26" rx="5" className="fill-purple-300" />
-         <rect x="44" y="44" width="26" height="26" rx="5" className="fill-amber-300" />
+      <svg viewBox="0 0 80 80" className="h-20 w-20">
+         <defs>
+            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+               <feDropShadow
+                  dx="4"
+                  dy="4"
+                  stdDeviation="2"
+                  floodOpacity="0.25"
+               />
+            </filter>
+         </defs>
+
+         <rect x="10" y="10" width="30" height="30" rx="5" className="fill-green-300" filter="url(#shadow)" />
+         <rect x="44" y="10" width="30" height="30" rx="5" className="fill-blue-300 " filter="url(#shadow)" />
+         <rect x="10" y="44" width="30" height="30" rx="5" className="fill-purple-300" filter="url(#shadow)" />
+         <rect x="44" y="44" width="30" height="30" rx="5" className="fill-amber-300" filter="url(#shadow)" />
       </svg>
    );
 }
