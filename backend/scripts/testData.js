@@ -8,6 +8,7 @@ module.exports.seedData = async (db) => {
    const teampoolCol = db.collection('teampool');
    const instructionCol = db.collection('instruction');
    const methodCol = db.collection('method');
+   const bonusChallengeCol = db.collection('bonusChallenge');
 
    // -----------------------------
    // Helpers
@@ -120,6 +121,120 @@ module.exports.seedData = async (db) => {
    ];
 
    await clusterCol.insertMany(clusters);
+
+
+   // -----------------------------
+   // BONUS CHALLENGES
+   // -----------------------------
+   const bonusChallenges = [
+      {
+         _id: id(),
+         title: 'Queue Controller',
+         description:
+            'Submit a short test job, locate its job ID using squeue, then cancel it before it finishes.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Job Tracker',
+         description:
+            'Identify the state of one of your jobs, or confirm that you have no active jobs.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Partition Explorer',
+         description:
+            'Identify a partition with idle or mixed nodes.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Pending Detective',
+         description:
+            'Find a pending job in the queue and identify the reason it is waiting.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Output Hunter',
+         description:
+            'Submit a basic hello-world job and locate the output file it creates.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Storage Scout',
+         description:
+            'Check how much home-directory space remains.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Scratch Explorer',
+         description:
+            'Create a small temporary file in scratch, confirm it exists, then remove it.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'File Finder',
+         description:
+            'Use find to locate a file or directory in your home directory.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Disk Check',
+         description:
+            'Identify which filesystem has the most available space.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Permission Inspector',
+         description:
+            'Inspect a files permissions and identify who can read or write it.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'GPU Scout',
+         description:
+            'Identify which partition provides GPU resources.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Process Watcher',
+         description:
+            'Inspect the processes currently running under your account.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Log Reader',
+         description:
+            'Create a small text file with a few lines, then use tail to display its final two lines.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Search Specialist',
+         description:
+            'Use grep to search for a word, warning, or error message inside a text file.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Command Recall',
+         description:
+            'Pick one command used during todays health check and explain what information it gives you.',
+         active: true
+      }
+   ];
+
+   await bonusChallengeCol.insertMany(bonusChallenges);
 
    // -----------------------------
    // INSTRUCTION TEMPLATES (shared pattern)

@@ -37,6 +37,9 @@ const dailyReport = require('./services/dailyReport/dailyReport');
    // Register instruction routes
    app.use('/', require('./endpoints/instruction/route')(databaseConnection));
 
+   // Register bonus challenge routes
+   app.use('/', require ('./endpoints/bonusChallenge/route')(databaseConnection))
+
    // Register report routes
    app.use('/', require('./endpoints/report/routes')(databaseConnection));
 
