@@ -13,7 +13,9 @@ module.exports = (db) => {
 
          // Check name
          if (typeof id !== 'string') {
-            return res.status(400).json({ success: false, error: "The persons name provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The persons name provided is not a string' });
          }
 
          if (!name) {
