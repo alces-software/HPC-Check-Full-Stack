@@ -15,7 +15,9 @@ module.exports = (db) => {
 
          // Check title
          if (typeof title !== 'string') {
-            return res.status(400).json({ success: false, error: "The title provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The title provided is not a string' });
          }
 
          if (!title) {
@@ -30,7 +32,9 @@ module.exports = (db) => {
 
          // Check expected time
          if (typeof expectedTime !== 'string') {
-            return res.status(400).json({ success: false, error: "The expected time provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The expected time provided is not a string' });
          }
 
          if (!expectedTime) {
@@ -47,7 +51,9 @@ module.exports = (db) => {
 
          // Check description
          if (typeof description !== 'string') {
-            return res.status(400).json({ success: false, error: "The description provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The description provided is not a string' });
          }
 
          if (!description) {
@@ -64,7 +70,9 @@ module.exports = (db) => {
 
          // Check cluster id
          if (typeof clusterId !== 'string') {
-            return res.status(400).json({ success: false, error: "The cluster id provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is not a string' });
          }
 
          if (!clusterId) {
@@ -85,7 +93,9 @@ module.exports = (db) => {
 
          // Check good
          if (typeof good !== 'string') {
-            return res.status(400).json({ success: false, error: "The good provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The good provided is not a string' });
          }
 
          if (!good) {
@@ -100,7 +110,9 @@ module.exports = (db) => {
 
          // Check bad
          if (typeof bad !== 'string') {
-            return res.status(400).json({ success: false, error: "The bad provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The bad provided is not a string' });
          }
 
          if (!bad) {

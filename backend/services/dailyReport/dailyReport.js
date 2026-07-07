@@ -7,19 +7,28 @@ const { getDaily } = require('../../endpoints/rota/scheduleLogic');
  */
 module.exports = async (db) => {
    // Get all the reports from today
-   const startOfDay = new Date();
-   startOfDay.setHours(0, 0, 0, 0);
+   const startOfDay = new Date().setHours(0, 0, 0, 0);
+   const endOfDay = new Date().setHours(23, 59, 59, 999);
 
-   const endOfDay = new Date();
-   endOfDay.setHours(23, 59, 59, 999);
+   // Check to see if a report exists already and if one does exit out
+   const reportExists = await db.collection('overviewReport').findOne({
+      date: {
+         $gte: startOfDay,
+         $lte: endOfDay
+      }
+   });
+
+   if (reportExists) {
+      return;
+   }
 
    // Get the reports from the current day
    const reports = await db
       .collection('report')
       .find({
          startDate: {
-            $gte: startOfDay.getTime(),
-            $lte: endOfDay.getTime()
+            $gte: startOfDay,
+            $lte: endOfDay
          }
       })
       .toArray()
@@ -30,7 +39,7 @@ module.exports = async (db) => {
          }))
       );
 
-   const rotaDaily = await getDaily(db).then(res =>
+   const rotaDaily = await getDaily(db).then((res) =>
       Object.entries(res).map(([key, value]) => ({
          id: key,
          clusterId: value
@@ -43,14 +52,14 @@ module.exports = async (db) => {
          const exists = reports.filter((report) => person.clusterId.includes(report.clusterId));
 
          if (exists.length !== 1) {
-            person.clusterId.forEach(id => missingReports.push(id))
+            person.clusterId.forEach((id) => missingReports.push(id));
          }
       });
    }
 
    await db.collection('overviewReport').insertOne({
       date: Long.fromNumber(new Date().getTime()),
-      reports: reports.map(report => report.id),
+      reports: reports.map((report) => report.id),
       missing: missingReports
    });
 };

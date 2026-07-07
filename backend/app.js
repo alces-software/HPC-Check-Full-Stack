@@ -6,6 +6,7 @@ const { startPopulateClosedDays, startDailyOverviewBuilder } = require('./servic
 const { Database } = require('./db/db');
 const { seedData } = require('./scripts/testData');
 const populateClosedDays = require('./schedule/populateClosedDays');
+const dailyReport = require('./services/dailyReport/dailyReport');
 
 (async () => {
    const app = express();
@@ -51,6 +52,8 @@ const populateClosedDays = require('./schedule/populateClosedDays');
 
    // Check for closed days on boot
    await populateClosedDays(databaseConnection);
+
+   dailyReport(databaseConnection);
 
    // Makes the app listen to the port
    const PORT = process.env.PORT || 3000;

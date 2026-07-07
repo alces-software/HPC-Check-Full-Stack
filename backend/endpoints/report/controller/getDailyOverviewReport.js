@@ -11,39 +11,7 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
-
-         // Check id
-         if (typeof id !== 'string') {
-            return res.status(400).json({ success: false, error: "The report id provided is not a string" });
-         }
-
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing the report id' });
-         }
-
-         const sanitisedId = String(id).trim();
-
-         if (sanitisedId.length === 0) {
-            return res
-               .status(400)
-               .json({ success: false, error: 'The report id provided is empty' });
-         }
-
-         if (!ObjectId.isValid(sanitisedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid report id' });
-         }
-
-         // Get the overView report information
-         const overviewReport = await db.collection('overviewReport').findOne({
-            _id: new ObjectId(sanitisedId)
-         });
-
-         if (!overviewReport) {
-            return res
-               .status(404)
-               .json({ success: false, error: 'There is no overview report for today' });
-         }
+         const { date } = req.query || {};
 
          // Get people
          const people = await db
@@ -69,11 +37,31 @@ module.exports = (db) => {
                }))
             );
 
+         // Get the overview report for that day or provided day
+         const startOfDay = date ? new Date(date) : new Date();
+         startOfDay.setHours(0, 0, 0, 0);
+
+         const endOfDay = new Date();
+         endOfDay.setHours(23, 59, 59, 999);
+
+         const overviewReport = await db.collection('overviewReport').findOne({
+            date: {
+               $gte: startOfDay.getTime(),
+               $lte: endOfDay.getTime()
+            }
+         });
+
+         if (!overviewReport) {
+            return res
+               .status(404)
+               .json({ success: false, error: 'There is no overview report for today' });
+         }
+
          // Get reports
          const reports = await Promise.all(
             (overviewReport.reports ?? []).map(async (id) => {
-               const report = await db.collection("report").findOne({
-                  _id: new ObjectId(id),
+               const report = await db.collection('report').findOne({
+                  _id: new ObjectId(id)
                });
 
                if (!report) return null;
@@ -81,29 +69,43 @@ module.exports = (db) => {
                const { _id, ...rest } = report;
 
                const results = await db
-                  .collection("result")
+                  .collection('result')
                   .find({ reportId: _id.toString() })
                   .toArray();
+
+               const ResultsWithTitles = await Promise.all(
+                  results.map(async (data) => {
+                     const instruction = await db
+                        .collection('instruction')
+                        .findOne({ _id: new ObjectId(data.instructionId) });
+
+                     return {
+                        title: instruction.title,
+                        ...data
+                     };
+                  })
+               );
 
                return {
                   id: _id.toString(),
                   person: people.find((p) => p.id === rest.personId)?.name,
                   cluster: cluster.find((c) => c.id === rest.clusterId)?.name,
                   ...rest,
-                  results: results
+                  results: ResultsWithTitles
                      .map((r) => ({
+                        title: r.title,
                         instructionId: r.instructionId,
                         passed: r.passed,
-                        note: r.note,
+                        note: r.note
                      }))
-                     .filter((r) => r.note || !r.passed),
+                     .filter((r) => r.note || !r.passed)
                };
             })
          );
 
          // Get which ones are missing
          const missingReports = [];
-         overviewReport.missing.each(async (id) => {
+         overviewReport.missing.forEach(async (id) => {
             missingReports.push({
                id: id,
                name: cluster.find((c) => c.id === id)?.name

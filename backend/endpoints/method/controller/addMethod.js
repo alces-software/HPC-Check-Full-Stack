@@ -15,7 +15,9 @@ module.exports = (db) => {
 
          // Check id
          if (typeof id !== 'string') {
-            return res.status(400).json({ success: false, error: "The instruction id provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The instruction id provided is not a string' });
          }
 
          if (!id) {
@@ -38,7 +40,9 @@ module.exports = (db) => {
 
          // Check content
          if (typeof content !== 'string') {
-            return res.status(400).json({ success: false, error: "The content provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The content provided is not a string' });
          }
 
          if (!content) {
