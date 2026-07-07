@@ -336,10 +336,11 @@ export default function ClusterSettingsPage() {
    }
 
    return (
-      <main className="flex min-h-screen items-start justify-center">
-         <div className="relative z-10 w-full max-w-5xl">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl md:p-10">
-               <div className="mt-8 text-center">
+      <main className="flex justify-center space-y-8">
+         <div className="relative z-10 w-full max-w-6xl">
+            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
+               {/* Header */}
+               <div className="mb-10 text-center">
                   <div className="mb-4 flex justify-center">
                      <FaDatabase className="h-20 w-20 text-emerald-300" aria-hidden="true" />
                   </div>
@@ -385,7 +386,7 @@ export default function ClusterSettingsPage() {
                   </div>
                </div>
 
-               <div className="mt-10 mb-8 flex justify-center">
+               <div className="mb-8 flex justify-center">
                   <div className="inline-flex items-center gap-5 rounded-2xl px-8 py-4 backdrop-blur-sm">
                      <button
                         type="button"

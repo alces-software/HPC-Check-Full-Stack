@@ -318,21 +318,22 @@ export default function Form() {
    }
 
    return (
-      <main className="relative flex min-h-screen items-center justify-center overflow-hidden">
-         {/* background */}
-
-         {/* content wrapper */}
-         <div className="relative z-10 w-full max-w-5xl">
+      <main className="flex justify-center space-y-8">
+         <div className="relative z-10 w-full max-w-6xl">
             <form
                onSubmit={handleSubmit}
-               className="rounded-3xl border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur-xl md:p-10"
+               className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl"
             >
                {/* Header */}
                <div className="mb-10 text-center">
                   <div className="mb-4 flex justify-center">
                      <FaClipboardList className="h-20 w-20 text-blue-300" aria-hidden="true" />
                   </div>
-                  <h1 className="text-4xl font-bold text-white">Process Documentation</h1>
+
+                  <h1 className="text-4xl sm:text-5xl font-bold text-white">
+                     Process Documentation
+                  </h1>
+
                   <p className="mt-3 text-lg text-slate-300">
                      {name}&apos;s Check for{' '}
                      <span className="font-semibold text-blue-300">{clusterName}</span>
@@ -355,16 +356,6 @@ export default function Form() {
                            key={step.id}
                            className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6"
                         >
-                           {/* <h2>{index + 1}</h2>
-                           <h2 className="mb-4 flex items-center justify-between text-xl font-semibold text-white">
-                              {step.title}
-
-                              {step.expectedTime && (
-                                 <span className="shrink-0 rounded-full border border-blue-400/20 bg-blue-500/20 px-3 py-1 text-right text-sm font-semibold text-blue-200">
-                                    {step.expectedTime}
-                                 </span>
-                              )}
-                           </h2> */}
                            <div className="mb-2 flex items-center gap-3">
                               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-400/30 bg-blue-500/20 text-sm font-bold text-blue-300">
                                  {index + 1}

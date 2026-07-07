@@ -128,168 +128,174 @@ export default function Report() {
    }
 
    return (
-      <main className="space-y-8">
-         <div className="rounded-2xl border border-white/10 bg-white/10 p-6 shadow-2xl backdrop-blur-xl md:p-8">
-            {/* Header */}
-            <div className="mb-6 flex items-start justify-between md:mb-8">
-               <div>
-                  <h1 className="text-3xl font-bold text-white md:text-4xl">HPC Test Results</h1>
+      <main className="flex justify-center space-y-8">
+         <div className="relative z-10 w-full max-w-6xl">
+            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
+               {/* Header */}
+               <div className="mb-10 flex items-start justify-between md:mb-8">
+                  <div>
+                     <h1 className="text-4xl sm:text-5xl font-bold text-white">HPC Test Results</h1>
 
-                  <p className="mt-2 text-slate-300">
-                     Results for {formatDate(new Date(report.startTime))} on {report.cluster}
-                  </p>
+                     <p className="mt-3 text-lg text-slate-300">
+                        Results for {formatDate(new Date(report.startTime))} on {report.cluster}
+                     </p>
+                     <p className="mt-2 text-slate-300">
+                        Checks:
+                        <span
+                           className={`ml-2 rounded-full border px-2 py-1 text-xs font-semibold uppercase tracking-wide ${
+                              report.passed
+                                 ? 'border-green-400/30 bg-green-500/20 text-green-300'
+                                 : 'border-red-400/30 bg-red-500/20 text-red-300'
+                           }`}
+                        >
+                           {report.passed ? 'Passed' : 'Failed'}
+                        </span>
+                     </p>
+                  </div>
 
-                  <p className="mt-2 text-slate-300">
-                     Checks:
-                     <span
-                        className={`ml-2 rounded-full border px-2 py-1 text-xs font-semibold uppercase tracking-wide ${
-                           report.passed
-                              ? 'border-green-400/30 bg-green-500/20 text-green-300'
-                              : 'border-red-400/30 bg-red-500/20 text-red-300'
-                        }`}
-                     >
-                        {report.passed ? 'Passed' : 'Failed'}
-                     </span>
-                  </p>
-               </div>
-               <div className="flex gap-2">
-                  {navigator.clipboard !== undefined &&
-                     typeof navigator.clipboard.writeText === 'function' && (
+                  <div className="flex gap-2">
+                     {navigator.clipboard !== undefined &&
+                        typeof navigator.clipboard.writeText === 'function' && (
+                           <button
+                              type="button"
+                              onClick={handleCopy}
+                              className={`cursor-pointer rounded-lg border p-2 transition-all duration-300 ${
+                                 copied
+                                    ? 'border-green-400/40 bg-green-500/20 text-green-300'
+                                    : 'border-white/10 bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white'
+                              }`}
+                              title={copied ? 'Copied!' : 'Copy report link'}
+                              aria-label={copied ? 'Copied!' : 'Copy report link'}
+                           >
+                              {copied ? (
+                                 <IoCheckmark className="h-5 w-5 animate-pulse" />
+                              ) : (
+                                 <IoCopy className="h-5 w-5" />
+                              )}
+                           </button>
+                        )}
+
+                     {typeof navigator.share === 'function' && (
                         <button
                            type="button"
-                           onClick={handleCopy}
+                           onClick={handleShare}
                            className={`cursor-pointer rounded-lg border p-2 transition-all duration-300 ${
-                              copied
+                              shared
                                  ? 'border-green-400/40 bg-green-500/20 text-green-300'
                                  : 'border-white/10 bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white'
                            }`}
-                           title={copied ? 'Copied!' : 'Copy report link'}
-                           aria-label={copied ? 'Copied!' : 'Copy report link'}
+                           title={shared ? 'Shared!' : 'Share report'}
+                           aria-label={shared ? 'Shared!' : 'Share report'}
                         >
-                           {copied ? (
+                           {shared ? (
                               <IoCheckmark className="h-5 w-5 animate-pulse" />
                            ) : (
-                              <IoCopy className="h-5 w-5" />
+                              <IoShare className="h-5 w-5" />
                            )}
                         </button>
                      )}
-
-                  {typeof navigator.share === 'function' && (
-                     <button
-                        type="button"
-                        onClick={handleShare}
-                        className={`cursor-pointer rounded-lg border p-2 transition-all duration-300 ${
-                           shared
-                              ? 'border-green-400/40 bg-green-500/20 text-green-300'
-                              : 'border-white/10 bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white'
-                        }`}
-                        title={shared ? 'Shared!' : 'Share report'}
-                        aria-label={shared ? 'Shared!' : 'Share report'}
-                     >
-                        {shared ? (
-                           <IoCheckmark className="h-5 w-5 animate-pulse" />
-                        ) : (
-                           <IoShare className="h-5 w-5" />
-                        )}
-                     </button>
-                  )}
+                  </div>
                </div>
-            </div>
 
-            {/* TABLE */}
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-               {/* Mobile */}
-               <div className="divide-y divide-white/10 md:hidden">
-                  {report.results.map((result, index) => (
-                     <div key={index} className="p-4">
-                        <div className="flex items-start justify-between gap-3">
-                           <h3 className="min-w-0 flex-1 break-words text-white">{result.title}</h3>
+               {/* TABLE */}
+               <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                  {/* Mobile */}
+                  <div className="divide-y divide-white/10 md:hidden">
+                     {report.results.map((result, index) => (
+                        <div key={index} className="p-4">
+                           <div className="flex items-start justify-between gap-3">
+                              <h3 className="min-w-0 flex-1 break-words text-white">
+                                 {result.title}
+                              </h3>
 
-                           <span
-                              className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-bold uppercase ${outcomeStyle(
-                                 result.passed
-                              )}`}
-                           >
-                              {result.passed ? 'PASS' : 'FAIL'}
-                           </span>
+                              <span
+                                 className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-bold uppercase ${outcomeStyle(
+                                    result.passed
+                                 )}`}
+                              >
+                                 {result.passed ? 'PASS' : 'FAIL'}
+                              </span>
+                           </div>
+
+                           <p className="mt-3 text-sm text-slate-300">
+                              {result.note || 'No notes'}
+                           </p>
                         </div>
+                     ))}
+                  </div>
 
-                        <p className="mt-3 text-sm text-slate-300">{result.note || 'No notes'}</p>
-                     </div>
-                  ))}
-               </div>
-
-               {/* Desktop */}
-               <div className="hidden md:block overflow-x-auto">
-                  <table className="w-full text-left">
-                     <thead className="bg-slate-900/50">
-                        <tr>
-                           <th className="px-6 py-4 text-sm text-slate-300">Outcome</th>
-                           <th className="px-6 py-4 text-sm text-slate-300">Task</th>
-                           <th className="px-6 py-4 text-sm text-slate-300">Notes</th>
-                        </tr>
-                     </thead>
-
-                     <tbody>
-                        {report.results.map((result, index) => (
-                           <tr key={index} className="border-b border-white/10">
-                              <td className="px-6 py-4">
-                                 <span
-                                    className={`rounded-full border px-3 py-1 text-xs font-bold uppercase ${outcomeStyle(
-                                       result.passed
-                                    )}`}
-                                 >
-                                    {result.passed ? 'PASS' : 'FAIL'}
-                                 </span>
-                              </td>
-
-                              <td className="px-6 py-4 text-white">{result.title}</td>
-
-                              <td className="px-6 py-4 text-slate-300">{result.note || '-'}</td>
+                  {/* Desktop */}
+                  <div className="hidden md:block overflow-x-auto">
+                     <table className="w-full text-left">
+                        <thead className="bg-slate-900/50">
+                           <tr>
+                              <th className="px-6 py-4 text-sm text-slate-300">Outcome</th>
+                              <th className="px-6 py-4 text-sm text-slate-300">Task</th>
+                              <th className="px-6 py-4 text-sm text-slate-300">Notes</th>
                            </tr>
-                        ))}
-                     </tbody>
-                  </table>
+                        </thead>
+
+                        <tbody>
+                           {report.results.map((result, index) => (
+                              <tr key={index} className="border-b border-white/10">
+                                 <td className="px-6 py-4">
+                                    <span
+                                       className={`rounded-full border px-3 py-1 text-xs font-bold uppercase ${outcomeStyle(
+                                          result.passed
+                                       )}`}
+                                    >
+                                       {result.passed ? 'PASS' : 'FAIL'}
+                                    </span>
+                                 </td>
+
+                                 <td className="px-6 py-4 text-white">{result.title}</td>
+
+                                 <td className="px-6 py-4 text-slate-300">{result.note || '-'}</td>
+                              </tr>
+                           ))}
+                        </tbody>
+                     </table>
+                  </div>
                </div>
-            </div>
 
-            {/* Bonus Challenge */}
-            {report.bonusChallengeResult?.completed && (
-               <section className="mt-6 overflow-hidden rounded-2xl border border-yellow-400/30 bg-yellow-500/10">
-                  <div className="flex items-center gap-2 px-5 py-4">
-                     <span className="text-yellow-300">★</span>
+               {/* Bonus Challenge */}
+               {report.bonusChallengeResult?.completed && (
+                  <section className="mt-6 overflow-hidden rounded-2xl border border-yellow-400/30 bg-yellow-500/10">
+                     <div className="flex items-center gap-2 px-5 py-4">
+                        <span className="text-yellow-300">★</span>
 
-                     <p className="text-sm font-semibold uppercase tracking-wide text-yellow-300">
-                        Bonus Challenge Completed
-                     </p>
+                        <p className="text-sm font-semibold uppercase tracking-wide text-yellow-300">
+                           Bonus Challenge Completed
+                        </p>
 
-                     <span className="text-sm font-semibold text-white">
-                        — {report.bonusChallengeResult.title}
-                     </span>
-                  </div>
-               </section>
-            )}
+                        <span className="text-sm font-semibold text-white">
+                           — {report.bonusChallengeResult.title}
+                        </span>
+                     </div>
+                  </section>
+               )}
 
-            {/* FOOTER */}
-            <div className="mt-6 border-t border-white/10 pt-6">
-               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  <div>
-                     <p className="text-xs text-slate-400">Tester</p>
-                     <p className="text-white">
-                        {report.person} #{report.personId}
-                     </p>
-                  </div>
+               {/* FOOTER */}
+               <div className="mt-6 border-t border-white/10 pt-6">
+                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                     <div>
+                        <p className="text-xs text-slate-400">Tester</p>
+                        <p className="text-white">
+                           {report.person} #{report.personId}
+                        </p>
+                     </div>
 
-                  <div>
-                     <p className="text-xs text-slate-400">Cluster</p>
-                     <p className="text-white">
-                        {report.cluster} #{report.clusterId}
-                     </p>
-                  </div>
+                     <div>
+                        <p className="text-xs text-slate-400">Cluster</p>
+                        <p className="text-white">
+                           {report.cluster} #{report.clusterId}
+                        </p>
+                     </div>
 
-                  <div>
-                     <p className="text-xs text-slate-400">Duration</p>
-                     <p className="text-white">{report.duration}</p>
+                     <div>
+                        <p className="text-xs text-slate-400">Duration</p>
+                        <p className="text-white">{report.duration}</p>
+                     </div>
                   </div>
                </div>
             </div>

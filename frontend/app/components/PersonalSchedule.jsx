@@ -44,14 +44,6 @@ export default function PersonalSchedule() {
                return;
             }
 
-            // NEW SHAPE:
-            // {
-            //   "Oscar": {
-            //     id,
-            //     clusters: [{ id, name }]
-            //   }
-            // }
-
             const personEntry = Object.values(rotaData.body)[0];
 
             const todaysClusters = personEntry?.clusters || [];
@@ -115,17 +107,21 @@ export default function PersonalSchedule() {
 
    return (
       <main className="flex justify-center space-y-8">
-         <div className="relative z-10 mx-auto max-w-5xl">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
+         <div className="relative z-10 w-full max-w-6xl">
+            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
                {/* Header */}
                <div className="mb-10 text-center">
                   <div className="mb-4 flex justify-center">
                      <FaUser className="h-20 w-20 text-blue-300" aria-hidden="true" />
                   </div>
 
-                  <h1 className="text-4xl font-bold text-white">{name}&apos;s Clusters</h1>
+                  <h1 className="text-4xl sm:text-5xl font-bold text-white">
+                     {name}&apos;s Clusters
+                  </h1>
 
-                  <p className="mt-2 text-slate-300">Select a cluster to complete your report</p>
+                  <p className="mt-3 text-lg text-slate-300">
+                     Select a cluster to complete your report.
+                  </p>
                </div>
 
                {/* Clusters */}

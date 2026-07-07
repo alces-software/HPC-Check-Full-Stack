@@ -30,7 +30,7 @@ module.exports = (db) => {
             .toArray()
             .then((res) =>
                res.map(({ _id, ...rest }) => ({
-                  _id: _id.toString(),
+                  id: _id.toString(),
                   ...rest
                }))
             );

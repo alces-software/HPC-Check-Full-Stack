@@ -96,9 +96,7 @@ export default function Home() {
                         aria-hidden="true"
                      />
 
-                     <h2 className="mb-2 text-2xl font-bold text-white">
-                        View Schedule
-                     </h2>
+                     <h2 className="mb-2 text-2xl font-bold text-white">View Schedule</h2>
 
                      <p className="text-slate-300">
                         Check the weekly rota and see team allocations.
@@ -115,18 +113,11 @@ export default function Home() {
                      href="/name"
                      className={`${cardBase} border border-blue-400/20 bg-blue-500/10 hover:border-blue-400/50 hover:bg-blue-500/20`}
                   >
-                     <FaRegEdit
-                        className="mb-4 text-5xl text-blue-300"
-                        aria-hidden="true"
-                     />
+                     <FaRegEdit className="mb-4 text-5xl text-blue-300" aria-hidden="true" />
 
-                     <h2 className="mb-2 text-2xl font-bold text-white">
-                        Fill Out Report
-                     </h2>
+                     <h2 className="mb-2 text-2xl font-bold text-white">Fill Out Report</h2>
 
-                     <p className="text-slate-300">
-                        Complete and submit your daily report.
-                     </p>
+                     <p className="text-slate-300">Complete and submit your daily report.</p>
 
                      <div className="mt-6 flex items-center gap-1 font-semibold text-blue-300 transition-transform group-hover:translate-x-2">
                         Start Report
@@ -139,14 +130,9 @@ export default function Home() {
                      href="/results"
                      className={`${cardBase} border border-purple-400/20 bg-purple-500/10 hover:border-purple-400/50 hover:bg-purple-500/20`}
                   >
-                     <FaChartBar
-                        className="mb-4 text-5xl text-purple-300"
-                        aria-hidden="true"
-                     />
+                     <FaChartBar className="mb-4 text-5xl text-purple-300" aria-hidden="true" />
 
-                     <h2 className="mb-2 text-2xl font-bold text-white">
-                        View Results
-                     </h2>
+                     <h2 className="mb-2 text-2xl font-bold text-white">View Results</h2>
 
                      <p className="text-slate-300">
                         Access submitted reports and past test results.
@@ -163,14 +149,9 @@ export default function Home() {
                      href="/options"
                      className={`${cardBase} border border-amber-400/20 bg-amber-500/10 hover:border-amber-400/50 hover:bg-amber-500/20`}
                   >
-                     <IoIosSettings
-                        className="mb-4 text-6xl text-amber-300"
-                        aria-hidden="true"
-                     />
+                     <IoIosSettings className="mb-4 text-6xl text-amber-300" aria-hidden="true" />
 
-                     <h2 className="mb-2 text-2xl font-bold text-white">
-                        Administration
-                     </h2>
+                     <h2 className="mb-2 text-2xl font-bold text-white">Administration</h2>
 
                      <p className="text-slate-300">
                         Manage users, clusters, and scheduling options.
@@ -187,18 +168,11 @@ export default function Home() {
                      href="/overview"
                      className={`${cardBase} border border-pink-400/20 bg-pink-500/10 hover:border-pink-400/50 hover:bg-pink-500/20`}
                   >
-                     <GrOverview
-                        className="mb-4 text-6xl text-pink-300"
-                        aria-hidden="true"
-                     />
+                     <GrOverview className="mb-4 text-6xl text-pink-300" aria-hidden="true" />
 
-                     <h2 className="mb-2 text-2xl font-bold text-white">
-                        Overview
-                     </h2>
+                     <h2 className="mb-2 text-2xl font-bold text-white">Overview</h2>
 
-                     <p className="text-slate-300">
-                        View a break down of a day's reports.
-                     </p>
+                     <p className="text-slate-300">View a break down of a day&apos;s reports.</p>
 
                      <div className="mt-6 flex items-center gap-1 font-semibold text-pink-300 transition-transform group-hover:translate-x-2">
                         Open Overview
