@@ -11,11 +11,14 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { clusterId, personId, startTime, endTime, results, bonusChallengeResult } = req.body || {};
+         const { clusterId, personId, startTime, endTime, results, bonusChallengeResult } =
+            req.body || {};
 
          // Check cluster id
          if (typeof clusterId !== 'string') {
-            return res.status(400).json({ success: false, error: "The cluster id provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is not a string' });
          }
 
          if (!clusterId) {
@@ -46,7 +49,9 @@ module.exports = (db) => {
 
          // Check person id
          if (typeof personId !== 'string') {
-            return res.status(400).json({ success: false, error: "The persons id provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The persons id provided is not a string' });
          }
 
          if (!personId) {
@@ -76,8 +81,10 @@ module.exports = (db) => {
          }
 
          // Check start time
-         if (typeof id !== 'number') {
-            return res.status(400).json({ success: false, error: "The start time provided is not a number" });
+         if (typeof startTime !== 'number') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The start time provided is not a number' });
          }
 
          if (!startTime) {
@@ -85,8 +92,10 @@ module.exports = (db) => {
          }
 
          // Check end time
-         if (typeof id !== 'number') {
-            return res.status(400).json({ success: false, error: "The end time provided is not a number" });
+         if (typeof endTime !== 'number') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The end time provided is not a number' });
          }
 
          if (!endTime) {
@@ -110,8 +119,8 @@ module.exports = (db) => {
                .json({ success: false, error: 'The results array provided is empty' });
          }
 
+         // Check bonus challenge
          let sanitizedBonusChallengeResult = null;
-
          if (bonusChallengeResult) {
             if (typeof bonusChallengeResult !== 'object') {
                return res.status(400).json({
@@ -162,8 +171,6 @@ module.exports = (db) => {
                completed: true
             };
          }
-
-
 
          // Check to make sure no report has been submitted for the cluster on that day
          const startOfDay = new Date();
