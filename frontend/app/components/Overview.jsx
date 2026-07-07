@@ -35,9 +35,9 @@ export default function Overview() {
          try {
             const res = await fetch(
                `${process.env.NEXT_PUBLIC_API_URL}/report/overview` +
-               `?${new URLSearchParams({
-                  date: date
-               }).toString()}`
+                  `?${new URLSearchParams({
+                     date: date
+                  }).toString()}`
             );
             const data = await res.json();
             setReport(data?.body ?? {});
@@ -51,6 +51,17 @@ export default function Overview() {
 
       loadReportFromDate();
    }, [date]);
+
+   // Calculate duration
+   function calculateDuration(start, end) {
+      const diffMs = end.getTime() - start.getTime();
+
+      const hours = Math.floor(diffMs / 1000 / 60 / 60);
+      const minutes = Math.floor((diffMs / 1000 / 60) % 60);
+      const seconds = Math.floor((diffMs / 1000) % 60);
+
+      return `${hours}h ${minutes}m ${seconds}s`;
+   }
 
    // Show loading
    if (!reportLoaded) {
@@ -106,8 +117,9 @@ export default function Overview() {
                         type="date"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
-                        className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${date ? 'text-white' : 'text-transparent sm:text-white'
-                           }`}
+                        className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
+                           date ? 'text-white' : 'text-transparent sm:text-white'
+                        }`}
                      />
                      {!date && (
                         <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
@@ -118,93 +130,157 @@ export default function Overview() {
                </div>
 
                {/* Body */}
-               {!report.id ? (
-                  <p className="flex items-center justify-center text-white">No overview to load</p>
-               ) : (
-                  <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm sm:p-6">
-                     <h1 className="mb-4 text-3xl font-bold text-white md:text-4xl">Breakdown</h1>
+               <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm sm:p-6">
+                  {!report.id ? (
+                     <p className="flex items-center justify-center text-white">
+                        No overview to available
+                     </p>
+                  ) : (
+                     <div>
+                        <h1 className="mb-4 text-3xl font-bold text-white md:text-4xl">
+                           Breakdown
+                        </h1>
 
-                     <h2 className="mb-4 border-t border-white/10 pt-4 text-lg font-semibold text-white md:text-2xl">
-                        Completed checks
-                     </h2>
+                        <h2 className="mb-4 border-t border-white/10 pt-4 text-lg font-semibold text-white md:text-2xl">
+                           Completed checks
+                        </h2>
 
-                     <div className="space-y-4">
-                        {report.reports.map((element) => (
-                           <div
-                              key={element.id}
-                              className="rounded-xl border border-white/10 bg-slate-800/70 p-4 shadow-sm transition"
-                           >
-                              <div className="flex flex-col gap-3 sm:grid sm:grid-cols-4 sm:items-center">
-                                 {/* Status */}
-                                 <div>
-                                    <span
-                                       className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${element.passed
-                                          ? 'border-green-400/30 bg-green-500/20 text-green-300'
-                                          : 'border-red-400/30 bg-red-500/20 text-red-300'
-                                          }`}
-                                    >
-                                       {element.passed ? 'Passed' : 'Failed'}
-                                    </span>
-                                 </div>
-
-                                 {/* Cluster */}
-                                 <div className="text-sm text-white sm:text-base">
-                                    <span className="block text-xs uppercase text-slate-400">
-                                       Cluster
-                                    </span>
-                                    {element.cluster}
-                                 </div>
-
-                                 {/* Person */}
-                                 <div className="text-sm text-white sm:text-base">
-                                    <span className="block text-xs uppercase text-slate-400">
-                                       Person
-                                    </span>
-                                    {element.person}
-                                 </div>
-
-                                 {/* Timestamp */}
-                                 <div className="text-sm text-white sm:text-base">
-                                    <span className="block text-xs uppercase text-slate-400">
-                                       Timestamp
-                                    </span>
-                                    {new Date(element.endDate).getTime()}
-                                 </div>
-                              </div>
-
-                              {/* Results */}
-                              <div className="mt-5 space-y-3 border-t border-white/10 pt-4">
-                                 {element.results.map((result) => (
-                                    <div
-                                       key={result.id}
-                                       className="rounded-lg border border-white/10 bg-slate-900/40 p-3 transition"
-                                    >
-                                       <div className="mb-2 flex items-start justify-between gap-3">
-                                          <h3 className="text-sm font-semibold text-white sm:text-base">
-                                             {result.title}
-                                          </h3>
-
+                        {report.reports.length > 0 ? (
+                           <div className="space-y-4">
+                              {report.reports.map((element) => (
+                                 <div
+                                    key={element.id}
+                                    className="rounded-xl border border-white/10 bg-slate-800/70 p-4 shadow-sm transition"
+                                 >
+                                    <div className="flex flex-col gap-3 sm:grid sm:grid-cols-4 sm:items-center">
+                                       {/* Status */}
+                                       <div>
                                           <span
-                                             className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${element.passed
-                                                ? "border-green-400/30 bg-green-500/20 text-green-300"
-                                                : "border-red-400/30 bg-red-500/20 text-red-300"
-                                                }`}
+                                             className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
+                                                element.passed
+                                                   ? 'border-green-400/30 bg-green-500/20 text-green-300'
+                                                   : 'border-red-400/30 bg-red-500/20 text-red-300'
+                                             }`}
                                           >
-                                             {element.passed ? "Passed" : "Failed"}
+                                             {element.passed ? 'Passed' : 'Failed'}
                                           </span>
                                        </div>
 
-                                       <p className="break-words text-sm leading-relaxed text-slate-300">
-                                          {result.note}
-                                       </p>
+                                       {/* Cluster */}
+                                       <div className="text-sm text-white sm:text-base">
+                                          <span className="block text-xs uppercase text-slate-400">
+                                             Cluster
+                                          </span>
+                                          {element.cluster}
+                                       </div>
+
+                                       {/* Person */}
+                                       <div className="text-sm text-white sm:text-base">
+                                          <span className="block text-xs uppercase text-slate-400">
+                                             Person
+                                          </span>
+                                          {element.person}
+                                       </div>
+
+                                       {/* Timestamp */}
+                                       <div className="text-sm text-white sm:text-base">
+                                          <span className="block text-xs uppercase text-slate-400">
+                                             Duration
+                                          </span>
+                                          {calculateDuration(
+                                             new Date(element.startDate),
+                                             new Date(element.endDate)
+                                          )}
+                                       </div>
                                     </div>
-                                 ))}
-                              </div>
+
+                                    {/* Results */}
+                                    <div className="mt-5 space-y-3 border-t border-white/10 pt-4">
+                                       {element.results.map((result) => (
+                                          <div
+                                             key={result.id}
+                                             className="rounded-lg border border-white/10 bg-slate-900/40 p-3 transition"
+                                          >
+                                             <div className="mb-2 flex items-start justify-between gap-3">
+                                                <h3 className="text-sm font-semibold text-white sm:text-base">
+                                                   {result.title}
+                                                </h3>
+
+                                                <span
+                                                   className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${
+                                                      result.passed
+                                                         ? 'border-green-400/30 bg-green-500/20 text-green-300'
+                                                         : 'border-red-400/30 bg-red-500/20 text-red-300'
+                                                   }`}
+                                                >
+                                                   {result.passed ? 'Passed' : 'Failed'}
+                                                </span>
+                                             </div>
+
+                                             <p className="block text-xs uppercase text-slate-400">
+                                                Notes:
+                                             </p>
+                                             <p className="break-words text-sm leading-relaxed text-slate-300">
+                                                {result.note}
+                                             </p>
+                                          </div>
+                                       ))}
+                                    </div>
+                                 </div>
+                              ))}
                            </div>
-                        ))}
+                        ) : (
+                           <p className="flex items-center justify-center text-white">
+                              No completed reports
+                           </p>
+                        )}
+
+                        <h2 className="mb-4 mt-4 border-t border-white/10 pt-4 text-lg font-semibold text-white md:text-2xl">
+                           Missing checks
+                        </h2>
+
+                        {report.missing.length === 0 ? (
+                           <p className="flex items-center justify-center text-white">
+                              All reports completed
+                           </p>
+                        ) : (
+                           <div className="space-y-4">
+                              {report.missing.map((element) => (
+                                 <div
+                                    key={element.id}
+                                    className="rounded-xl border border-white/10 bg-slate-800/70 p-4 shadow-sm transition hover:bg-slate-800/90"
+                                 >
+                                    <div className="flex flex-col gap-4 sm:grid sm:grid-cols-3 sm:items-center">
+                                       {/* Status */}
+                                       <div>
+                                          <span className="inline-flex rounded-full border border-yellow-400/30 bg-yellow-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-yellow-300">
+                                             Missing
+                                          </span>
+                                       </div>
+
+                                       {/* Cluster */}
+                                       <div className="text-sm text-white sm:text-base">
+                                          <span className="block text-xs uppercase text-slate-400">
+                                             Cluster
+                                          </span>
+                                          {element.cluster}
+                                       </div>
+
+                                       {/* Person */}
+                                       <div className="text-sm text-white sm:text-base">
+                                          <span className="block text-xs uppercase text-slate-400">
+                                             Person
+                                          </span>
+                                          {element.person}
+                                       </div>
+                                    </div>
+                                 </div>
+                              ))}
+                           </div>
+                        )}
                      </div>
-                  </div>
-               )}
+                  )}
+               </div>
             </div>
          </div>
       </main>

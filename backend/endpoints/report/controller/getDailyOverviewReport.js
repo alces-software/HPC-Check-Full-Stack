@@ -91,26 +91,15 @@ module.exports = (db) => {
                   person: people.find((p) => p.id === rest.personId)?.name,
                   cluster: cluster.find((c) => c.id === rest.clusterId)?.name,
                   ...rest,
-                  results: ResultsWithTitles
-                     .map((r) => ({
-                        title: r.title,
-                        instructionId: r.instructionId,
-                        passed: r.passed,
-                        note: r.note
-                     }))
-                     .filter((r) => r.note || !r.passed)
+                  results: ResultsWithTitles.map((r) => ({
+                     title: r.title,
+                     instructionId: r.instructionId,
+                     passed: r.passed,
+                     note: r.note
+                  })).filter((r) => r.note || !r.passed)
                };
             })
          );
-
-         // Get which ones are missing
-         const missingReports = [];
-         overviewReport.missing.forEach(async (id) => {
-            missingReports.push({
-               id: id,
-               name: cluster.find((c) => c.id === id)?.name
-            });
-         });
 
          return res.status(200).json({
             success: true,
@@ -118,7 +107,7 @@ module.exports = (db) => {
                id: overviewReport._id.toString(),
                date: overviewReport.date,
                reports: reports,
-               missing: missingReports
+               missing: overviewReport.missing
             }
          });
       } catch (error) {

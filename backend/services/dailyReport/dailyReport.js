@@ -22,6 +22,30 @@ module.exports = async (db) => {
       return;
    }
 
+   // Get people
+   const people = await db
+      .collection('person')
+      .find({})
+      .toArray()
+      .then((res) =>
+         res.map((data) => ({
+            id: data._id.toString(),
+            name: data.name
+         }))
+      );
+
+   // Get clusters
+   const cluster = await db
+      .collection('cluster')
+      .find({})
+      .toArray()
+      .then((res) =>
+         res.map((data) => ({
+            id: data._id.toString(),
+            name: data.name
+         }))
+      );
+
    // Get the reports from the current day
    const reports = await db
       .collection('report')
@@ -46,13 +70,18 @@ module.exports = async (db) => {
       }))
    );
    const missingReports = [];
-
    if (rotaDaily.length != reports.length) {
       rotaDaily.forEach((person) => {
          const exists = reports.filter((report) => person.clusterId.includes(report.clusterId));
-
          if (exists.length !== 1) {
-            person.clusterId.forEach((id) => missingReports.push(id));
+            person.clusterId.forEach((id) => {
+               missingReports.push({
+                  clusterId: id,
+                  personId: person.id,
+                  person: people.find((p) => p.id === person.id)?.name,
+                  cluster: cluster.find((c) => c.id === id)?.name
+               });
+            });
          }
       });
    }

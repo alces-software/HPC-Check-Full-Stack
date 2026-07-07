@@ -113,7 +113,7 @@ export default function Home() {
 
                   {/* Overview */}
                   <Link
-                     href="/options"
+                     href="/overview"
                      className="group cursor-pointer rounded-2xl border border-pink-400/20 bg-pink-500/10 p-8 text-left transition-all duration-300 hover:-translate-y-2 hover:border-pink-400/50 hover:bg-pink-500/20 hover:shadow-2xl"
                   >
                      <GrOverview className="mb-4 text-6xl text-pink-300" aria-hidden="true" />
