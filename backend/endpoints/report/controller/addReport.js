@@ -76,7 +76,7 @@ module.exports = (db) => {
          }
 
          // Check start time
-         if (typeof id !== 'number') {
+         if (typeof startTime !== 'number') {
             return res.status(400).json({ success: false, error: "The start time provided is not a number" });
          }
 
@@ -85,7 +85,7 @@ module.exports = (db) => {
          }
 
          // Check end time
-         if (typeof id !== 'number') {
+         if (typeof endTime !== 'number') {
             return res.status(400).json({ success: false, error: "The end time provided is not a number" });
          }
 

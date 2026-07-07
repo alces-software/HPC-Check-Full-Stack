@@ -70,41 +70,35 @@ module.exports = (db) => {
             );
 
          // Get reports
-         const reports = [];
-         overviewReport.reports.each(async (id) =>
-            reports.push(
-               await db
-                  .collection('report')
-                  .find({
-                     _id: new ObjectId(id)
-                  })
-                  .toArray()
-                  .then(async (res) => {
-                     res.map(async ({ _id, ...rest }) => ({
-                        id: _id.toString(),
-                        person: people.find((p) => p.id === rest.personId)?.name,
-                        cluster: cluster.find((c) => c.id === rest.clusterId)?.name,
-                        ...rest,
-                        results: await db
-                           .collection('result')
-                           .find({
-                              reportId: res._id.toString()
-                           })
-                           .toArray()
-                           .then((res) =>
-                              res
-                                 .map((result) => ({
-                                    instructionId: result.instructionId,
-                                    passed: result.passed,
-                                    note: result.note
-                                 }))
-                                 .filter((result) => {
-                                    result.note.length > 0 || !result.passed;
-                                 })
-                           )
-                     }));
-                  })
-            )
+         const reports = await Promise.all(
+            (overviewReport.reports ?? []).map(async (id) => {
+               const report = await db.collection("report").findOne({
+                  _id: new ObjectId(id),
+               });
+
+               if (!report) return null;
+
+               const { _id, ...rest } = report;
+
+               const results = await db
+                  .collection("result")
+                  .find({ reportId: _id.toString() })
+                  .toArray();
+
+               return {
+                  id: _id.toString(),
+                  person: people.find((p) => p.id === rest.personId)?.name,
+                  cluster: cluster.find((c) => c.id === rest.clusterId)?.name,
+                  ...rest,
+                  results: results
+                     .map((r) => ({
+                        instructionId: r.instructionId,
+                        passed: r.passed,
+                        note: r.note,
+                     }))
+                     .filter((r) => r.note || !r.passed),
+               };
+            })
          );
 
          // Get which ones are missing

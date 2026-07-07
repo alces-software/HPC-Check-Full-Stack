@@ -1,3 +1,4 @@
+const { Long } = require('mongodb');
 const { getDaily } = require('../../endpoints/rota/scheduleLogic');
 
 /**
@@ -22,31 +23,34 @@ module.exports = async (db) => {
          }
       })
       .toArray()
-      .then(async (res) => {
-         res.map(async ({ _id, clusterId }) => ({
+      .then((res) =>
+         res.map(({ _id, clusterId }) => ({
             id: _id.toString(),
             clusterId: clusterId
-         }));
-      });
+         }))
+      );
 
-   const rotaDaily = getDaily(db);
+   const rotaDaily = await getDaily(db).then(res =>
+      Object.entries(res).map(([key, value]) => ({
+         id: key,
+         clusterId: value
+      }))
+   );
    const missingReports = [];
 
    if (rotaDaily.length != reports.length) {
-      rotaDaily.each((person) => {
+      rotaDaily.forEach((person) => {
          const exists = reports.filter((report) => person.clusterId.includes(report.clusterId));
 
-         if (!exists) {
-            missingReports.push(
-               person.clusterId.filter((clusterId) => clusterId != exists.clusterId)
-            );
+         if (exists.length !== 1) {
+            person.clusterId.forEach(id => missingReports.push(id))
          }
       });
    }
 
    await db.collection('overviewReport').insertOne({
-      date: new Date().getTime(),
-      reports: reports.map((report) => report.id),
+      date: Long.fromNumber(new Date().getTime()),
+      reports: reports.map(report => report.id),
       missing: missingReports
    });
 };
