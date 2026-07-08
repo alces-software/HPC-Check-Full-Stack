@@ -22,14 +22,14 @@ module.exports = (db) => {
          } = req.body || {};
 
          // Check cluster id
+         if (!clusterId) {
+            return res.status(400).json({ success: false, error: 'Missing cluster ID' });
+         }
+
          if (typeof clusterId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The cluster id provided is not a string' });
-         }
-
-         if (!clusterId) {
-            return res.status(400).json({ success: false, error: 'Missing cluster id' });
+               .json({ success: false, error: 'The cluster ID provided is not a string' });
          }
 
          const sanitizedClusterId = String(clusterId).trim();
@@ -37,7 +37,7 @@ module.exports = (db) => {
          if (sanitizedClusterId.length === 0) {
             return res
                .status(400)
-               .json({ success: false, error: 'The person id provided is empty' });
+               .json({ success: false, error: 'The person ID provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedClusterId)) {
@@ -55,14 +55,14 @@ module.exports = (db) => {
          }
 
          // Check person id
+         if (!personId) {
+            return res.status(400).json({ success: false, error: 'Missing persons ID' });
+         }
+
          if (typeof personId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The persons id provided is not a string' });
-         }
-
-         if (!personId) {
-            return res.status(400).json({ success: false, error: 'Missing persons id' });
+               .json({ success: false, error: 'The persons ID provided is not a string' });
          }
 
          const sanitizedPersonId = String(personId).trim();
@@ -70,11 +70,11 @@ module.exports = (db) => {
          if (sanitizedPersonId.length === 0) {
             return res
                .status(400)
-               .json({ success: false, error: 'The person id provided is empty' });
+               .json({ success: false, error: 'The person ID provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedPersonId)) {
-            return res.status(400).json({ success: false, error: 'Invalid person id provided' });
+            return res.status(400).json({ success: false, error: 'Invalid person ID provided' });
          }
 
          const personExists = await db.collection('person').findOne({
@@ -88,25 +88,25 @@ module.exports = (db) => {
          }
 
          // Check start time
+         if (!startTime) {
+            return res.status(400).json({ success: false, error: 'Missing start time' });
+         }
+
          if (typeof startTime !== 'number') {
             return res
                .status(400)
                .json({ success: false, error: 'The start time provided is not a number' });
          }
 
-         if (!startTime) {
-            return res.status(400).json({ success: false, error: 'Missing start time' });
+         // Check end time
+         if (!endTime) {
+            return res.status(400).json({ success: false, error: 'Missing end time' });
          }
 
-         // Check end time
          if (typeof endTime !== 'number') {
             return res
                .status(400)
                .json({ success: false, error: 'The end time provided is not a number' });
-         }
-
-         if (!endTime) {
-            return res.status(400).json({ success: false, error: 'Missing end time' });
          }
 
          // Check results

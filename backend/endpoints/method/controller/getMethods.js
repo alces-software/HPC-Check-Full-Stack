@@ -14,14 +14,14 @@ module.exports = (db) => {
          const { id } = req.params || {};
 
          // check id
+         if (!id) {
+            return res.status(400).json({ success: false, error: 'Missing instruction id' });
+         }
+
          if (typeof id !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The instruction id provided is not a string' });
-         }
-
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing instruction id' });
          }
 
          const sanitizedId = String(id).trim();

@@ -12,14 +12,14 @@ module.exports = (db) => {
          const { name } = req.body || {};
 
          // Check name
+         if (!name) {
+            return res.status(400).json({ success: false, error: "Missing team's name" });
+         }
+
          if (typeof name !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The name provided is not a string' });
-         }
-
-         if (!name) {
-            return res.status(400).json({ success: false, error: "Missing team's name" });
          }
 
          const sanitizedName = String(name).trim();

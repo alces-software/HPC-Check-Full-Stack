@@ -11,29 +11,29 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawClusterId } = req.params || {};
 
-         // Check id
-         if (typeof id !== 'string') {
+         // Check cluster id
+         if (rawClusterId === undefined || rawClusterId === null) {
+            return res.status(400).json({ success: false, error: 'Missing cluster ID' });
+         }
+
+         if (typeof rawClusterId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The cluster id provided is not a string' });
+               .json({ success: false, error: 'The cluster ID provided is not a string' });
          }
 
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing cluster id' });
-         }
+         const clusterId = rawClusterId.trim();
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length === 0) {
+         if (!clusterId) {
             return res
                .status(400)
-               .json({ success: false, error: 'The cluster id provided is empty' });
+               .json({ success: false, error: 'The cluster ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
+         if (!ObjectId.isValid(clusterId)) {
+            return res.status(400).json({ success: false, error: 'Invalid cluster ID provided' });
          }
 
          const response = [];
@@ -41,9 +41,7 @@ module.exports = (db) => {
          // Get all the instructions
          const instructions = await db
             .collection('instruction')
-            .find({
-               clusterId: sanitizedId
-            })
+            .find({ clusterId })
             .toArray()
             .then((res) =>
                res.map(({ _id, ...rest }) => ({
@@ -73,7 +71,6 @@ module.exports = (db) => {
                const methodData = m;
                methodData.id = m.id;
                delete methodData._id;
-
                i.methods.push(methodData);
             });
 

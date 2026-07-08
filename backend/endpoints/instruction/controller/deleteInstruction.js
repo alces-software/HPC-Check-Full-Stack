@@ -11,38 +11,36 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params;
+         const { id: rawInstructionId } = req.params;
 
-         // Check id
-         if (typeof id !== 'string') {
+         // Check instruction id
+         if (rawInstructionId === undefined || rawInstructionId === null) {
+            return res.status(400).json({ success: false, error: 'Missing instruction ID' });
+         }
+
+         if (typeof rawInstructionId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The instruction id provided is not a string' });
+               .json({ success: false, error: 'The instruction ID provided is not a string' });
          }
 
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing instruction id' });
+         const instructionId = rawInstructionId.trim();
+
+         if (!instructionId) {
+            return res.status(400).json({ success: false, error: 'The ID provided is empty' });
          }
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length == 0) {
-            return res.status(400).json({ success: false, error: 'The id provided is empty' });
-         }
-
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'The id provided is invalid' });
+         if (!ObjectId.isValid(instructionId)) {
+            return res.status(400).json({ success: false, error: 'The ID provided is invalid' });
          }
 
          // Delete instruction
          await db.collection('instruction').deleteOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(instructionId)
          });
 
          // Delete all the methods associated with the instruction
-         await db.collection('method').deleteMany({
-            instructionId: sanitizedId
-         });
+         await db.collection('method').deleteMany({ instructionId });
 
          return res.status(200).json({ success: true });
       } catch (error) {

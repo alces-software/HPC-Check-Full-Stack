@@ -15,25 +15,31 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing pool id' });
+            return res.status(400).json({ success: false, error: 'Missing pool ID' });
+         }
+
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The pool ID provided is not a string' });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The id provided is empty' });
+            return res.status(400).json({ success: false, error: 'The pool ID provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid pool id provided' });
+            return res.status(400).json({ success: false, error: 'Invalid pool ID provided' });
          }
 
          // Get the pool from the database
-         const results = await db.collection('pool').findOne({
+         const pool = await db.collection('pool').findOne({
             _id: new ObjectId(sanitizedId)
          });
 
-         if (!results) {
+         if (!pool) {
             return res.status(404).json({ success: false, error: "Pool doesn't exist" });
          }
 
@@ -41,7 +47,7 @@ module.exports = (db) => {
             success: true,
             body: {
                id: sanitizedId,
-               name: results.name
+               name: pool.name
             }
          });
       } catch (error) {

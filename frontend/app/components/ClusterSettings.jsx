@@ -7,7 +7,6 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FaDatabase, FaUser } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
-import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
 
 export default function ClusterSettingsPage() {
    const searchParams = useSearchParams();
@@ -55,12 +54,16 @@ export default function ClusterSettingsPage() {
    const [editedInstructionTitle, setEditedInstructionTitle] = useState('');
    const [editedInstructionDescription, setEditedInstructionDescription] = useState('');
    const [editedInstructionExpectedTime, setEditedInstructionExpectedTime] = useState('');
+   const [editedInstructionGood, setEditedInstructionGood] = useState('');
+   const [editedInstructionBad, setEditedInstructionBad] = useState('');
    const [editedInstructionPosition, setEditedInstructionPosition] = useState(0);
 
    const [addingInstruction, setAddingInstruction] = useState(false);
    const [newInstructionTitle, setNewInstructionTitle] = useState('');
    const [newInstructionDescription, setNewInstructionDescription] = useState('');
    const [newInstructionExpectedTime, setNewInstructionExpectedTime] = useState('');
+   const [newInstructionGood, setNewInstructionGood] = useState('');
+   const [newInstructionBad, setNewInstructionBad] = useState('');
 
    const [reports, setReports] = useState([]);
 
@@ -238,7 +241,7 @@ export default function ClusterSettingsPage() {
       }
    }
 
-   async function updateInstruction(id, title, description, expectedTime, position) {
+   async function updateInstruction(id, title, description, expectedTime, bad, good, position) {
       try {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/instruction`, {
             method: 'PATCH',
@@ -248,6 +251,8 @@ export default function ClusterSettingsPage() {
                title,
                description,
                expectedTime,
+               bad,
+               good,
                position
             })
          });
@@ -270,9 +275,11 @@ export default function ClusterSettingsPage() {
          const title = newInstructionTitle.trim();
          const description = newInstructionDescription.trim();
          const expectedTime = newInstructionExpectedTime.trim();
+         const good = newInstructionGood.trim();
+         const bad = newInstructionBad.trim();
 
-         if (!title || !description) {
-            alert('Title and description are required');
+         if (!title || !description || !expectedTime || !good || !bad) {
+            alert('All inputs are required');
             return;
          }
 
@@ -283,7 +290,9 @@ export default function ClusterSettingsPage() {
                clusterId,
                title,
                description,
-               expectedTime
+               expectedTime,
+               good,
+               bad
             })
          });
 
@@ -297,6 +306,8 @@ export default function ClusterSettingsPage() {
          setNewInstructionTitle('');
          setNewInstructionDescription('');
          setNewInstructionExpectedTime('');
+         setNewInstructionGood('');
+         setNewInstructionBad('');
       } catch (err) {
          console.error(err);
          alert(err.message);
@@ -481,6 +492,20 @@ export default function ClusterSettingsPage() {
                               className="w-full rounded-xl border border-slate-700 bg-slate-900 p-3 text-white"
                            />
 
+                           <input
+                              value={newInstructionGood}
+                              onChange={(e) => setNewInstructionGood(e.target.value)}
+                              placeholder="Good outcome"
+                              className="w-full rounded-xl border border-slate-700 bg-slate-900 p-3 text-white"
+                           />
+
+                           <input
+                              value={newInstructionBad}
+                              onChange={(e) => setNewInstructionBad(e.target.value)}
+                              placeholder="Bad outcome"
+                              className="w-full rounded-xl border border-slate-700 bg-slate-900 p-3 text-white"
+                           />
+
                            <div className="flex justify-end gap-3">
                               <button
                                  onClick={() => setAddingInstruction(false)}
@@ -546,6 +571,23 @@ export default function ClusterSettingsPage() {
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
 
+                                             <input
+                                                value={editedInstructionGood}
+                                                onChange={(e) =>
+                                                   setEditedInstructionGood(e.target.value)
+                                                }
+                                                placeholder="Everything worked"
+                                                className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                                             />
+                                             <input
+                                                value={editedInstructionBad}
+                                                onChange={(e) =>
+                                                   setEditedInstructionBad(e.target.value)
+                                                }
+                                                placeholder="Everything is on fire"
+                                                className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                                             />
+
                                              <div className="relative">
                                                 <select
                                                    value={editedInstructionPosition}
@@ -584,6 +626,8 @@ export default function ClusterSettingsPage() {
                                                       setEditedInstructionTitle('');
                                                       setEditedInstructionDescription('');
                                                       setEditedInstructionExpectedTime('');
+                                                      setEditedInstructionGood('');
+                                                      setEditedInstructionBad('');
                                                       setEditedInstructionPosition(0);
                                                    }}
                                                    className="w-full cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 cursor-pointer md:w-auto"
@@ -599,6 +643,8 @@ export default function ClusterSettingsPage() {
                                                          editedInstructionTitle.trim(),
                                                          editedInstructionDescription.trim(),
                                                          editedInstructionExpectedTime.trim(),
+                                                         editedInstructionGood.trim(),
+                                                         editedInstructionBad.trim(),
                                                          editedInstructionPosition
                                                       )
                                                    }
@@ -642,6 +688,8 @@ export default function ClusterSettingsPage() {
                                              setEditedInstructionExpectedTime(
                                                 step.expectedTime || ''
                                              );
+                                             setEditedInstructionGood(step.good || '');
+                                             setEditedInstructionBad(step.bad || '');
                                              setEditedInstructionPosition(step.position || 1);
                                           }}
                                           className="w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white cursor-pointer md:w-auto"
@@ -850,7 +898,7 @@ export default function ClusterSettingsPage() {
                                                 }}
                                                 className="mt-4 cursor-pointer rounded-xl border border-slate-300/20 bg-slate-100/10 px-5 py-2.5 text-sm font-semibold text-slate-200 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-slate-200/40 hover:bg-slate-100/15 hover:text-white"
                                              >
-                                                Close Editor Ｘ
+                                                Close Editor X
                                              </button>
                                           </li>
                                        )}

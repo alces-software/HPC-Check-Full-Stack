@@ -11,39 +11,48 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { name } = req.body || {};
+         const { name: rawName } = req.body || {};
 
          // Check name
-         if (!name) {
-            return res.status(400).json({ success: false, error: 'Missing hpc name' });
+         if (rawName === undefined || rawName === null) {
+            return res.status(400).json({ success: false, error: 'Missing cluster name' });
          }
 
-         const sanitizedName = String(name).trim();
+         if (typeof rawName !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster name provided is not a string' });
+         }
 
-         if (sanitizedName.length == 0) {
-            return res.status(400).json({ success: false, error: 'The name provided is empty' });
+         const clusterName = rawName.trim();
+
+         if (!clusterName) {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster name provided is empty' });
          }
 
          // Check if hpc already exists
-         const existingHpc = await db.collection('cluster').findOne({
+         const existing = await db.collection('cluster').findOne({
             name: {
-               $regex: `^${sanitizedName}$`,
+               $regex: `^${clusterName}$`,
                $options: 'i'
             }
          });
 
-         if (existingHpc) {
-            return res.status(409).json({ success: false, error: 'HPC already exits' });
+         if (existing) {
+            return res.status(409).json({ success: false, error: 'Cluster already exits' });
          }
 
          // Add it to the database
          const clusterId = await db
             .collection('cluster')
             .insertOne({
-               name: sanitizedName
+               name: clusterName
             })
             .then((res) => res.insertedId.toString());
 
+         // Populate the database with generic instructions and methods for the cluster
          templateIt(clusterId, db);
 
          return res.status(200).json({ success: true });

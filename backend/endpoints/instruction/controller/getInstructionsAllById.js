@@ -11,28 +11,28 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawInstructionId } = req.params || {};
 
-         // Check id
-         if (typeof id !== 'string') {
+         // Check instruction id
+         if (rawInstructionId === undefined || rawInstructionId === null) {
+            return res.status(400).json({ success: false, error: 'Missing instruction id' });
+         }
+
+         if (typeof rawInstructionId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The instruction id provided is not a string' });
          }
 
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing instruction id' });
-         }
+         const instructionId = rawInstructionId.trim();
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length === 0) {
+         if (!instructionId) {
             return res
                .status(400)
                .json({ success: false, error: 'The instruction id provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(instructionId)) {
             return res
                .status(400)
                .json({ success: false, error: 'Invalid instruction id provided' });
@@ -40,7 +40,7 @@ module.exports = (db) => {
 
          // Get the instruction
          const response = await db.collection('instruction').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(instructionId)
          });
 
          if (!response) {
@@ -52,26 +52,24 @@ module.exports = (db) => {
          response.methods = [];
 
          // Get methods for the instruction
-         const methods = await db
+         await db
             .collection('method')
-            .find({
-               instructionId: response.id
-            })
+            .find({ instructionId })
             .toArray()
-            .then((result) =>
-               result.map(({ _id, ...rest }) => ({
+            .then((res) =>
+               res.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
                   ...rest
                }))
+            )
+            .then((res) =>
+               res.forEach((m) => {
+                  const methodData = m;
+                  methodData.id = m.id;
+                  delete methodData._id;
+                  response.methods.push(methodData);
+               })
             );
-
-         methods.forEach((m) => {
-            const methodData = m;
-            methodData.id = m.id;
-            delete methodData._id;
-
-            response.methods.push(methodData);
-         });
 
          return res
             .status(200)

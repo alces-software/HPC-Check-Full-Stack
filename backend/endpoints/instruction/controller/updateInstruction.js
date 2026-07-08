@@ -11,27 +11,31 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id, ...rest } = req.body || {};
+         const { id: rawInstructionId, ...rest } = req.body || {};
 
-         // Check id
-         if (typeof id !== 'string') {
+         // Check instruction id
+         if (rawInstructionId === undefined || rawInstructionId === null) {
+            return res.status(400).json({ success: false, error: 'Missing instruction ID' });
+         }
+
+         if (typeof rawInstructionId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The instruction provided is not a string' });
+               .json({ success: false, error: 'The instruction ID provided is not a string' });
          }
 
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing instruction id' });
+         const instructionId = rawInstructionId.trim();
+
+         if (!instructionId) {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The instruction ID provided is empty' });
          }
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length == 0) {
-            return res.status(400).json({ success: false, error: 'The id provided is empty' });
-         }
-
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'The id provided is invalid' });
+         if (!ObjectId.isValid(instructionId)) {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The instruction ID provided is invalid' });
          }
 
          // Check updates
@@ -48,7 +52,7 @@ module.exports = (db) => {
          // Check instruction exists
          const instructionExists = await db
             .collection('instruction')
-            .findOne({ _id: new ObjectId(sanitizedId) });
+            .findOne({ _id: new ObjectId(instructionId) });
          if (!instructionExists) {
             return res
                .status(404)
@@ -71,7 +75,7 @@ module.exports = (db) => {
                   .json({ success: false, error: 'The new instruction position is invalid' });
             }
 
-            instructions = instructions.filter((i) => !i._id.equals(new ObjectId(id)));
+            instructions = instructions.filter((i) => !i._id.equals(new ObjectId(instructionId)));
             instructions.splice(updates.position - 1, 0, instructionExists);
 
             await db.collection('instruction').bulkWrite(
@@ -86,12 +90,9 @@ module.exports = (db) => {
             );
          }
 
-         if (updates.length > 0) {
-            // Do not remove this if the database validation will fail
-            await db
-               .collection('instruction')
-               .updateOne({ _id: new ObjectId(sanitizedId) }, { $set: updates });
-         }
+         await db
+            .collection('instruction')
+            .updateOne({ _id: new ObjectId(instructionId) }, { $set: updates });
 
          return res.status(200).json({ success: true });
       } catch (error) {

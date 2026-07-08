@@ -61,24 +61,9 @@ export default function TeamSettingsPage() {
       }
    }, [teamId]);
 
-   const [allPools, setAllPools] = useState([]);
-
-   const loadAllPools = useCallback(async () => {
-      try {
-         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool`);
-         const data = await res.json();
-
-         setAllPools(data.body ?? []);
-      } catch (err) {
-         console.error('Failed to fetch pools:', err);
-         setAllPools([]);
-      }
-   }, []);
-
    useEffect(() => {
       loadTeam();
-      loadAllPools();
-   }, [loadAllPools, loadTeam]);
+   }, [loadTeam]);
 
    const [selectedUserId, setSelectedUserId] = useState('');
    const [selectedPoolId, setSelectedPoolId] = useState('');
@@ -120,7 +105,7 @@ export default function TeamSettingsPage() {
 
          setPools(data.body ?? []);
       } catch (err) {
-         console.error('Failed to fetch availablepools:', err);
+         console.error('Failed to fetch available pools:', err);
          setPools([]);
       }
    }, [teamId]);
@@ -300,12 +285,27 @@ export default function TeamSettingsPage() {
          setSavingSettings(true);
          setStatusMessage('');
 
+         const startWindowInt = timeInputToInt(startWindow);
+         const endWindowInt = timeInputToInt(endWindow);
+
          if (clustersPerDay < 0) {
             setStatusMessage("Can't set clusters per day to zero.");
             setStatusType('error');
             return;
-         } else if (clustersPerDay === team.clusters_per_day) {
-            setStatusMessage("There's no changes made to settings to save.");
+         } else if (!startWindow || !endWindow) {
+            setStatusMessage('Please select a start and end time.');
+            setStatusType('error');
+            return;
+         } else if (startWindowInt >= endWindowInt) {
+            setStatusMessage('Start time must be before end time.');
+            setStatusType('error');
+            return;
+         } else if (
+            clustersPerDay === team.clusters_per_day &&
+            startWindowInt === team.start_window &&
+            endWindowInt === team.end_window
+         ) {
+            setStatusMessage('There are no settings changes to save.');
             setStatusType('error');
             return;
          }
@@ -317,7 +317,9 @@ export default function TeamSettingsPage() {
             },
             body: JSON.stringify({
                id: teamId,
-               clusters_per_day: clustersPerDay
+               clusters_per_day: clustersPerDay,
+               start_window: startWindowInt,
+               end_window: endWindowInt
             })
          });
 
@@ -329,7 +331,9 @@ export default function TeamSettingsPage() {
 
          setTeam((prev) => ({
             ...prev,
-            clusters_per_day: clustersPerDay
+            clusters_per_day: clustersPerDay,
+            start_window: startWindowInt,
+            end_window: endWindowInt
          }));
 
          setStatusMessage('Settings updated successfully.');
@@ -496,7 +500,7 @@ export default function TeamSettingsPage() {
                                     <ListboxOption
                                        key={pool.id}
                                        value={pool.id}
-                                       className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
+                                       className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-emerald-500/20 data-[selected]:font-semibold"
                                     >
                                        {pool.name}
                                     </ListboxOption>
@@ -529,23 +533,22 @@ export default function TeamSettingsPage() {
                                     className="flex items-center justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
                                  >
                                     <Link href={`/pools?id=${pool.id}`} className="flex-1">
-                                       <p className="font-medium text-white transition hover:text-amber-300">
+                                       <p className="font-medium text-white transition hover:text-emerald-300">
                                           {pool.name}
                                        </p>
 
                                        <p className="text-xs text-slate-400">{pool.id}</p>
 
-                                       <p className="mt-1 text-xs text-cyan-300">
+                                       <p className="mt-1 text-xs text-emerald-300">
                                           View pool settings
                                        </p>
                                     </Link>
                                     <button
-                                       type="button"
                                        onClick={() => openRemovePoolConfirmation(pool.id)}
-                                       className="ml-3 rounded-full border border-red-400/40 bg-red-500/10 px-2.5 py-1 text-sm text-red-200 transition hover:bg-red-500/20"
-                                       aria-label={`Remove ${pool.name} from team`}
+                                       className="ml-3 cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
+                                       title="Delete pool"
                                     >
-                                       ×
+                                       ✕
                                     </button>
                                  </div>
                               ))

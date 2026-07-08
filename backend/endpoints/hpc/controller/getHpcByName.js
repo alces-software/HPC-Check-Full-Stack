@@ -9,29 +9,29 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { name } = req.params || {};
+         const { name: rawName } = req.params || {};
 
          // Check name
-         if (typeof name !== 'string') {
-            return res
-               .status(400)
-               .json({ success: false, error: 'The name provided is not a string' });
-         }
-
-         if (!name) {
+         if (rawName === undefined || rawName === null) {
             return res.status(400).json({ success: false, error: 'Missing cluster name' });
          }
 
-         const sanitizedName = String(name).trim();
+         if (typeof rawName !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster name provided is not a string' });
+         }
 
-         if (sanitizedName.length == 0) {
+         const name = rawName.trim();
+
+         if (!name) {
             return res.status(400).json({ success: false, error: 'The name provided is empty' });
          }
 
          // Get the cluster
          const response = await db.collection('cluster').findOne({
             name: {
-               $regex: `^${sanitizedName}$`,
+               $regex: `^${name}$`,
                $options: 'i'
             }
          });
