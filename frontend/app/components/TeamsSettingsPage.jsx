@@ -118,7 +118,7 @@ export default function TeamSettingsPage() {
 
          setPools(data.body ?? []);
       } catch (err) {
-         console.error('Failed to fetch availablepools:', err);
+         console.error('Failed to fetch available pools:', err);
          setPools([]);
       }
    }, [teamId]);
@@ -382,11 +382,10 @@ export default function TeamSettingsPage() {
 
                {statusMessage && (
                   <div
-                     className={`mt-8 rounded-2xl border px-4 py-4 text-sm ${
-                        statusType === 'error'
+                     className={`mt-8 rounded-2xl border px-4 py-4 text-sm ${statusType === 'error'
                            ? 'border-red-500/30 bg-red-500/10 text-red-100'
                            : 'border-green-500/30 bg-green-500/10 text-emerald-100'
-                     }`}
+                        }`}
                   >
                      {statusMessage}
                   </div>

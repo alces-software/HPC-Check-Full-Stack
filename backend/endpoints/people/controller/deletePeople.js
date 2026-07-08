@@ -18,6 +18,12 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'Missing persons id' });
          }
 
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The persons id provided is not a string' });
+         }
+
          if (!ObjectId.isValid(id)) {
             return res.status(400).json({ success: false, error: 'Invalid person id provided' });
          }

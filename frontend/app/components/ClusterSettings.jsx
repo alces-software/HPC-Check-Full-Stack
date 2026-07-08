@@ -850,7 +850,7 @@ export default function ClusterSettingsPage() {
                                                 }}
                                                 className="mt-4 cursor-pointer rounded-xl border border-slate-300/20 bg-slate-100/10 px-5 py-2.5 text-sm font-semibold text-slate-200 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-slate-200/40 hover:bg-slate-100/15 hover:text-white"
                                              >
-                                                Close Editor Ｘ
+                                                Close Editor X
                                              </button>
                                           </li>
                                        )}

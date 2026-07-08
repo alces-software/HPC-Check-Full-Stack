@@ -15,14 +15,14 @@ module.exports = (db) => {
          const { teamId } = req.body || {};
 
          // Check id
+         if (!id) {
+            return res.status(400).json({ success: false, error: "Missing person's id" });
+         }
+
          if (typeof id !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The persons id provided is not a string' });
-         }
-
-         if (!id) {
-            return res.status(400).json({ success: false, error: "Missing person's id" });
          }
 
          const sanitizedId = String(id).trim();
@@ -38,14 +38,14 @@ module.exports = (db) => {
          }
 
          // Check team id
+         if (!teamId) {
+            return res.status(400).json({ success: false, error: "Missing team's id" });
+         }
+
          if (typeof teamId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The team id provided is not a string' });
-         }
-
-         if (!teamId) {
-            return res.status(400).json({ success: false, error: "Missing team's id" });
          }
 
          const sanitizedTeamId = String(teamId).trim();
@@ -61,18 +61,18 @@ module.exports = (db) => {
          }
 
          //  Check if the person exists
-         const personExists = await db.collection('person').findOne({
+         const person = await db.collection('person').findOne({
             _id: new ObjectId(sanitizedId)
          });
 
-         if (!personExists) {
+         if (!person) {
             return res.status(404).json({ success: false, error: "Person doesn't exist" });
          }
 
          // Check if clusters current team wont be left without clusters
-         if (personExists.teamId) {
+         if (person.teamId) {
             const cluster_count = await db.collection('cluster').countDocuments({
-               teamId: personExists.teamId
+               teamId: person.teamId
             });
 
             if (cluster_count <= 1) {

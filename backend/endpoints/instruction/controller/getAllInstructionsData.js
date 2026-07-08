@@ -14,14 +14,14 @@ module.exports = (db) => {
          const { id } = req.params || {};
 
          // Check id
+         if (!id) {
+            return res.status(400).json({ success: false, error: 'Missing cluster ID' });
+         }
+
          if (typeof id !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The cluster id provided is not a string' });
-         }
-
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing cluster id' });
+               .json({ success: false, error: 'The cluster ID provided is not a string' });
          }
 
          const sanitizedId = String(id).trim();
@@ -29,11 +29,11 @@ module.exports = (db) => {
          if (sanitizedId.length === 0) {
             return res
                .status(400)
-               .json({ success: false, error: 'The cluster id provided is empty' });
+               .json({ success: false, error: 'The cluster ID provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
+            return res.status(400).json({ success: false, error: 'Invalid cluster ID provided' });
          }
 
          const response = [];

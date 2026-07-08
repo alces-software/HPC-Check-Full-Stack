@@ -14,53 +14,75 @@ module.exports = (db) => {
          const { teamId } = req.body || {};
          const { id } = req.params || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'missing pool ID' });
          }
 
-         if (!teamId) {
-            return res.status(400).json({ success: false, error: 'missing team ID' });
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The pool ID provided is not a string' });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The pool id provided is empty' });
+            return res.status(400).json({ success: false, error: 'The pool ID provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
+            return res.status(400).json({ success: false, error: 'Invalid pool ID provided' });
+         }
+
+         // Check team id
+         if (!teamId) {
+            return res.status(400).json({ success: false, error: 'missing team ID' });
+         }
+
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The team ID provided is not a string' });
          }
 
          const sanitizedTeamId = String(teamId).trim();
 
          if (sanitizedTeamId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
+            return res.status(400).json({ success: false, error: 'The team ID provided is empty' });
          }
 
-         const poolResults = await db
-            .collection('pool')
-            .findOne({ _id: new ObjectId(sanitizedId) });
+         if (!ObjectId.isValid(sanitizedTeamId)) {
+            return res.status(400).json({ success: false, error: 'Invalid team ID provided' });
+         }
 
-         if (!poolResults) {
+         // Get pool
+         const pool = await db.collection('pool').findOne({ _id: new ObjectId(sanitizedId) });
+
+         if (!pool) {
             return res.status(404).json({ success: false, error: 'Pool with that ID not found' });
          }
 
-         const teamResults = await db
-            .collection('team')
-            .findOne({ _id: new ObjectId(sanitizedTeamId) });
+         //  Get team
+         const team = await db.collection('team').findOne({ _id: new ObjectId(sanitizedTeamId) });
 
-         if (!teamResults) {
+         if (!team) {
             return res.status(404).json({ success: false, error: 'Team with that ID not found' });
          }
 
-         const teamPoolResults = await db.collection('teampool').findOne({
+         // Team pool
+         const teamPool = await db.collection('teampool').findOne({
             teamId: sanitizedTeamId,
             poolId: sanitizedId
          });
 
-         if (teamPoolResults) {
+         if (teamPool) {
             return res
                .status(400)
                .json({ success: false, error: 'Pool is already assigned to team' });
          }
 
+         // Add to database
          const result = await db.collection('teampool').insertOne({
             teamId: sanitizedTeamId,
             poolId: sanitizedId

@@ -15,12 +15,14 @@ module.exports = (db) => {
          const { poolId } = req.body || {};
 
          // Check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing cluster id' });
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster ID provided is not a string' });
          }
 
-         if (!poolId) {
-            return res.status(400).json({ success: false, error: 'Missing pool id' });
+         if (!id) {
+            return res.status(400).json({ success: false, error: 'Missing cluster ID' });
          }
 
          const sanitizedId = String(id).trim();
@@ -28,43 +30,55 @@ module.exports = (db) => {
          if (sanitizedId.length === 0) {
             return res
                .status(400)
-               .json({ success: false, error: 'The cluster id provided is empty' });
+               .json({ success: false, error: 'The cluster ID provided is empty' });
+         }
+
+         if (!ObjectId.isValid(sanitizedId)) {
+            return res.status(400).json({ success: false, error: 'Invalid cluster ID provided' });
+         }
+
+         // Check pool id
+         if (typeof poolId !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The pool ID provided is not a string' });
+         }
+
+         if (!poolId) {
+            return res.status(400).json({ success: false, error: 'Missing pool ID' });
          }
 
          const sanitizedPoolId = String(poolId).trim();
 
          if (sanitizedPoolId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The pool id provided is empty' });
-         }
-
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
+            return res.status(400).json({ success: false, error: 'The pool ID provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedPoolId)) {
-            return res.status(400).json({ success: false, error: 'Invalid pool id provided' });
+            return res.status(400).json({ success: false, error: 'Invalid pool ID provided' });
          }
 
          // Get the cluster
-         const results = await db.collection('cluster').findOne({
+         const cluster = await db.collection('cluster').findOne({
             _id: new ObjectId(sanitizedId)
          });
 
-         if (!results) {
+         if (!cluster) {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
          }
 
-         if (results.poolId === sanitizedPoolId) {
+         if (cluster.poolId === sanitizedPoolId) {
             return res
                .status(400)
                .json({ success: false, error: 'Cluster already assigned to pool' });
          }
 
-         const poolResults = await db.collection('pool').findOne({
+         // Get pool
+         const pool = await db.collection('pool').findOne({
             _id: new ObjectId(sanitizedPoolId)
          });
 
-         if (!poolResults) {
+         if (!pool) {
             return res.status(404).json({ success: false, error: "Pool doesn't exist" });
          }
 
@@ -81,7 +95,7 @@ module.exports = (db) => {
             success: true,
             body: {
                id: sanitizedId,
-               name: results.name,
+               name: cluster.name,
                poolId: sanitizedPoolId
             }
          });

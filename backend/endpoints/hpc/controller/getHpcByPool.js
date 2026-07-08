@@ -13,8 +13,15 @@ module.exports = (db) => {
       try {
          const { id } = req.params || {};
 
+         // Check id
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing pool id' });
+         }
+
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The pool id provided is not a string' });
          }
 
          const sanitizedId = String(id).trim();
@@ -28,7 +35,7 @@ module.exports = (db) => {
          }
 
          // Get the cluster
-         const data = await db
+         const respone = await db
             .collection('cluster')
             .find({
                poolId: sanitizedId
@@ -41,7 +48,7 @@ module.exports = (db) => {
                }))
             );
 
-         return res.status(200).json({ success: true, body: data });
+         return res.status(200).json({ success: true, body: respone });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }

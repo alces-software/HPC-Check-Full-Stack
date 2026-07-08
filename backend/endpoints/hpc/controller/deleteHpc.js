@@ -15,7 +15,13 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing hpc id' });
+            return res.status(400).json({ success: false, error: 'Missing cluster id' });
+         }
+
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is not a string' });
          }
 
          const sanitizedId = String(id).trim();
@@ -23,19 +29,19 @@ module.exports = (db) => {
          if (sanitizedId.length === 0) {
             return res
                .status(400)
-               .json({ success: false, error: "The hpc id you've provided is empty" });
+               .json({ success: false, error: "The cluster id you've provided is empty" });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
             return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
          }
 
-         // Check cluster exists
-         const existingCluster = await db.collection('cluster').findOneAndDelete({
+         // Get cluster
+         const cluster = await db.collection('cluster').findOneAndDelete({
             _id: new ObjectId(sanitizedId)
          });
 
-         if (!existingCluster) {
+         if (!cluster) {
             return res.status(409).json({
                success: false,
                error: "HPC doesn't exists"

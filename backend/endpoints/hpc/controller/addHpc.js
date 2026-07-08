@@ -15,25 +15,33 @@ module.exports = (db) => {
 
          // Check name
          if (!name) {
-            return res.status(400).json({ success: false, error: 'Missing hpc name' });
+            return res.status(400).json({ success: false, error: 'Missing cluster name' });
+         }
+
+         if (typeof name !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster name provided is not a string' });
          }
 
          const sanitizedName = String(name).trim();
 
          if (sanitizedName.length == 0) {
-            return res.status(400).json({ success: false, error: 'The name provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster name provided is empty' });
          }
 
          // Check if hpc already exists
-         const existingHpc = await db.collection('cluster').findOne({
+         const existing = await db.collection('cluster').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
                $options: 'i'
             }
          });
 
-         if (existingHpc) {
-            return res.status(409).json({ success: false, error: 'HPC already exits' });
+         if (existing) {
+            return res.status(409).json({ success: false, error: 'Cluster already exits' });
          }
 
          // Add it to the database
@@ -44,6 +52,7 @@ module.exports = (db) => {
             })
             .then((res) => res.insertedId.toString());
 
+         // Populate the database with generic instructions and methods for the cluster
          templateIt(clusterId, db);
 
          return res.status(200).json({ success: true });

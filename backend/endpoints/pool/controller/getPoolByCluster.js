@@ -15,29 +15,37 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing cluster id' });
+            return res.status(400).json({ success: false, error: 'Missing cluster ID' });
+         }
+
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster ID provided is not a string' });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The id provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster ID provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
+            return res.status(400).json({ success: false, error: 'Invalid cluster ID provided' });
          }
 
          // Get the cluster from the database
-         const results = await db.collection('cluster').findOne({
+         const cluster = await db.collection('cluster').findOne({
             _id: new ObjectId(sanitizedId)
          });
 
-         if (!results) {
+         if (!cluster) {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
          }
 
-         if (!results.poolId) {
+         if (!cluster.poolId) {
             return res.status(404).json({ success: false, error: 'Cluster not assigned to pool' });
          }
 
@@ -45,7 +53,7 @@ module.exports = (db) => {
             success: true,
             body: {
                id: sanitizedId,
-               pool: results.poolId
+               pool: cluster.poolId
             }
          });
       } catch (error) {

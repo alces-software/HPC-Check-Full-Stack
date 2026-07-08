@@ -14,14 +14,14 @@ module.exports = (db) => {
          const { title, expectedTime, description, clusterId, good, bad } = req.body || {};
 
          // Check title
+         if (!title) {
+            return res.status(400).json({ success: false, error: 'Missing instruction title' });
+         }
+
          if (typeof title !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The title provided is not a string' });
-         }
-
-         if (!title) {
-            return res.status(400).json({ success: false, error: 'Missing instruction title' });
          }
 
          const sanitizedTitle = String(title).trim();
@@ -31,14 +31,14 @@ module.exports = (db) => {
          }
 
          // Check expected time
+         if (!expectedTime) {
+            return res.status(400).json({ success: false, error: 'Missing expected time' });
+         }
+
          if (typeof expectedTime !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The expected time provided is not a string' });
-         }
-
-         if (!expectedTime) {
-            return res.status(400).json({ success: false, error: 'Missing expected time' });
          }
 
          const sanitizedExpectedTime = String(expectedTime).trim();
@@ -50,14 +50,14 @@ module.exports = (db) => {
          }
 
          // Check description
+         if (!description) {
+            return res.status(400).json({ success: false, error: 'Missing description' });
+         }
+
          if (typeof description !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The description provided is not a string' });
-         }
-
-         if (!description) {
-            return res.status(400).json({ success: false, error: 'Missing description' });
          }
 
          const sanitizedDescription = String(description).trim();
@@ -69,14 +69,14 @@ module.exports = (db) => {
          }
 
          // Check cluster id
+         if (!clusterId) {
+            return res.status(400).json({ success: false, error: 'Missing cluster id' });
+         }
+
          if (typeof clusterId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The cluster id provided is not a string' });
-         }
-
-         if (!clusterId) {
-            return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }
 
          const sanitizedClusterId = String(clusterId).trim();
@@ -92,14 +92,14 @@ module.exports = (db) => {
          }
 
          // Check good
+         if (!good) {
+            return res.status(400).json({ success: false, error: 'Missing instruction title' });
+         }
+
          if (typeof good !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The good provided is not a string' });
-         }
-
-         if (!good) {
-            return res.status(400).json({ success: false, error: 'Missing instruction title' });
          }
 
          const sanitizedGood = String(good).trim();
@@ -109,14 +109,14 @@ module.exports = (db) => {
          }
 
          // Check bad
+         if (!bad) {
+            return res.status(400).json({ success: false, error: 'Missing instruction title' });
+         }
+
          if (typeof bad !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The bad provided is not a string' });
-         }
-
-         if (!bad) {
-            return res.status(400).json({ success: false, error: 'Missing instruction title' });
          }
 
          const sanitizedBad = String(bad).trim();
@@ -125,17 +125,12 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'The bad provided is empty' });
          }
 
-         // Get new instructions position
-         const currentTotalInstructions = await db
-            .collection('instruction')
-            .countDocuments({ clusterId: sanitizedClusterId });
-
-         // Check if cluster exists
-         const clusterExists = await db.collection('cluster').findOne({
+         // Get cluster
+         const cluster = await db.collection('cluster').findOne({
             _id: new ObjectId(sanitizedClusterId)
          });
 
-         if (!clusterExists) {
+         if (!cluster) {
             return res
                .status(404)
                .json({ success: false, error: 'The cluster specified does not exits' });
@@ -149,7 +144,10 @@ module.exports = (db) => {
             clusterId: sanitizedClusterId,
             good: sanitizedGood,
             bad: sanitizedBad,
-            position: currentTotalInstructions + 1
+            position:
+               (await db
+                  .collection('instruction')
+                  .countDocuments({ clusterId: sanitizedClusterId })) + 1
          });
 
          return res.status(200).json({ success: true });

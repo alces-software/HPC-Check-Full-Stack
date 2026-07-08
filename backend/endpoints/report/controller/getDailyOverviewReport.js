@@ -72,18 +72,16 @@ module.exports = (db) => {
                   .toArray();
 
                const ResultsWithTitles = await Promise.all(
-                  results
-                     .map(async (data) => {
-                        const instruction = await db
-                           .collection('instruction')
-                           .findOne({ _id: new ObjectId(data.instructionId) });
+                  results.map(async (data) => {
+                     const instruction = await db
+                        .collection('instruction')
+                        .findOne({ _id: new ObjectId(data.instructionId) });
 
-                        return {
-                           title: instruction.title,
-                           ...data
-                        };
-                     })
-                     .filter((r) => r.note || !r.passed)
+                     return {
+                        title: instruction.title,
+                        ...data
+                     };
+                  })
                );
 
                return {
@@ -91,7 +89,7 @@ module.exports = (db) => {
                   person: people.find((p) => p.id === rest.personId)?.name,
                   cluster: cluster.find((c) => c.id === rest.clusterId)?.name,
                   ...rest,
-                  results: ResultsWithTitles
+                  results: ResultsWithTitles.filter((r) => r.note || !r.passed)
                };
             })
          );

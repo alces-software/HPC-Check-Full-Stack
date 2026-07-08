@@ -12,14 +12,14 @@ module.exports = (db) => {
          const { name } = req.body || {};
 
          // Check name
+         if (!name) {
+            return res.status(400).json({ success: false, error: 'Missing the persons name' });
+         }
+
          if (typeof id !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The name provided is not a string' });
-         }
-
-         if (!name) {
-            return res.status(400).json({ success: false, error: 'Missing the persons name' });
          }
 
          const sanitizedName = String(name).trim();
@@ -29,14 +29,14 @@ module.exports = (db) => {
          }
 
          // Make sure the person exists
-         const existingPerson = await db.collection('person').findOne({
+         const person = await db.collection('person').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
                $options: 'i'
             }
          });
 
-         if (existingPerson) {
+         if (person) {
             return res.status(409).json({ success: false, error: 'Person already exits' });
          }
 
