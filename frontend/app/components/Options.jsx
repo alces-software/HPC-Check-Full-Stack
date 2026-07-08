@@ -624,7 +624,7 @@ export default function Options() {
                                     className="flex items-center justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                                  >
                                     <Link href={`/pools?id=${pool.id}`} className="flex-1">
-                                       <p className="font-medium text-white transition hover:text-amber-300">
+                                       <p className="font-medium text-white transition hover:text-cyan-300">
                                           {pool.name}
                                        </p>
 
