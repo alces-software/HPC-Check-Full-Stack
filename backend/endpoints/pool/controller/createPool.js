@@ -9,43 +9,43 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { name } = req.params || {};
+         const { name } = req.body || {};
 
          // Check name
-         if (typeof id !== 'string') {
-            return res
-               .status(400)
-               .json({ success: false, error: 'The persons name provided is not a string' });
-         }
-
          if (!name) {
-            return res.status(400).json({ success: false, error: 'Missing persons name' });
+            return res.status(400).json({ success: false, error: "Missing pool's name" });
          }
 
          const sanitizedName = String(name).trim();
 
-         if (sanitizedName.length == 0) {
+         if (sanitizedName.length === 0) {
             return res.status(400).json({ success: false, error: 'The name provided is empty' });
          }
 
-         // Check is someone exists
-         const response = await db.collection('person').findOne({
+         // Make sure the person exists
+         const existingPerson = await db.collection('pool').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
                $options: 'i'
             }
          });
 
-         if (!response) {
-            return res.status(404).json({ success: false, error: "Person doesn't exist" });
+         if (existingPerson) {
+            return res
+               .status(409)
+               .json({ success: false, error: 'Pool with this name already exits' });
          }
 
-         response.id = response._id.toString();
-         delete response._id;
+         // Add pool to the database
+         const result = await db.collection('pool').insertOne({
+            name: sanitizedName
+         });
 
          return res.status(200).json({
             success: true,
-            body: response
+            body: {
+               newId: result.insertedId
+            }
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

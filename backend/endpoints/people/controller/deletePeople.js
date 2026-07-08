@@ -11,15 +11,9 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.body || {};
+         const { id } = req.params;
 
          // Check id
-         if (typeof id !== 'string') {
-            return res
-               .status(400)
-               .json({ success: false, error: 'The persons id provided is not a string' });
-         }
-
          if (!id) {
             return res.status(400).json({ success: false, error: 'Missing persons id' });
          }
@@ -28,7 +22,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'Invalid person id provided' });
          }
 
-         // Check if person exits
+         // Check if person exists
          const existingPerson = await db.collection('person').findOne({
             _id: new ObjectId(id)
          });

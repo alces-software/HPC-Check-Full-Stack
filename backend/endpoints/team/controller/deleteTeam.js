@@ -11,15 +11,9 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.body || {};
+         const { id } = req.params;
 
          // Check id
-         if (typeof id !== 'string') {
-            return res
-               .status(400)
-               .json({ success: false, error: 'The team id provided is not a string' });
-         }
-
          if (!id) {
             return res.status(400).json({ success: false, error: "Missing team's id" });
          }
@@ -57,14 +51,14 @@ module.exports = (db) => {
 
          // Check if clusters are linked to the team
          const hasClusters = await db
-            .collection('cluster')
+            .collection('teampool')
             .find({
                teamId: sanitizedId
             })
             .toArray();
 
          if (hasClusters.length > 0) {
-            return res.status(409).json({ success: false, error: 'This team has clusters' });
+            return res.status(409).json({ success: false, error: 'This team has pools' });
          }
 
          // Delete the team

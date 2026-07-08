@@ -56,13 +56,15 @@ module.exports.seedData = async (db) => {
          _id: id(),
          name: 'Platform Ops',
          clusters_per_day: 2,
-         assigned: true
+         start_window: 9,
+         end_window: 12
       },
       {
          _id: id(),
          name: 'AI Engineering',
          clusters_per_day: 2,
-         assigned: true
+         start_window: 9,
+         end_window: 12
       }
    ];
 

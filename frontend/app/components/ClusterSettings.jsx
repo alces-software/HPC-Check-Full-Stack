@@ -162,14 +162,11 @@ export default function ClusterSettingsPage() {
 
    async function deleteMethod(methodId) {
       try {
-         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method/`, {
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/method/${methodId}`, {
             method: 'DELETE',
             headers: {
                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-               id: methodId
-            })
+            }
          });
 
          if (!res.ok) {
@@ -308,10 +305,9 @@ export default function ClusterSettingsPage() {
 
    async function deleteInstruction(id) {
       try {
-         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/instruction`, {
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/instruction/${id}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
+            headers: { 'Content-Type': 'application/json' }
          });
 
          const data = await res.json();

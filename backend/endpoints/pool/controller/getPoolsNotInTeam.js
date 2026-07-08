@@ -14,14 +14,8 @@ module.exports = (db) => {
          const { id } = req.params || {};
 
          // Check id
-         if (typeof id !== 'string') {
-            return res
-               .status(400)
-               .json({ success: false, error: 'The team id provided is not a string' });
-         }
-
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing teams id' });
+            return res.status(400).json({ success: false, error: 'Missing team id' });
          }
 
          const sanitizedId = String(id).trim();
@@ -34,20 +28,36 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'Invalid team id provided' });
          }
 
-         // Get the team
-         const response = await db.collection('team').findOne({
+         const poolResults = await db.collection('team').findOne({
             _id: new ObjectId(sanitizedId)
          });
 
-         if (!response) {
-            return res.status(404).json({ success: false, error: "Team doesn't exist" });
+         if (!poolResults) {
+            return res.status(404).json({ success: false, error: "team doesn't exist" });
          }
 
-         response.id = response._id.toString();
-         delete response._id;
+         // Get the teamPool
+         const teamPools = await db.collection('teampool').find({ teamId: sanitizedId }).toArray();
 
-         // Return the team information
-         return res.status(200).json({
+         if (teamPools.length === 0) {
+            return res.status(404).json({ success: false, error: 'Team does not have any pools' });
+         }
+
+         // Get all pool IDs
+         const poolIds = teamPools.map((tp) => new ObjectId(tp.poolId));
+
+         // Fetch all pool documents
+         const pools = await db
+            .collection('pool')
+            .find({ _id: { $nin: poolIds } })
+            .toArray();
+
+         const response = pools.map(({ _id, ...pool }) => ({
+            id: _id,
+            ...pool
+         }));
+
+         return res.json({
             success: true,
             body: response
          });

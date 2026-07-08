@@ -8,9 +8,10 @@ module.exports = (db) =>
       .get('/teams', require('./controller/getAllTeam')(db))
       .get('/teams/id/:id', require('./controller/getTeamById')(db))
       .get('/teams/name/:name', require('./controller/getTeamByName')(db))
+      .get('/teams/pool/:id', require('./controller/getTeamByPool')(db))
       // POST
       .post('/teams', require('./controller/addTeam')(db))
       // DELETE
-      .delete('/teams', require('./controller/deleteTeam')(db))
+      .delete('/teams/:id', require('./controller/deleteTeam')(db))
       // UPDATE
       .patch('/teams', require('./controller/updateTeamSettings')(db));

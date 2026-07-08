@@ -14,52 +14,85 @@ function PortalIcon() {
             </filter>
          </defs>
 
-         <rect
-            x="10"
-            y="-8"
-            width="30"
-            height="30"
-            rx="5"
-            className="fill-green-300"
-            filter="url(#shadow)"
-         />
-         <rect
-            x="44"
-            y="-8"
-            width="30"
-            height="30"
-            rx="5"
-            className="fill-blue-300"
-            filter="url(#shadow)"
-         />
-         <rect
-            x="10"
-            y="25"
-            width="30"
-            height="30"
-            rx="5"
-            className="fill-purple-300"
-            filter="url(#shadow)"
-         />
-         <rect
-            x="44"
-            y="25"
-            width="30"
-            height="30"
-            rx="5"
-            className="fill-amber-300"
-            filter="url(#shadow)"
-         />
+         <g
+            className="cursor-pointer transition-all duration-200 ease-out hover:scale-110 hover:-translate-y-1 active:scale-95"
+            style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+            onClick={() => (window.location.href = '/schedule')}
+         >
+            <rect
+               x="10"
+               y="-8"
+               width="30"
+               height="30"
+               rx="5"
+               className="fill-green-300 transition-colors duration-200 hover:fill-green-400"
+               filter="url(#shadow)"
+            />
+         </g>
 
-         <rect
-            x="27"
-            y="58"
-            width="30"
-            height="30"
-            rx="5"
-            className="fill-pink-300"
-            filter="url(#shadow)"
-         />
+         <g
+            className="cursor-pointer transition-all duration-200 ease-out hover:scale-110 hover:-translate-y-1 active:scale-95"
+            style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+            onClick={() => (window.location.href = '/name')}
+         >
+            <rect
+               x="44"
+               y="-8"
+               width="30"
+               height="30"
+               rx="5"
+               className="fill-blue-300 transition-colors duration-200 hover:fill-blue-400"
+               filter="url(#shadow)"
+            />
+         </g>
+
+         <g
+            className="cursor-pointer transition-all duration-200 ease-out hover:scale-110 hover:-translate-y-1 active:scale-95"
+            style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+            onClick={() => (window.location.href = '/results')}
+         >
+            <rect
+               x="10"
+               y="25"
+               width="30"
+               height="30"
+               rx="5"
+               className="fill-purple-300 transition-colors duration-200 hover:fill-purple-400"
+               filter="url(#shadow)"
+            />
+         </g>
+
+         <g
+            className="cursor-pointer transition-all duration-200 ease-out hover:scale-110 hover:-translate-y-1 active:scale-95"
+            style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+            onClick={() => (window.location.href = '/options')}
+         >
+            <rect
+               x="44"
+               y="25"
+               width="30"
+               height="30"
+               rx="5"
+               className="fill-amber-300 transition-colors duration-200 hover:fill-amber-400"
+               filter="url(#shadow)"
+            />
+         </g>
+
+         <g
+            className="cursor-pointer transition-all duration-200 ease-out hover:scale-110 hover:-translate-y-1 active:scale-95"
+            style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+            onClick={() => (window.location.href = '/overview')}
+         >
+            <rect
+               x="27"
+               y="58"
+               width="30"
+               height="30"
+               rx="5"
+               className="fill-pink-300 transition-colors duration-200 hover:fill-pink-400"
+               filter="url(#shadow)"
+            />
+         </g>
       </svg>
    );
 }
