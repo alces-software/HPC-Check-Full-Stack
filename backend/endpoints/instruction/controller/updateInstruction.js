@@ -18,7 +18,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'Missing instruction ID' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawInstructionId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The instruction ID provided is not a string' });
@@ -27,11 +27,15 @@ module.exports = (db) => {
          const instructionId = rawInstructionId.trim();
 
          if (!instructionId) {
-            return res.status(400).json({ success: false, error: 'The instruction ID provided is empty' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The instruction ID provided is empty' });
          }
 
          if (!ObjectId.isValid(instructionId)) {
-            return res.status(400).json({ success: false, error: 'The instruction ID provided is invalid' });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The instruction ID provided is invalid' });
          }
 
          // Check updates
@@ -86,12 +90,9 @@ module.exports = (db) => {
             );
          }
 
-         if (updates.length > 0) {
-            // Do not remove this if the database validation will fail
-            await db
-               .collection('instruction')
-               .updateOne({ _id: new ObjectId(instructionId) }, { $set: updates });
-         }
+         await db
+            .collection('instruction')
+            .updateOne({ _id: new ObjectId(instructionId) }, { $set: updates });
 
          return res.status(200).json({ success: true });
       } catch (error) {

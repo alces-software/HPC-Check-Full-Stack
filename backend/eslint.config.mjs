@@ -9,7 +9,7 @@ export default defineConfig([
    {
       files: ['**/*.{js,mjs,cjs}'],
       languageOptions: {
-         sourceType: 'module', // ✅ FIX: allows import/export
+         sourceType: 'module',
          globals: {
             ...globals.node
          }

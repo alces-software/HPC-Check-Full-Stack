@@ -20,6 +20,8 @@ module.exports = (db) => {
             bad: rawBad
          } = req.body || {};
 
+         console.log(req.body);
+
          // Check title
          if (rawTitle === undefined || rawTitle === null) {
             return res.status(400).json({ success: false, error: 'Missing instruction title' });
@@ -100,7 +102,7 @@ module.exports = (db) => {
 
          // Check good
          if (rawGood === undefined || rawGood === null) {
-            return res.status(400).json({ success: false, error: 'Missing instruction title' });
+            return res.status(400).json({ success: false, error: 'Missing good' });
          }
 
          if (typeof rawGood !== 'string') {
@@ -117,7 +119,7 @@ module.exports = (db) => {
 
          // Check bad
          if (rawBad === undefined || rawBad === null) {
-            return res.status(400).json({ success: false, error: 'Missing instruction title' });
+            return res.status(400).json({ success: false, error: 'Missing bad' });
          }
 
          if (typeof rawBad !== 'string') {
