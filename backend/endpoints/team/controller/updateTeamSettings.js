@@ -11,26 +11,26 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id, ...rest } = req.body || {};
+         const { id: rawTeamId, ...rest } = req.body || {};
 
          // Check id
-         if (!id) {
+         if (rawTeamId === undefined || rawTeamId === null) {
             return res.status(400).json({ success: false, error: 'Missing team id' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawTeamId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The team id provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const teamId = rawTeamId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!teamId) {
             return res.json(400).json({ success: false, error: 'The team id provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(teamId)) {
             return res
                .status(400)
                .json({ success: false, error: 'The team id provided was invalid' });
@@ -38,7 +38,7 @@ module.exports = (db) => {
 
          // Check team exists
          const teamExists = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(teamId)
          });
 
          if (!teamExists) {
@@ -57,9 +57,7 @@ module.exports = (db) => {
          }
 
          // Updates values in the database
-         await db
-            .collection('team')
-            .updateOne({ _id: new ObjectId(sanitizedId) }, { $set: updates });
+         await db.collection('team').updateOne({ _id: new ObjectId(teamId) }, { $set: updates });
 
          return res.status(200).json({ success: true });
       } catch (error) {

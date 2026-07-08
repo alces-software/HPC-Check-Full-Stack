@@ -11,32 +11,32 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawTeamId } = req.params || {};
 
          // Check id
-         if (!id) {
+         if (rawTeamId === undefined || rawTeamId === null) {
             return res.status(400).json({ success: false, error: 'Missing teams ID' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawTeamId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The team ID provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const teamId = rawTeamId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!teamId) {
             return res.status(400).json({ success: false, error: 'The team ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(teamId)) {
             return res.status(400).json({ success: false, error: 'Invalid team ID provided' });
          }
 
          // Get the team
          const response = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(teamId)
          });
 
          if (!response) {
