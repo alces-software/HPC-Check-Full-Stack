@@ -13,7 +13,9 @@ module.exports = (db) => {
 
          // Check name
          if (typeof name !== 'string') {
-            return res.status(400).json({ success: false, error: "The team name provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The team name provided is not a string' });
          }
 
          if (!name) {
@@ -27,20 +29,24 @@ module.exports = (db) => {
          }
 
          // Get team
-         const results = await db.collection('team').findOne({
+         const response = await db.collection('team').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
                $options: 'i'
             }
          });
 
-         if (!results) {
+         if (!response) {
             return res.status(404).json({ success: false, error: "Team doesn't exist" });
          }
+
+         response.id = response._id.toString();
+         delete response._id;
 
          // Return team information
          return res.status(200).json({
             success: true,
+<<<<<<< HEAD
             body: {
                id: results._id.toString(),
                name: results.name,
@@ -48,6 +54,9 @@ module.exports = (db) => {
                   start_window: results.start_window,
                   end_window: results.end_window
             }
+=======
+            body: response
+>>>>>>> origin/main
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

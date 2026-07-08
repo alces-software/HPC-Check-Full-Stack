@@ -15,7 +15,9 @@ module.exports = (db) => {
 
          // Check id
          if (typeof id !== 'string') {
-            return res.status(400).json({ success: false, error: "The team id provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The team id provided is not a string' });
          }
 
          if (!id) {
@@ -33,17 +35,21 @@ module.exports = (db) => {
          }
 
          // Get the team
-         const results = await db.collection('team').findOne({
+         const response = await db.collection('team').findOne({
             _id: new ObjectId(sanitizedId)
          });
 
-         if (!results) {
+         if (!response) {
             return res.status(404).json({ success: false, error: "Team doesn't exist" });
          }
+
+         response.id = response._id.toString();
+         delete response._id;
 
          // Return the team information
          return res.status(200).json({
             success: true,
+<<<<<<< HEAD
             body: {
                id: sanitizedId,
                name: results.name,
@@ -51,6 +57,9 @@ module.exports = (db) => {
                start_window: results.start_window,
                end_window: results.end_window
             }
+=======
+            body: response
+>>>>>>> origin/main
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

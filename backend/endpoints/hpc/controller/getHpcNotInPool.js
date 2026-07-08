@@ -15,28 +15,30 @@ module.exports = (db) => {
 
          // Check id
          if (typeof id !== 'string') {
-            return res.status(400).json({ success: false, error: "The team id provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The team id provided is not a string' });
          }
 
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing team id' });
+            return res.status(400).json({ success: false, error: 'Missing pool id' });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
+            return res.status(400).json({ success: false, error: 'The pool id provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
+            return res.status(400).json({ success: false, error: 'Invalid pool id provided' });
          }
 
          // Get the cluster
          const data = await db
             .collection('cluster')
             .find({
-               teamId: { $ne: sanitizedId }
+               poolId: { $ne: sanitizedId }
             })
             .toArray()
             .then((res) =>

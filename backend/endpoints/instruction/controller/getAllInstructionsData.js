@@ -15,7 +15,9 @@ module.exports = (db) => {
 
          // Check id
          if (typeof id !== 'string') {
-            return res.status(400).json({ success: false, error: "The cluster id provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster id provided is not a string' });
          }
 
          if (!id) {

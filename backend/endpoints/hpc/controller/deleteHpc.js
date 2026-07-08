@@ -11,15 +11,11 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.body || {};
+         const { id } = req.params;
 
          // Check id
-         if (typeof id !== 'string') {
-            return res.status(400).json({ success: false, error: "The cluster id provided is not a string" });
-         }
-
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing cluster id' });
+            return res.status(400).json({ success: false, error: 'Missing hpc id' });
          }
 
          const sanitizedId = String(id).trim();
@@ -27,7 +23,7 @@ module.exports = (db) => {
          if (sanitizedId.length === 0) {
             return res
                .status(400)
-               .json({ success: false, error: "The cluster id you've provided is empty" });
+               .json({ success: false, error: "The hpc id you've provided is empty" });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {

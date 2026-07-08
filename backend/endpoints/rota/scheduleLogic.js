@@ -1,7 +1,6 @@
 const getScheduleForDay = require('../../schedule/scheduler');
 
-async function getDaily(db, day) {
-
+async function getDaily(db, day = new Date()) {
    const schedule = {};
 
    const targetDate = new Date(day);

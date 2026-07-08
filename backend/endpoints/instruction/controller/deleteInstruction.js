@@ -11,11 +11,13 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.body || {};
+         const { id } = req.params;
 
          // Check id
          if (typeof id !== 'string') {
-            return res.status(400).json({ success: false, error: "The instruction id provided is not a string" });
+            return res
+               .status(400)
+               .json({ success: false, error: 'The instruction id provided is not a string' });
          }
 
          if (!id) {

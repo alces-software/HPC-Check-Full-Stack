@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
-import { FaDatabase, FaUser, FaUsers } from 'react-icons/fa';
+import { FaLayerGroup, FaUser, FaUsers } from 'react-icons/fa';
 import { IoIosSettings } from 'react-icons/io';
 
 function timeNumberToInput(value) {
@@ -60,33 +60,33 @@ export default function TeamSettingsPage() {
       }
    }, [teamId]);
 
-   const [allClusters, setAllClusters] = useState([]);
+   const [allPools, setAllPools] = useState([]);
 
-   const loadAllClusters = useCallback(async () => {
+   const loadAllPools = useCallback(async () => {
       try {
-         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc`);
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool`);
          const data = await res.json();
 
-         setAllClusters(data.body ?? []);
+         setAllPools(data.body ?? []);
       } catch (err) {
-         console.error('Failed to fetch clusters:', err);
-         setAllClusters([]);
+         console.error('Failed to fetch pools:', err);
+         setAllPools([]);
       }
    }, []);
 
    useEffect(() => {
       loadTeam();
-      loadAllClusters();
-   }, [loadAllClusters, loadTeam]);
+      loadAllPools();
+   }, [loadAllPools, loadTeam]);
 
    const [selectedUserId, setSelectedUserId] = useState('');
-   const [selectedClusterId, setSelectedClusterId] = useState('');
+   const [selectedPoolId, setSelectedPoolId] = useState('');
 
    const [teamUsers, setTeamUsers] = useState([]);
    const [users, setUsers] = useState([]);
 
-   const [clusters, setClusters] = useState([]);
-   const [teamClusters, setTeamClusters] = useState([]);
+   const [pools, setPools] = useState([]);
+   const [teamPools, setTeamPools] = useState([]);
 
    const [statusMessage, setStatusMessage] = useState('');
    const [statusType, setStatusType] = useState('success');
@@ -111,31 +111,31 @@ export default function TeamSettingsPage() {
       getUsers();
    }, [teamId]);
 
-   const getClusters = useCallback(async () => {
+   const getPools = useCallback(async () => {
       try {
-         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/not/${teamId}`);
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool/team/not/${teamId}`);
          const data = await res.json();
 
-         setClusters(data.body ?? []);
+         setPools(data.body ?? []);
       } catch (err) {
-         console.error('Failed to fetch available clusters:', err);
-         setClusters([]);
+         console.error('Failed to fetch availablepools:', err);
+         setPools([]);
       }
    }, [teamId]);
 
    useEffect(() => {
-      getClusters();
-   }, [getClusters]);
+      getPools();
+   }, [getPools]);
 
-   const getTeamClusters = useCallback(async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${teamId}`);
+   const getTeamPools = useCallback(async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool/team/${teamId}`);
       const data = await res.json();
-      setTeamClusters(data.body);
+      setTeamPools(data.body);
    }, [teamId]);
 
    useEffect(() => {
-      getTeamClusters();
-   }, [getTeamClusters]);
+      getTeamPools();
+   }, [getTeamPools]);
 
    if (!team) {
       return (
@@ -202,38 +202,22 @@ export default function TeamSettingsPage() {
       }
    };
 
-   const handleAddCluster = async () => {
-      if (!selectedClusterId) {
-         showStatus('Please select a user.', 'error');
-         return;
-      }
-
-      const clusterToAdd = allClusters.find((cluster) => cluster.id === selectedClusterId);
-      const clusterTeamId = clusterToAdd.teamId;
-
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${clusterTeamId}`);
-      const data = await res.json();
-
-      if (data.body && data.body.length === 1) {
-         alert(
-            `You cannot add ${clusterToAdd.name} as it is the only remaining cluster in their team.`
-         );
+   const handleAddPool = async () => {
+      if (!selectedPoolId) {
+         showStatus('Please select a pool.', 'error');
          return;
       }
 
       try {
-         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/hpc/team/${selectedClusterId}`,
-            {
-               method: 'PATCH',
-               headers: {
-                  'Content-Type': 'application/json'
-               },
-               body: JSON.stringify({
-                  teamId: teamId
-               })
-            }
-         );
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool/team/${selectedPoolId}`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+               teamId: teamId
+            })
+         });
 
          const data = await res.json();
 
@@ -241,20 +225,54 @@ export default function TeamSettingsPage() {
             throw new Error(data.message || 'Failed to add user to team.');
          }
 
-         setClusters((previousClusters) =>
-            previousClusters.filter((cluster) => cluster.id !== selectedClusterId)
-         );
+         setPools((previousPools) => previousPools.filter((pool) => pool.id !== selectedPoolId));
 
-         setSelectedClusterId('');
-         getTeamClusters();
+         setSelectedPoolId('');
+         getTeamPools();
 
-         setStatusMessage('Cluster added to team.');
+         setStatusMessage('Pool added to team.');
          setStatusType('success');
       } catch (err) {
          console.error(err);
-         setStatusMessage('Failed to add cluster to team.');
+         setStatusMessage('Failed to add pool to team.');
          setStatusType('error');
       }
+   };
+
+   async function handleRemovePool(poolId) {
+      try {
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool/team/${poolId}`, {
+            method: 'DELETE',
+            headers: {
+               'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+               teamId: teamId
+            })
+         });
+
+         const data = await res.json().catch(() => ({}));
+
+         if (!res.ok || !data.success) {
+            throw new Error(data.message || 'Failed to remove pool from team.');
+         }
+
+         const removedPool = teamPools.find((pool) => pool.id === poolId);
+         if (removedPool) {
+            setPools((previousPools) => [...previousPools, removedPool]);
+         }
+
+         setTeamPools((previousPools) => previousPools.filter((pool) => pool.id !== poolId));
+         showStatus('Pool removed from team.');
+      } catch (err) {
+         console.error(err);
+         showStatus('Failed to remove pool from team.', 'error');
+      }
+   }
+
+   const showStatus = (message, type = 'success') => {
+      setStatusMessage(message);
+      setStatusType(type);
    };
 
    const handleSaveSettings = async () => {
@@ -356,7 +374,7 @@ export default function TeamSettingsPage() {
                   <h1 className="text-5xl font-bold text-white">{team.name}</h1>
 
                   <p className="mt-3 text-lg text-slate-300">
-                     Manage users and clusters assigned to this team.
+                     Manage users and pools assigned to this team.
                   </p>
 
                   <p className="mt-2 text-sm text-amber-300">id: {team.id}</p>
@@ -449,25 +467,25 @@ export default function TeamSettingsPage() {
                   </div>
 
                   <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-6">
-                     <FaDatabase className="mb-3 text-4xl text-emerald-300" aria-hidden="true" />
+                     <FaLayerGroup className="mb-3 text-4xl text-emerald-300" aria-hidden="true" />
 
-                     <h2 className="mb-2 text-2xl font-bold text-white">Clusters</h2>
+                     <h2 className="mb-2 text-2xl font-bold text-white">Pools</h2>
 
                      <p className="mb-4 text-sm text-slate-300">
-                        Add existing clusters to this team.
+                        Add existing cluster pools to this team.
                      </p>
 
                      <div className="mb-6 flex gap-3">
                         <Listbox
                            as="div"
-                           value={selectedClusterId}
-                           onChange={setSelectedClusterId}
+                           value={selectedPoolId}
+                           onChange={setSelectedPoolId}
                            className={'w-full'}
                         >
                            <div className="relative">
                               <ListboxButton className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-3 py-3 text-left cursor-pointer text-white outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30">
-                                 {clusters.find((cluster) => cluster.id === selectedClusterId)
-                                    ?.name || 'Select cluster'}
+                                 {pools.find((pool) => pool.id === selectedPoolId)?.name ||
+                                    'Select pool'}
 
                                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                                     ▼
@@ -475,13 +493,13 @@ export default function TeamSettingsPage() {
                               </ListboxButton>
 
                               <ListboxOptions className="absolute z-50 mt-2 max-h-40 w-full overflow-auto rounded-xl border border-white/10 bg-slate-900/95 shadow-2xl backdrop-blur-xl">
-                                 {clusters.map((cluster) => (
+                                 {pools.map((pool) => (
                                     <ListboxOption
-                                       key={cluster.id}
-                                       value={cluster.id}
+                                       key={pool.id}
+                                       value={pool.id}
                                        className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
                                     >
-                                       {cluster.name}
+                                       {pool.name}
                                     </ListboxOption>
                                  ))}
                               </ListboxOptions>
@@ -490,7 +508,7 @@ export default function TeamSettingsPage() {
 
                         <button
                            type="button"
-                           onClick={handleAddCluster}
+                           onClick={handleAddPool}
                            className="rounded-xl bg-emerald-600 px-5 py-3 cursor-pointer font-semibold text-white transition hover:bg-emerald-500"
                         >
                            Add
@@ -499,23 +517,32 @@ export default function TeamSettingsPage() {
 
                      <div className="border-t border-white/10 pt-4">
                         <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-300">
-                           Clusters in Team
+                           Pools in Team
                         </h3>
 
                         <div className="space-y-2">
-                           {teamClusters.length === 0 ? (
-                              <p className="text-sm text-slate-400">No clusters assigned yet.</p>
+                           {teamPools.length === 0 ? (
+                              <p className="text-sm text-slate-400">No pools assigned yet.</p>
                            ) : (
-                              teamClusters.map((cluster) => (
+                              teamPools.map((pool) => (
                                  <div
-                                    key={cluster.id}
+                                    key={pool.id}
                                     className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
                                  >
                                     <div>
-                                       <p className="font-medium text-white">{cluster.name}</p>
+                                       <p className="font-medium text-white">{pool.name}</p>
 
-                                       <p className="text-xs text-slate-400">{cluster.id}</p>
+                                       <p className="text-xs text-slate-400">{pool.id}</p>
                                     </div>
+
+                                    <button
+                                       type="button"
+                                       onClick={() => handleRemovePool(pool.id)}
+                                       className="ml-3 rounded-full border border-red-400/40 bg-red-500/10 px-2.5 py-1 text-sm text-red-200 transition hover:bg-red-500/20"
+                                       aria-label={`Remove ${pool.name} from team`}
+                                    >
+                                       ×
+                                    </button>
                                  </div>
                               ))
                            )}

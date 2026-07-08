@@ -29,15 +29,17 @@ export default function Name() {
 
    return (
       <main className="flex justify-center space-y-8">
-         <div className="w-full max-w-md">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
-               <div className="mb-8 text-center">
+         <div className="relative z-10 w-full max-w-6xl">
+            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
+               {/* Header */}
+               <div className="text-center">
                   <div className="mb-4 flex justify-center">
                      <FaUser className="h-20 w-20 text-blue-300" aria-hidden="true" />
                   </div>
 
-                  <h1 className="text-4xl font-bold text-white">Welcome</h1>
-                  <p className="mt-2 text-slate-300">Select your name to continue</p>
+                  <h1 className="text-4xl sm:text-5xl font-bold text-white">Welcome</h1>
+
+                  <p className="mt-3 text-lg text-slate-300">Select your name to continue.</p>
                </div>
 
                <form onSubmit={handleSubmit} className="space-y-6">

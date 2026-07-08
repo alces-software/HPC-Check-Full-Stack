@@ -81,6 +81,31 @@
       "validationAction": "error"
    },
    {
+      "name": "bonusChallenge",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "title", "description", "active"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "title": {
+                  "bsonType": "string"
+               },
+               "description": {
+                  "bsonType": "string"
+               },
+               "active": {
+                  "bsonType": "bool"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
       "name": "cluster",
       "validator": {
          "$jsonSchema": {
@@ -201,6 +226,18 @@
                },
                "passed": {
                   "bsonType": "bool"
+               },
+               "bonusChallengeResult": {
+                  "bsonType": "object",
+                  "required": ["bonusChallengeId", "completed"],
+                  "properties": {
+                     "bonusChallengeId": {
+                        "bsonType": "string"
+                     },
+                     "completed": {
+                        "bsonType": "bool"
+                     }
+                  }
                }
             }
          }
@@ -223,6 +260,7 @@
                },
                "clusters_per_day": {
                   "bsonType": "int"
+<<<<<<< HEAD
                },
                "assigned": {
                   "bsonType": "bool"
@@ -232,6 +270,8 @@
                },
                "end_window": {
                   "bsonType": "number"
+=======
+>>>>>>> origin/main
                }
             }
          }
@@ -299,11 +339,33 @@
                "day": {
                   "bsonType": "date"
                }
-
             }
          }
       },
       "validationLevel": "moderate",
       "validationAction": "error"
+   },
+   {
+      "name": "overviewReport",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "date", "reports", "missing"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "date": {
+                  "bsonType": "long"
+               },
+               "reports": {
+                  "bsonType": "array"
+               },
+               "missing": {
+                  "bsonType": "array"
+               }
+            }
+         }
+      }
    }
 ]

@@ -1,34 +1,34 @@
 async function populateClosedDays(db) {
-    const response = await fetch('https://www.gov.uk/bank-holidays.json');
-    const data = await response.json();
+   const response = await fetch('https://www.gov.uk/bank-holidays.json');
+   const data = await response.json();
 
-    const holidays = data['england-and-wales'].events;
+   const holidays = data['england-and-wales'].events;
 
-    const collection = db.collection('closedDay');
+   const collection = db.collection('closedDay');
 
-    const operations = holidays.map((h) => {
-        // Normalize to start-of-day (important for deduping)
-        const day = new Date(h.date);
-        day.setUTCHours(0, 0, 0, 0);
+   const operations = holidays.map((h) => {
+      // Normalize to start-of-day (important for deduping)
+      const day = new Date(h.date);
+      day.setUTCHours(0, 0, 0, 0);
 
-        return {
-        updateOne: {
+      return {
+         updateOne: {
             filter: { day },
             update: {
-                $setOnInsert: {
-                    day
-                }
+               $setOnInsert: {
+                  day
+               }
             },
             upsert: true
-        }
-        };
-    });
+         }
+      };
+   });
 
-    if (operations.length > 0) {
-        await collection.bulkWrite(operations, { ordered: false });
-    }
+   if (operations.length > 0) {
+      await collection.bulkWrite(operations, { ordered: false });
+   }
 
-    console.log(`Processed ${operations.length} holidays`);
+   console.log(`Processed ${operations.length} holidays`);
 }
 
 module.exports = populateClosedDays;

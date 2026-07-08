@@ -10,6 +10,6 @@ module.exports = (db) =>
       // POST
       .post('/method', require('./controller/addMethod')(db))
       // DELETE
-      .delete('/method', require('./controller/deleteMethod')(db))
+      .delete('/method/:id', require('./controller/deleteMethod')(db))
       // UPDATE
       .patch('/method', require('./controller/updateMethod')(db));
