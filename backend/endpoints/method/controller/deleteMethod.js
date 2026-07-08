@@ -11,36 +11,36 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params;
+         const { id: rawMethodId } = req.params;
 
-         // Check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing method id' });
+         // Check method id
+         if (rawMethodId === undefined || rawMethodId === null) {
+            return res.status(400).json({ success: false, error: 'Missing method ID' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawMethodId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The method id provided is not a string' });
+               .json({ success: false, error: 'The method ID provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const methodId = rawMethodId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!methodId) {
             return res
                .status(400)
-               .json({ success: false, error: 'The method id provided is empty' });
+               .json({ success: false, error: 'The method ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(methodId)) {
             return res
                .status(400)
-               .json({ success: false, error: 'The method is provided is invalid' });
+               .json({ success: false, error: 'The method ID provided is invalid' });
          }
 
          // Delete from the database
          await db.collection('method').findOneAndDelete({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(methodId)
          });
 
          return res.status(200).json({ success: true });

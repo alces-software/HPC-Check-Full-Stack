@@ -9,28 +9,28 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { name } = req.body || {};
+         const { name: rawName } = req.body || {};
 
          // Check name
-         if (!name) {
+         if (rawName === undefined || rawName === null) {
             return res.status(400).json({ success: false, error: "Missing team's name" });
          }
 
-         if (typeof name !== 'string') {
+         if (typeof rawName !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The name provided is not a string' });
          }
 
-         const sanitizedName = String(name).trim();
+         const name = rawName.trim();
 
-         if (sanitizedName.length == 0) {
+         if (!name) {
             return res.status(400).json({ success: false, error: 'The name provided is empty' });
          }
 
          const existingTeam = await db.collection('team').findOne({
             name: {
-               $regex: `^${sanitizedName}$`,
+               $regex: `^${name}$`,
                $options: 'i'
             }
          });
@@ -41,7 +41,7 @@ module.exports = (db) => {
 
          // Add team to database
          await db.collection('team').insertOne({
-            name: sanitizedName,
+            name,
             clusters_per_day: 1
          });
 

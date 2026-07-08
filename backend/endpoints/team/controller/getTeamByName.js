@@ -9,29 +9,29 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { name } = req.params || {};
+         const { name: rawName } = req.params || {};
 
          // Check name
-         if (!name) {
+         if (rawName === undefined || rawName === null) {
             return res.status(400).json({ success: false, error: 'Missing team name' });
          }
 
-         if (typeof name !== 'string') {
+         if (typeof rawName !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The team name provided is not a string' });
          }
 
-         const sanitizedName = String(name).trim();
+         const name = rawName.trim();
 
-         if (sanitizedName.length == 0) {
+         if (!name) {
             return res.status(400).json({ success: false, error: 'The name provided is empty' });
          }
 
          // Get team
          const response = await db.collection('team').findOne({
             name: {
-               $regex: `^${sanitizedName}$`,
+               $regex: `^${name}$`,
                $options: 'i'
             }
          });

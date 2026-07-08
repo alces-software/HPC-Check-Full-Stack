@@ -11,36 +11,36 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawInstructionId } = req.params || {};
 
-         // check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing instruction id' });
+         // check instruction id
+         if (rawInstructionId === undefined || rawInstructionId === null) {
+            return res.status(400).json({ success: false, error: 'Missing instruction ID' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawInstructionId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The instruction id provided is not a string' });
+               .json({ success: false, error: 'The instruction ID provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const instructionId = rawInstructionId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!instructionId) {
             return res
                .status(400)
-               .json({ success: false, error: 'The instruction id provided is empty' });
+               .json({ success: false, error: 'The instruction ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(instructionId)) {
             return res
                .status(400)
-               .json({ success: false, error: 'Invalid instruction id provided' });
+               .json({ success: false, error: 'Invalid instruction ID provided' });
          }
 
          // Check if instruction exists
          const instructionExists = await db.collection('instruction').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(instructionId)
          });
 
          if (!instructionExists) {
@@ -50,9 +50,7 @@ module.exports = (db) => {
          // Get methods
          const response = await db
             .collection('method')
-            .find({
-               instructionId: sanitizedId
-            })
+            .find({ instructionId })
             .toArray()
             .then((res) =>
                res.map(({ _id, ...rest }) => ({

@@ -11,45 +11,42 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawPoolId } = req.params || {};
 
-         // Check id
-         if (!id) {
+         // Check pool id
+         if (rawPoolId === undefined || rawPoolId === null) {
             return res.status(400).json({ success: false, error: 'Missing pool ID' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawPoolId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The pool ID provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const poolId = rawPoolId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!poolId) {
             return res.status(400).json({ success: false, error: 'The pool ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(poolId)) {
             return res.status(400).json({ success: false, error: 'Invalid pool ID provided' });
          }
 
          // Get the pool from the database
          const pool = await db.collection('pool').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(poolId)
          });
 
          if (!pool) {
             return res.status(404).json({ success: false, error: "Pool doesn't exist" });
          }
 
-         return res.status(200).json({
-            success: true,
-            body: {
-               id: sanitizedId,
-               name: pool.name
-            }
-         });
+         pool.id = pool._id.toString();
+         delete pool._id;
+
+         return res.status(200).json({ success: true, body: pool });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }

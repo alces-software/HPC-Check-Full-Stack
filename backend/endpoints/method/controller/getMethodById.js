@@ -11,41 +11,41 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawMethodId } = req.params || {};
 
-         // Check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing method id' });
+         // Check method id
+         if (rawMethodId === undefined || rawMethodId === null) {
+            return res.status(400).json({ success: false, error: 'Missing method ID' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawMethodId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The method id provided is not a string' });
+               .json({ success: false, error: 'The method ID provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const methodId = rawMethodId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!methodId) {
             return res
                .status(400)
-               .json({ success: false, error: 'The method id provided is empty' });
+               .json({ success: false, error: 'The method ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid method id provided' });
+         if (!ObjectId.isValid(methodId)) {
+            return res.status(400).json({ success: false, error: 'Invalid method ID provided' });
          }
 
          // Get methods
          const response = await db.collection('method').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(methodId)
          });
 
          if (!response) {
             return res.status(409).json({ success: false, error: "Method does't exist" });
          }
 
-         response.id = sanitizedId;
+         response.id = methodId;
          delete response._id;
 
          return res.status(200).json({ success: true, body: response });
