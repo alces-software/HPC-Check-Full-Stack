@@ -341,8 +341,10 @@ export default function Schedule() {
 
                         {/* People */}
                         <div>
-                           {Object.keys(schedule?.[dayKey] || {}).length === 0 ? (
+                           {schedule?.[dayKey]?.closed || false ? (
                               <div className="px-6 py-4 text-white/70 italic">OFFICE CLOSED</div>
+                           ) : Object.keys(schedule?.[dayKey] || {}).length === 0 ? (
+                              <div className="px-6 py-4 text-white/70 italic">NO SCHEDULE</div>
                            ) : (
                               Object.entries(schedule?.[dayKey] || {}).map(
                                  ([name, person], index, arr) => {

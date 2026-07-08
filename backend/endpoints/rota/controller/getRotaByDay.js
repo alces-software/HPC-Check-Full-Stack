@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { getWeekly } = require('../scheduleLogic');
+const { getDaily } = require('../scheduleLogic');
 const enrichSchedule = require('../enrichSchedule');
 
 /**
@@ -23,17 +23,9 @@ module.exports = (db) => {
             });
          }
 
-         const weekly = await getWeekly(db, date);
+         const daily = await getDaily(db, date);
 
-         const enriched = {};
-
-         for (const [day, assignments] of Object.entries(weekly)) {
-            if (assignments && assignments.closed) {
-               enriched[day] = { closed: true };
-            } else {
-               enriched[day] = await enrichSchedule(db, assignments, { includeTeam: true });
-            }
-         }
+         const enriched = await enrichSchedule(db, daily, { includeTeam: true });
 
          return res.status(200).json({
             success: true,

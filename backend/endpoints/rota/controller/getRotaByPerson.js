@@ -1,5 +1,6 @@
 const { ObjectId } = require('mongodb');
 const { getDaily } = require('../scheduleLogic');
+const enrichSchedule = require('../enrichSchedule');
 
 /**
  * @param {import('mongodb').Db} db
@@ -56,31 +57,21 @@ module.exports = (db) => {
          const today = new Date();
          const scheduleForToday = await getDaily(db, today);
 
-         // Fetch cluster details
-         const assignedClusterIds = scheduleForToday[sanitisedId] || [];
-         const clusters = Object.fromEntries(
-            assignedClusterIds.length
-               ? await db
-                    .collection('cluster')
-                    .find({
-                       _id: { $in: assignedClusterIds.map((c) => new ObjectId(c)) }
-                    })
-                    .toArray()
-                    .then((res) => res.map((c) => [c._id.toString(), c.name]))
-               : []
-         );
+         if (scheduleForToday && scheduleForToday.closed) {
+            return res.status(200).json({
+               success: true,
+               body: { closed: true }
+            });
+         }
+
+         // Use helper to enrich schedule and pick this person's entry
+         const enriched = await enrichSchedule(db, scheduleForToday, { includeTeam: false });
+
+         const personEntry = enriched[person.name] ?? { id: person._id.toString(), clusters: [] };
 
          return res.status(200).json({
             success: true,
-            body: {
-               [person.name]: {
-                  id: person._id.toString(),
-                  clusters: assignedClusterIds.map((id) => ({
-                     id,
-                     name: clusters[id] ?? id
-                  }))
-               }
-            }
+            body: { [person.name]: personEntry }
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
