@@ -48,7 +48,7 @@ module.exports = (db) => {
                .json({ success: false, error: 'The pool id provided is not a string' });
          }
 
-         const poolId = String(rawPoolId).trim();
+         const poolId = rawPoolId.trim();
 
          if (!poolId) {
             return res.status(400).json({ success: false, error: 'The pool id provided is empty' });
