@@ -95,6 +95,10 @@ export default function Form() {
    const [bonusChallenge, setBonusChallenge] = useState(null);
    const [bonusCompleted, setBonusCompleted] = useState(false);
 
+   const [checkFocus, setCheckFocus] = useState(null);
+   const [focusReflection, setFocusReflection] = useState('');
+
+   //METHOD-HIDING SETTINGS
    const [hiddenMethodIds, setHiddenMethodIds] = useState([]);
    const [revealedMethodIds, setRevealedMethodIds] = useState([]);
    const MAX_HIDDEN_METHODS = 2;
@@ -307,6 +311,27 @@ export default function Form() {
       getBonusChallenge();
    }, []);
 
+   useEffect(() => {
+      async function getCheckFocus() {
+         try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/check-focus/random`);
+            const data = await res.json();
+
+            if (!data.success) {
+               setCheckFocus(null);
+               return;
+            }
+
+            setCheckFocus(data.body);
+         } catch (error) {
+            console.error('Failed to fetch check focus:', error);
+            setCheckFocus(null);
+         }
+      }
+
+      getCheckFocus();
+   }, []);
+
    function toggleStep(stepId) {
       setCompletedSteps((prev) => ({
          ...prev,
@@ -358,7 +383,14 @@ export default function Form() {
                     bonusChallengeId: bonusChallenge.id,
                     completed: bonusCompleted
                  }
-               : null
+               : null,
+
+         checkFocusResult: checkFocus
+            ? {
+                 checkFocusId: checkFocus.id,
+                 reflection: focusReflection.trim()
+              }
+            : null
       };
 
       try {
@@ -499,6 +531,19 @@ export default function Form() {
                      <span className="font-semibold text-blue-300">{clusterName}</span>
                   </p>
                </div>
+
+               {/* Focus*/}
+               {checkFocus && (
+                  <section className="mb-8 rounded-2xl border border-purple-400/30 bg-purple-500/10 p-4 md:p-6">
+                     <p className="text-sm font-semibold uppercase tracking-wide text-purple-300">
+                        Today&apos;s Focus
+                     </p>
+
+                     <h2 className="mt-1 text-xl font-semibold text-white">{checkFocus.title}</h2>
+
+                     <p className="mt-2 text-slate-200">{checkFocus.description}</p>
+                  </section>
+               )}
 
                {/* Steps */}
                <div className="space-y-6">
@@ -793,6 +838,29 @@ export default function Form() {
                      );
                   })}
                </div>
+
+               {/* Focus Text Box */}
+               {checkFocus && (
+                  <section className="mt-8 rounded-2xl border border-purple-400/30 bg-purple-500/10 p-4 md:p-6">
+                     <p className="text-sm font-semibold uppercase tracking-wide text-purple-300">
+                        Focus Reflection
+                     </p>
+
+                     <p className="mt-2 text-slate-200">
+                        Did today&apos;s focus change what you noticed during the check?
+                     </p>
+
+                     <textarea
+                        name="focusReflection"
+                        rows={4}
+                        placeholder="Optional reflection..."
+                        value={focusReflection}
+                        onChange={(e) => setFocusReflection(e.target.value)}
+                        className="mt-4 w-full rounded-xl border border-purple-400/20 bg-slate-900/50 p-3 text-white placeholder:text-slate-500"
+                     />
+                  </section>
+               )}
+
                {/* Bonus challenges */}
                {bonusChallenge && (
                   <section className="mt-8 rounded-2xl border border-yellow-400/30 bg-yellow-500/10 p-4 md:p-6">

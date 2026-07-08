@@ -11,8 +11,15 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { clusterId, personId, startTime, endTime, results, bonusChallengeResult } =
-            req.body || {};
+         const {
+            clusterId,
+            personId,
+            startTime,
+            endTime,
+            results,
+            bonusChallengeResult,
+            checkFocusResult
+         } = req.body || {};
 
          // Check cluster id
          if (typeof clusterId !== 'string') {
@@ -172,6 +179,53 @@ module.exports = (db) => {
             };
          }
 
+         // Check focus
+         let sanitizedCheckFocusResult = null;
+
+         if (checkFocusResult) {
+            if (typeof checkFocusResult !== 'object') {
+               return res.status(400).json({
+                  success: false,
+                  error: 'Check focus result must be an object'
+               });
+            }
+
+            const { checkFocusId, reflection } = checkFocusResult;
+
+            if (!checkFocusId) {
+               return res.status(400).json({
+                  success: false,
+                  error: 'Missing check focus id'
+               });
+            }
+
+            const sanitizedCheckFocusId = String(checkFocusId).trim();
+
+            if (!ObjectId.isValid(sanitizedCheckFocusId)) {
+               return res.status(400).json({
+                  success: false,
+                  error: 'Invalid check focus id'
+               });
+            }
+
+            const checkFocusExists = await db.collection('checkFocus').findOne({
+               _id: new ObjectId(sanitizedCheckFocusId),
+               active: true
+            });
+
+            if (!checkFocusExists) {
+               return res.status(404).json({
+                  success: false,
+                  error: 'Check focus does not exist'
+               });
+            }
+
+            sanitizedCheckFocusResult = {
+               checkFocusId: sanitizedCheckFocusId,
+               reflection: String(reflection || '').trim()
+            };
+         }
+
          // Check to make sure no report has been submitted for the cluster on that day
          const startOfDay = new Date();
          startOfDay.setHours(0, 0, 0, 0);
@@ -203,6 +257,10 @@ module.exports = (db) => {
 
             ...(sanitizedBonusChallengeResult && {
                bonusChallengeResult: sanitizedBonusChallengeResult
+            }),
+
+            ...(sanitizedCheckFocusResult && {
+               checkFocusResult: sanitizedCheckFocusResult
             })
          };
 
