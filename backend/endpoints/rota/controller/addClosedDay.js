@@ -12,16 +12,17 @@ module.exports = (db) => {
          const { day } = req.body || {};
 
          // Check day
-         if (typeof id !== 'string') {
+         if (!day) {
+            return res.status(400).json({ success: false, error: 'Missing day' });
+         }
+
+         if (typeof day !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The day provided is not a string' });
          }
 
-         if (!day) {
-            return res.status(400).json({ success: false, error: 'Missing day' });
-         }
-
+         // Get date
          const date = new Date(day);
 
          if (isNaN(date.getTime())) {
@@ -30,8 +31,8 @@ module.exports = (db) => {
 
          date.setHours(0, 0, 0, 0);
 
-         const collection = db.collection('closedDay');
-         const existing = await collection.findOne({ day: date });
+         // Check if the day is in the database already
+         const existing = await db.collection('closedDay').findOne({ day: date });
 
          if (existing) {
             return res
@@ -39,7 +40,7 @@ module.exports = (db) => {
                .json({ success: false, error: 'Office already marked closed for this day' });
          }
 
-         await collection.insertOne({ day: date });
+         await db.collection('closedDay').insertOne({ day: date });
 
          return res.status(201).json({ success: true, body: { day } });
       } catch (error) {

@@ -10,8 +10,6 @@ module.exports = async (db) => {
    const startOfDay = new Date().setHours(0, 0, 0, 0);
    const endOfDay = new Date().setHours(23, 59, 59, 999);
 
-   console.log('hello');
-
    // Check to see if a report exists already and if one does exit out
    const reportExists = await db.collection('overviewReport').findOne({
       date: {

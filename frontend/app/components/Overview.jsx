@@ -35,9 +35,9 @@ export default function Overview() {
          try {
             const res = await fetch(
                `${process.env.NEXT_PUBLIC_API_URL}/report/overview` +
-                  `?${new URLSearchParams({
-                     date: date
-                  }).toString()}`
+               `?${new URLSearchParams({
+                  date: date
+               }).toString()}`
             );
             const data = await res.json();
             setReport(data?.body ?? {});
@@ -51,6 +51,10 @@ export default function Overview() {
 
       loadReportFromDate();
    }, [date]);
+
+   useEffect(() => {
+      console.log(report)
+   }, [report]);
 
    // Calculate duration
    function calculateDuration(start, end) {
@@ -117,9 +121,8 @@ export default function Overview() {
                         type="date"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
-                        className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
-                           date ? 'text-white' : 'text-transparent sm:text-white'
-                        }`}
+                        className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${date ? 'text-white' : 'text-transparent sm:text-white'
+                           }`}
                      />
                      {!date && (
                         <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
@@ -156,11 +159,10 @@ export default function Overview() {
                                        {/* Status */}
                                        <div>
                                           <span
-                                             className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
-                                                element.passed
+                                             className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${element.passed
                                                    ? 'border-green-400/30 bg-green-500/20 text-green-300'
                                                    : 'border-red-400/30 bg-red-500/20 text-red-300'
-                                             }`}
+                                                }`}
                                           >
                                              {element.passed ? 'Passed' : 'Failed'}
                                           </span>
@@ -209,11 +211,10 @@ export default function Overview() {
                                                 </h3>
 
                                                 <span
-                                                   className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${
-                                                      result.passed
+                                                   className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${result.passed
                                                          ? 'border-green-400/30 bg-green-500/20 text-green-300'
                                                          : 'border-red-400/30 bg-red-500/20 text-red-300'
-                                                   }`}
+                                                      }`}
                                                 >
                                                    {result.passed ? 'Passed' : 'Failed'}
                                                 </span>
