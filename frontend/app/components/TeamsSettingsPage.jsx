@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
 import { FaLayerGroup, FaUser, FaUsers } from 'react-icons/fa';
 import { IoIosSettings } from 'react-icons/io';
@@ -211,7 +212,7 @@ export default function TeamSettingsPage () {
         }
     };
 
-    async function handleRemovePool(poolId) {
+    async function handleRemovePool (poolId) {
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool/team/${poolId}`, {
                 method: 'DELETE',
@@ -240,7 +241,7 @@ export default function TeamSettingsPage () {
             console.error(err);
             showStatus('Failed to remove pool from team.', 'error');
         }
-    };
+    }
 
     const showStatus = (message, type = 'success') => {
         setStatusMessage(message);
@@ -493,18 +494,24 @@ export default function TeamSettingsPage () {
                                         teamPools.map(pool => (
                                             <div
                                                 key={pool.id}
-                                                className='flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white'
+                                                className='flex items-center justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white'
                                             >
-                                                <div>
-                                                    <p className='font-medium text-white'>
+                                                <Link
+                                                    href={`/pools?id=${pool.id}`}
+                                                    className='flex-1'
+                                                >
+                                                    <p className='font-medium text-white transition hover:text-amber-300'>
                                                         {pool.name}
                                                     </p>
 
                                                     <p className='text-xs text-slate-400'>
                                                         {pool.id}
                                                     </p>
-                                                </div>
 
+                                                    <p className='mt-1 text-xs text-cyan-300'>
+                                                        View pool settings
+                                                    </p>
+                                                </Link>
                                                 <button
                                                     type='button'
                                                     onClick={() => handleRemovePool(pool.id)}
