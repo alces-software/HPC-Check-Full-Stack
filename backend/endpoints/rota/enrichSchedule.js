@@ -36,10 +36,16 @@ module.exports = async function enrichSchedule(db, assignments, options = {}) {
 
    const [people, clusters] = await Promise.all([
       personObjectIds.length
-         ? db.collection('person').find({ _id: { $in: personObjectIds } }).toArray()
+         ? db
+              .collection('person')
+              .find({ _id: { $in: personObjectIds } })
+              .toArray()
          : [],
       clusterObjectIds.length
-         ? db.collection('cluster').find({ _id: { $in: clusterObjectIds } }).toArray()
+         ? db
+              .collection('cluster')
+              .find({ _id: { $in: clusterObjectIds } })
+              .toArray()
          : []
    ]);
 

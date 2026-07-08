@@ -6,7 +6,7 @@ import { IoIosArrowForward, IoMdDoneAll } from 'react-icons/io';
 import { BsThreeDots } from 'react-icons/bs';
 import { IoCloseSharp } from 'react-icons/io5';
 
-function formatDateParam (date) {
+function formatDateParam(date) {
    const year = date.getFullYear();
    const month = String(date.getMonth() + 1).padStart(2, '0');
    const day = String(date.getDate()).padStart(2, '0');
@@ -14,14 +14,14 @@ function formatDateParam (date) {
    return `${year}-${month}-${day}`;
 }
 
-function getDayStartMs (date) {
+function getDayStartMs(date) {
    const dayStart = new Date(date);
    dayStart.setHours(0, 0, 0, 0);
 
    return dayStart.getTime();
 }
 
-export default function Schedule () {
+export default function Schedule() {
    const [weekOffset, setWeekOffset] = useState(0);
    const [schedule, setSchedule] = useState(null);
    const [loading, setLoading] = useState(true);
@@ -88,7 +88,7 @@ export default function Schedule () {
 
       let ignore = false;
 
-      async function fetchReportStatus () {
+      async function fetchReportStatus() {
          try {
             const weekStart = new Date(weekBeginning);
             weekStart.setHours(0, 0, 0, 0);
@@ -146,14 +146,14 @@ export default function Schedule () {
       };
    }, [schedule, weekBeginning]);
 
-   async function getTeamMembers (teamId) {
+   async function getTeamMembers(teamId) {
       if (teamCache[teamId]) return teamCache[teamId];
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${teamId}`);
 
       const data = await res.json();
 
-      setTeamCache(prev => ({
+      setTeamCache((prev) => ({
          ...prev,
          [teamId]: data.body
       }));
@@ -161,7 +161,7 @@ export default function Schedule () {
       return data.body;
    }
 
-   async function swapPerson (newPersonId) {
+   async function swapPerson(newPersonId) {
       if (!swapTarget) return;
 
       try {
@@ -197,8 +197,8 @@ export default function Schedule () {
 
    if (loading || !schedule) {
       return (
-         <main className='flex items-center justify-center py-10'>
-            <div className='rounded-2xl bg-white/10 px-8 py-6 text-white backdrop-blur-xl'>
+         <main className="flex items-center justify-center py-10">
+            <div className="rounded-2xl bg-white/10 px-8 py-6 text-white backdrop-blur-xl">
                Loading schedule...
             </div>
          </main>
@@ -206,87 +206,87 @@ export default function Schedule () {
    }
 
    return (
-      <main className='space-y-8'>
-         <div className='rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl'>
+      <main className="space-y-8">
+         <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
             {/* Header */}
-            <div className='mb-6 grid gap-4 text-center md:grid-cols-[1fr_auto] md:items-start md:text-left'>
-               <div className='order-1md:col-start-1 md:row-start-1'>
-                  <h1 className='text-4xl font-bold text-white'>Weekly Schedule</h1>
-                  <p className='mt-2  text-slate-300'>Week beginning {formattedWeekBeginning}</p>
+            <div className="mb-6 grid gap-4 text-center md:grid-cols-[1fr_auto] md:items-start md:text-left">
+               <div className="order-1md:col-start-1 md:row-start-1">
+                  <h1 className="text-4xl font-bold text-white">Weekly Schedule</h1>
+                  <p className="mt-2  text-slate-300">Week beginning {formattedWeekBeginning}</p>
                </div>
 
                {/* KEYS */}
                {/* 
                <div className="order-2 flex pt-4 col-span-1 md:col-span-2 justify-center md:order-1 md:col-start-1 md:row-start-2 md:justify-end"> */}
-               <div className='order-2 grid grid-cols-2 col-span-1 md:col-span-2  justify-center gap-3 pt-4 lg:flex lg:flex-nowrap md:order-3 md:col-start-1 md:row-start-2 md:justify-end'>
-                  <div className='flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300'>
-                     <span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-green-300/20 bg-green-500/10 text-green-400'>
-                        <IoMdDoneAll className='h-4 w-4' aria-hidden='true' />
+               <div className="order-2 grid grid-cols-2 col-span-1 md:col-span-2  justify-center gap-3 pt-4 lg:flex lg:flex-nowrap md:order-3 md:col-start-1 md:row-start-2 md:justify-end">
+                  <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-green-300/20 bg-green-500/10 text-green-400">
+                        <IoMdDoneAll className="h-4 w-4" aria-hidden="true" />
                      </span>
 
-                     <span className='font-semibold text-white'>Completed Check</span>
+                     <span className="font-semibold text-white">Completed Check</span>
                   </div>
 
-                  <div className='flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300'>
-                     <span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-sky-300/20 bg-sky-500/10 text-sky-200/90'>
-                        <BsThreeDots className='h-4 w-4' aria-hidden='true' />
+                  <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-sky-300/20 bg-sky-500/10 text-sky-200/90">
+                        <BsThreeDots className="h-4 w-4" aria-hidden="true" />
                      </span>
 
-                     <span className='font-semibold text-white'>Pending Check</span>
+                     <span className="font-semibold text-white">Pending Check</span>
                   </div>
 
-                  <div className='flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300'>
-                     <span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-red-300/20 bg-red-500/10 text-red-200/90'>
-                        <IoCloseSharp className='h-5 w-5' aria-hidden='true' />
+                  <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-red-300/20 bg-red-500/10 text-red-200/90">
+                        <IoCloseSharp className="h-5 w-5" aria-hidden="true" />
                      </span>
 
-                     <span className='font-semibold text-white'>Missed Check</span>
+                     <span className="font-semibold text-white">Missed Check</span>
                   </div>
 
-                  <div className='flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300'>
-                     <span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10 text-amber-200/90'>
-                        <IoSwapHorizontal className='text-base' aria-hidden='true' />
+                  <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10 text-amber-200/90">
+                        <IoSwapHorizontal className="text-base" aria-hidden="true" />
                      </span>
 
                      <span>
-                        <span className='font-semibold text-white'>Swap</span> replaces a scheduled
+                        <span className="font-semibold text-white">Swap</span> replaces a scheduled
                         person for that day.
                      </span>
                   </div>
                </div>
 
-               <div className='order-3 flex justify-center gap-3 md:order-2 md:col-start-2 md:row-start-1 md:justify-end'>
+               <div className="order-3 flex justify-center gap-3 md:order-2 md:col-start-2 md:row-start-1 md:justify-end">
                   <button
-                     onClick={() => setWeekOffset(w => w - 1)}
-                     className='rounded-lg cursor-pointer bg-white/10 px-3 py-1.5 text-md text-white hover:bg-white/20'
+                     onClick={() => setWeekOffset((w) => w - 1)}
+                     className="rounded-lg cursor-pointer bg-white/10 px-3 py-1.5 text-md text-white hover:bg-white/20"
                   >
-                     <div className='flex items-center gap-1'>
-                        <IoIosArrowForward className='rotate-180' aria-hidden='true' />
+                     <div className="flex items-center gap-1">
+                        <IoIosArrowForward className="rotate-180" aria-hidden="true" />
                         Prev
                      </div>
                   </button>
 
                   <button
                      onClick={() => setWeekOffset(0)}
-                     className='rounded-lg cursor-pointer bg-green-500/20 px-3 py-1.5 text-md text-green-200 hover:bg-green-500/30'
+                     className="rounded-lg cursor-pointer bg-green-500/20 px-3 py-1.5 text-md text-green-200 hover:bg-green-500/30"
                   >
                      Today
                   </button>
 
                   <button
-                     onClick={() => setWeekOffset(w => w + 1)}
-                     className='rounded-lg cursor-pointer bg-white/10 px-3 py-1.5 text-md text-white hover:bg-white/20'
+                     onClick={() => setWeekOffset((w) => w + 1)}
+                     className="rounded-lg cursor-pointer bg-white/10 px-3 py-1.5 text-md text-white hover:bg-white/20"
                   >
-                     <div className='flex items-center gap-1'>
+                     <div className="flex items-center gap-1">
                         Next
-                        <IoIosArrowForward aria-hidden='true' />
+                        <IoIosArrowForward aria-hidden="true" />
                      </div>
                   </button>
                </div>
             </div>
 
             {/* Days */}
-            <div className='space-y-4'>
+            <div className="space-y-4">
                {days.map(([dayKey, dayLabel, offset]) => {
                   const dayDate = new Date(weekBeginning);
                   dayDate.setDate(weekBeginning.getDate() + offset);
@@ -329,11 +329,11 @@ export default function Schedule () {
                               >
                                  {dayLabel}
                               </h2>
-                              <span className='text-sm text-white/60'>{formattedDate}</span>
+                              <span className="text-sm text-white/60">{formattedDate}</span>
                            </div>
 
                            {isToday && (
-                              <span className='rounded-full bg-green-500 px-3 py-1 text-xs font-bold uppercase text-white'>
+                              <span className="rounded-full bg-green-500 px-3 py-1 text-xs font-bold uppercase text-white">
                                  Today
                               </span>
                            )}
@@ -342,9 +342,9 @@ export default function Schedule () {
                         {/* People */}
                         <div>
                            {schedule?.[dayKey]?.closed || false ? (
-                              <div className='px-6 py-4 text-white/70 italic'>OFFICE CLOSED</div>
+                              <div className="px-6 py-4 text-white/70 italic">OFFICE CLOSED</div>
                            ) : Object.keys(schedule?.[dayKey] || {}).length === 0 ? (
-                              <div className='px-6 py-4 text-white/70 italic'>NO SCHEDULE</div>
+                              <div className="px-6 py-4 text-white/70 italic">NO SCHEDULE</div>
                            ) : (
                               Object.entries(schedule?.[dayKey] || {}).map(
                                  ([name, person], index, arr) => {
@@ -360,11 +360,11 @@ export default function Schedule () {
                                                 : ''
                                           }`}
                                        >
-                                          <div className='flex items-center gap-3 font-semibold text-white'>
+                                          <div className="flex items-center gap-3 font-semibold text-white">
                                              {name}
                                              {isCurrentOrFuture && (
                                                 <button
-                                                   className='flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10 text-amber-200/90 transition hover:border-amber-300/35 hover:bg-amber-500/15 hover:text-amber-100'
+                                                   className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10 text-amber-200/90 transition hover:border-amber-300/35 hover:bg-amber-500/15 hover:text-amber-100"
                                                    aria-label={`Swap ${name}`}
                                                    title={`Swap ${name}`}
                                                    onClick={async () => {
@@ -384,15 +384,15 @@ export default function Schedule () {
                                                    }}
                                                 >
                                                    <IoSwapHorizontal
-                                                      className='cursor-pointer text-base'
-                                                      aria-hidden='true'
+                                                      className="cursor-pointer text-base"
+                                                      aria-hidden="true"
                                                    />
                                                 </button>
                                              )}
                                           </div>
 
-                                          <div className='flex flex-wrap gap-2'>
-                                             {person.clusters.map(cluster => {
+                                          <div className="flex flex-wrap gap-2">
+                                             {person.clusters.map((cluster) => {
                                                 const hasReport = Boolean(
                                                    reportStatus[`${cluster.id}:${dayStartMs}`]
                                                 );
@@ -404,8 +404,8 @@ export default function Schedule () {
                                                          hasReport
                                                             ? 'bg-green-500/20 px-3 gap-2 py-1 text-sm text-green-200'
                                                             : isCurrentOrFuture
-                                                            ? 'bg-blue-500/20 px-3 py-1 gap-2 text-sm text-blue-200'
-                                                            : 'bg-red-500/20 px-3 py-1 gap-1 text-sm text-red-200'
+                                                              ? 'bg-blue-500/20 px-3 py-1 gap-2 text-sm text-blue-200'
+                                                              : 'bg-red-500/20 px-3 py-1 gap-1 text-sm text-red-200'
                                                       }`}
                                                    >
                                                       {cluster.name}
@@ -414,24 +414,24 @@ export default function Schedule () {
                                                             hasReport
                                                                ? 'text-green-400'
                                                                : isCurrentOrFuture
-                                                               ? 'text-blue-200/90'
-                                                               : 'text-red-200/90'
+                                                                 ? 'text-blue-200/90'
+                                                                 : 'text-red-200/90'
                                                          }`}
                                                       >
                                                          {hasReport ? (
                                                             <IoMdDoneAll
-                                                               className='h-5 w-5'
-                                                               aria-hidden='true'
+                                                               className="h-5 w-5"
+                                                               aria-hidden="true"
                                                             />
                                                          ) : isCurrentOrFuture ? (
                                                             <BsThreeDots
-                                                               className='h-5 w-5'
-                                                               aria-hidden='true'
+                                                               className="h-5 w-5"
+                                                               aria-hidden="true"
                                                             />
                                                          ) : (
                                                             <IoCloseSharp
-                                                               className='h-7 w-7'
-                                                               aria-hidden='true'
+                                                               className="h-7 w-7"
+                                                               aria-hidden="true"
                                                             ></IoCloseSharp>
                                                          )}
                                                       </span>
@@ -455,41 +455,41 @@ export default function Schedule () {
          {/* SWAP MODAL */}
          {/* ========================= */}
          {swapTarget && (
-            <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-md'>
-               <div className='w-full max-w-lg rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl'>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-md">
+               <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl">
                   {/* Header */}
-                  <div className='mb-6'>
-                     <h3 className='text-3xl font-bold text-white'>Swap Assignment</h3>
+                  <div className="mb-6">
+                     <h3 className="text-3xl font-bold text-white">Swap Assignment</h3>
 
-                     <p className='mt-2 text-slate-300'>
+                     <p className="mt-2 text-slate-300">
                         Choose a replacement for{' '}
-                        <span className='font-semibold text-white'>{swapTarget.personName}</span>
+                        <span className="font-semibold text-white">{swapTarget.personName}</span>
                      </p>
                   </div>
 
                   {/* Summary */}
-                  <div className='mb-6 rounded-2xl border border-white/10 bg-white/5 p-5'>
-                     <div className='flex items-center justify-between gap-4'>
+                  <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-5">
+                     <div className="flex items-center justify-between gap-4">
                         <div>
-                           <p className='text-xs font-medium uppercase tracking-wider text-slate-400'>
+                           <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
                               Current
                            </p>
 
-                           <p className='mt-1 text-lg font-semibold text-white'>
+                           <p className="mt-1 text-lg font-semibold text-white">
                               {swapTarget.personName}
                            </p>
                         </div>
 
-                        <div className='flex h-10 w-10 items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10'>
-                           <IoSwapHorizontal className='text-xl text-amber-200' />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10">
+                           <IoSwapHorizontal className="text-xl text-amber-200" />
                         </div>
 
-                        <div className='text-right'>
-                           <p className='text-xs font-medium uppercase tracking-wider text-slate-400'>
+                        <div className="text-right">
+                           <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
                               Replacement
                            </p>
 
-                           <p className='mt-1 text-lg font-semibold text-green-300'>
+                           <p className="mt-1 text-lg font-semibold text-green-300">
                               {selectedSwapPerson?.name || 'Select below'}
                            </p>
                         </div>
@@ -497,16 +497,16 @@ export default function Schedule () {
                   </div>
 
                   {/* People */}
-                  <div className='max-h-72 space-y-2 overflow-y-auto pr-1'>
+                  <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
                      {swapTarget.options
-                        .filter(p => p.id !== swapTarget.personId)
-                        .map(p => {
+                        .filter((p) => p.id !== swapTarget.personId)
+                        .map((p) => {
                            const selected = selectedSwapPerson?.id === p.id;
 
                            return (
                               <button
                                  key={p.id}
-                                 type='button'
+                                 type="button"
                                  onClick={() => setSelectedSwapPerson(p)}
                                  className={`flex w-full cursor-pointer items-center justify-between rounded-xl border px-4 py-3 text-left transition-all ${
                                     selected
@@ -514,22 +514,22 @@ export default function Schedule () {
                                        : 'border-white/10 bg-white/5 hover:bg-white/10'
                                  }`}
                               >
-                                 <span className='font-semibold text-white'>{p.name}</span>
+                                 <span className="font-semibold text-white">{p.name}</span>
 
-                                 {selected && <IoMdDoneAll className='text-xl text-green-400' />}
+                                 {selected && <IoMdDoneAll className="text-xl text-green-400" />}
                               </button>
                            );
                         })}
                   </div>
 
                   {/* Actions */}
-                  <div className='mt-8 flex justify-end gap-3'>
+                  <div className="mt-8 flex justify-end gap-3">
                      <button
                         onClick={() => {
                            setSwapTarget(null);
                            setSelectedSwapPerson(null);
                         }}
-                        className='rounded-lg cursor-pointer bg-white/10 px-5 py-2.5 text-white transition hover:bg-white/20'
+                        className="rounded-lg cursor-pointer bg-white/10 px-5 py-2.5 text-white transition hover:bg-white/20"
                      >
                         Cancel
                      </button>

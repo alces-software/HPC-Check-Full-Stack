@@ -62,8 +62,7 @@ module.exports = (db) => {
          // Use helper to enrich schedule and pick this person's entry
          const enriched = await enrichSchedule(db, scheduleForToday, { includeTeam: false });
 
-         const personEntry =
-            enriched[person.name] ?? { id: person._id.toString(), clusters: [] };
+         const personEntry = enriched[person.name] ?? { id: person._id.toString(), clusters: [] };
 
          return res.status(200).json({
             success: true,
