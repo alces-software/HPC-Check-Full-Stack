@@ -47,7 +47,9 @@ module.exports = (db) => {
          }
 
          if (!person.teamId) {
-            return res.status(404).json({ success: false, error: 'Person is not assigned to a team' });
+            return res
+               .status(404)
+               .json({ success: false, error: 'Person is not assigned to a team' });
          }
 
          // Get today's schedule
@@ -59,13 +61,14 @@ module.exports = (db) => {
          const clusters = Object.fromEntries(
             assignedClusterIds.length
                ? await db
-                  .collection('cluster')
-                  .find({
-                     _id: { $in: assignedClusterIds.map((c) => new ObjectId(c)) }
-                  })
-                  .toArray()
+                    .collection('cluster')
+                    .find({
+                       _id: { $in: assignedClusterIds.map((c) => new ObjectId(c)) }
+                    })
+                    .toArray()
+                    .then((res) => res.map((c) => [c._id.toString(), c.name]))
                : []
-         ).map((c) => [c._id.toString(), c.name]);
+         );
 
          return res.status(200).json({
             success: true,

@@ -22,8 +22,16 @@ module.exports = (db) => {
                .json({ success: false, error: 'The day provided is not a string' });
          }
 
+         const sanitisedDay = String(day).trim();
+
+         if (sanitisedDay.length === 0) {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The report id provided is empty' });
+         }
+
          // Get date
-         const date = new Date(day);
+         const date = new Date(sanitisedDay);
 
          if (isNaN(date.getTime())) {
             return res.status(400).json({ success: false, error: 'Invalid date' });
@@ -42,7 +50,7 @@ module.exports = (db) => {
 
          await db.collection('closedDay').insertOne({ day: date });
 
-         return res.status(201).json({ success: true, body: { day } });
+         return res.status(201).json({ success: true, body: { day: sanitisedDay } });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }

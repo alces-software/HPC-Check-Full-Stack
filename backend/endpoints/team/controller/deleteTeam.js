@@ -15,17 +15,23 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: "Missing team's id" });
+            return res.status(400).json({ success: false, error: 'Missing team ID' });
+         }
+
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The team ID provided is not a string' });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
+            return res.status(400).json({ success: false, error: 'The team ID provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
+            return res.status(400).json({ success: false, error: 'Invalid team ID provided' });
          }
 
          // Check if team exists
@@ -38,26 +44,26 @@ module.exports = (db) => {
          }
 
          // Check if people are linked to the team
-         const hasPeople = await db
+         const people = await db
             .collection('person')
             .find({
                teamId: sanitizedId
             })
             .toArray();
 
-         if (hasPeople.length > 0) {
+         if (people.length > 0) {
             return res.status(409).json({ success: false, error: 'This team has people' });
          }
 
          // Check if clusters are linked to the team
-         const hasClusters = await db
+         const clusters = await db
             .collection('teampool')
             .find({
                teamId: sanitizedId
             })
             .toArray();
 
-         if (hasClusters.length > 0) {
+         if (clusters.length > 0) {
             return res.status(409).json({ success: false, error: 'This team has pools' });
          }
 

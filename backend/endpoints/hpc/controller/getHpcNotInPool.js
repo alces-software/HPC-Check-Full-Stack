@@ -11,26 +11,26 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawPoolId } = req.params || {};
 
-         // Check id
-         if (!id) {
+         // Check pool id
+         if (rawPoolId === undefined || rawPoolId === null) {
             return res.status(400).json({ success: false, error: 'Missing pool id' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawPoolId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The pool id provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const poolId = String(rawPoolId).trim();
 
-         if (sanitizedId.length === 0) {
+         if (poolId.length === 0) {
             return res.status(400).json({ success: false, error: 'The pool id provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(poolId)) {
             return res.status(400).json({ success: false, error: 'Invalid pool id provided' });
          }
 
@@ -38,7 +38,7 @@ module.exports = (db) => {
          const response = await db
             .collection('cluster')
             .find({
-               poolId: { $ne: sanitizedId }
+               poolId: { $ne: poolId }
             })
             .toArray()
             .then((res) =>

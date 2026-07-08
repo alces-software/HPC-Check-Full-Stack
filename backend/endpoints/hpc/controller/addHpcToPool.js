@@ -11,63 +11,63 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
-         const { poolId } = req.body || {};
+         const { id: rawClusterId } = req.params || {};
+         const { poolId: rawPoolId } = req.body || {};
 
-         // Check id
-         if (typeof id !== 'string') {
+         // Check cluster id
+         if (rawClusterId === undefined || rawClusterId === null) {
+            return res.status(400).json({ success: false, error: 'Missing cluster ID' });
+         }
+
+         if (typeof rawClusterId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The cluster ID provided is not a string' });
          }
 
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing cluster ID' });
-         }
+         const clusterId = rawClusterId.trim();
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length === 0) {
+         if (!clusterId) {
             return res
                .status(400)
                .json({ success: false, error: 'The cluster ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(clusterId)) {
             return res.status(400).json({ success: false, error: 'Invalid cluster ID provided' });
          }
 
          // Check pool id
-         if (typeof poolId !== 'string') {
+         if (rawPoolId === undefined || rawPoolId === null) {
+            return res.status(400).json({ success: false, error: 'Missing pool ID' });
+         }
+
+         if (typeof rawPoolId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The pool ID provided is not a string' });
          }
 
+         const poolId = rawPoolId.trim();
+
          if (!poolId) {
-            return res.status(400).json({ success: false, error: 'Missing pool ID' });
-         }
-
-         const sanitizedPoolId = String(poolId).trim();
-
-         if (sanitizedPoolId.length === 0) {
             return res.status(400).json({ success: false, error: 'The pool ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedPoolId)) {
+         if (!ObjectId.isValid(poolId)) {
             return res.status(400).json({ success: false, error: 'Invalid pool ID provided' });
          }
 
          // Get the cluster
          const cluster = await db.collection('cluster').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(clusterId)
          });
 
          if (!cluster) {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
          }
 
-         if (cluster.poolId === sanitizedPoolId) {
+         if (cluster.poolId === clusterId) {
             return res
                .status(400)
                .json({ success: false, error: 'Cluster already assigned to pool' });
@@ -75,7 +75,7 @@ module.exports = (db) => {
 
          // Get pool
          const pool = await db.collection('pool').findOne({
-            _id: new ObjectId(sanitizedPoolId)
+            _id: new ObjectId(poolId)
          });
 
          if (!pool) {
@@ -83,10 +83,10 @@ module.exports = (db) => {
          }
 
          db.collection('cluster').updateOne(
-            { _id: new ObjectId(sanitizedId) },
+            { _id: new ObjectId(clusterId) },
             {
                $set: {
-                  poolId: sanitizedPoolId
+                  poolId: poolId
                }
             }
          );
@@ -94,9 +94,9 @@ module.exports = (db) => {
          return res.status(200).json({
             success: true,
             body: {
-               id: sanitizedId,
+               id: clusterId,
                name: cluster.name,
-               poolId: sanitizedPoolId
+               poolId: poolId
             }
          });
       } catch (error) {

@@ -11,22 +11,22 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { name } = req.body || {};
+         const { name: rawName } = req.body || {};
 
          // Check name
-         if (!name) {
+         if (rawName === undefined || rawName === null) {
             return res.status(400).json({ success: false, error: 'Missing cluster name' });
          }
 
-         if (typeof name !== 'string') {
+         if (typeof rawName !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The cluster name provided is not a string' });
          }
 
-         const sanitizedName = String(name).trim();
+         const clusterName = rawName.trim();
 
-         if (sanitizedName.length == 0) {
+         if (!clusterName) {
             return res
                .status(400)
                .json({ success: false, error: 'The cluster name provided is empty' });
@@ -35,7 +35,7 @@ module.exports = (db) => {
          // Check if hpc already exists
          const existing = await db.collection('cluster').findOne({
             name: {
-               $regex: `^${sanitizedName}$`,
+               $regex: `^${clusterName}$`,
                $options: 'i'
             }
          });
@@ -48,7 +48,7 @@ module.exports = (db) => {
          const clusterId = await db
             .collection('cluster')
             .insertOne({
-               name: sanitizedName
+               name: clusterName
             })
             .then((res) => res.insertedId.toString());
 

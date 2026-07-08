@@ -37,7 +37,7 @@ module.exports = (db) => {
                }))
             );
 
-         // Check if a bonus question got returned from the question
+         // Check if a bonus question was chosen
          if (!response) {
             return res
                .status(404)
