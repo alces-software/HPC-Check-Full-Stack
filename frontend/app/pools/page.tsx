@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import ReportSkeleton from '../components/PoolSkeleton'
 
 export const metadata = {
-    title: 'Report',
+    title: 'Pool Options',
 };
 
 export default function Page () {
