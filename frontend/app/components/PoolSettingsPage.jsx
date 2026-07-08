@@ -157,10 +157,11 @@ export default function PoolClustersPage() {
 
                {statusMessage && (
                   <div
-                     className={`mt-8 rounded-2xl border px-4 py-4 text-sm ${statusType === 'error'
+                     className={`mt-8 rounded-2xl border px-4 py-4 text-sm ${
+                        statusType === 'error'
                            ? 'border-red-500/30 bg-red-500/10 text-red-100'
                            : 'border-green-500/30 bg-green-500/10 text-emerald-100'
-                        }`}
+                     }`}
                   >
                      {statusMessage}
                   </div>
@@ -180,10 +181,11 @@ export default function PoolClustersPage() {
                         type="button"
                         disabled={!selectedClusterId}
                         onClick={handleAddCluster}
-                        className={`rounded-xl px-5 py-3 font-semibold text-white transition ${selectedClusterId
+                        className={`rounded-xl px-5 py-3 font-semibold text-white transition ${
+                           selectedClusterId
                               ? 'bg-blue-600 hover:bg-blue-500'
                               : 'cursor-not-allowed bg-slate-600 opacity-50'
-                           }`}
+                        }`}
                      >
                         Add Selected
                      </button>
@@ -200,10 +202,11 @@ export default function PoolClustersPage() {
                               key={cluster.id}
                               type="button"
                               onClick={() => setSelectedClusterId(selected ? '' : cluster.id)}
-                              className={`rounded-2xl border p-5 text-left transition ${selected
+                              className={`rounded-2xl border p-5 text-left transition ${
+                                 selected
                                     ? 'border-blue-400 bg-blue-500/20 shadow-lg shadow-blue-500/20'
                                     : 'border-white/10 bg-slate-800/70 hover:border-blue-300/50 hover:bg-slate-700/70'
-                                 }`}
+                              }`}
                            >
                               <div className="flex justify-between">
                                  <div>
@@ -215,17 +218,19 @@ export default function PoolClustersPage() {
                                  </div>
 
                                  <FaServer
-                                    className={`text-3xl ${selected ? 'text-blue-300' : 'text-slate-500'
-                                       }`}
+                                    className={`text-3xl ${
+                                       selected ? 'text-blue-300' : 'text-slate-500'
+                                    }`}
                                  />
                               </div>
 
                               <div className="mt-4 flex gap-2">
                                  <span
-                                    className={`rounded-full px-3 py-1 text-xs ${assignedElsewhere
+                                    className={`rounded-full px-3 py-1 text-xs ${
+                                       assignedElsewhere
                                           ? 'bg-amber-500/20 text-amber-300'
                                           : 'bg-green-500/20 text-green-300'
-                                       }`}
+                                    }`}
                                  >
                                     {assignedElsewhere ? 'Assigned to another pool' : 'Available'}
                                  </span>

@@ -285,12 +285,27 @@ export default function TeamSettingsPage() {
          setSavingSettings(true);
          setStatusMessage('');
 
+         const startWindowInt = timeInputToInt(startWindow);
+         const endWindowInt = timeInputToInt(endWindow);
+
          if (clustersPerDay < 0) {
             setStatusMessage("Can't set clusters per day to zero.");
             setStatusType('error');
             return;
-         } else if (clustersPerDay === team.clusters_per_day) {
-            setStatusMessage("There's no changes made to settings to save.");
+         } else if (!startWindow || !endWindow) {
+            setStatusMessage('Please select a start and end time.');
+            setStatusType('error');
+            return;
+         } else if (startWindowInt >= endWindowInt) {
+            setStatusMessage('Start time must be before end time.');
+            setStatusType('error');
+            return;
+         } else if (
+            clustersPerDay === team.clusters_per_day &&
+            startWindowInt === team.start_window &&
+            endWindowInt === team.end_window
+         ) {
+            setStatusMessage('There are no settings changes to save.');
             setStatusType('error');
             return;
          }
@@ -302,7 +317,9 @@ export default function TeamSettingsPage() {
             },
             body: JSON.stringify({
                id: teamId,
-               clusters_per_day: clustersPerDay
+               clusters_per_day: clustersPerDay,
+               start_window: startWindowInt,
+               end_window: endWindowInt
             })
          });
 
@@ -314,7 +331,9 @@ export default function TeamSettingsPage() {
 
          setTeam((prev) => ({
             ...prev,
-            clusters_per_day: clustersPerDay
+            clusters_per_day: clustersPerDay,
+            start_window: startWindowInt,
+            end_window: endWindowInt
          }));
 
          setStatusMessage('Settings updated successfully.');
@@ -366,10 +385,11 @@ export default function TeamSettingsPage() {
 
                {statusMessage && (
                   <div
-                     className={`mt-8 rounded-2xl border px-4 py-4 text-sm ${statusType === 'error'
-                        ? 'border-red-500/30 bg-red-500/10 text-red-100'
-                        : 'border-green-500/30 bg-green-500/10 text-emerald-100'
-                        }`}
+                     className={`mt-8 rounded-2xl border px-4 py-4 text-sm ${
+                        statusType === 'error'
+                           ? 'border-red-500/30 bg-red-500/10 text-red-100'
+                           : 'border-green-500/30 bg-green-500/10 text-emerald-100'
+                     }`}
                   >
                      {statusMessage}
                   </div>
