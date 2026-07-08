@@ -20,17 +20,6 @@ function getDayStartMs(date) {
    return dayStart.getTime();
 }
 
-function getReportTimestamp(value) {
-   if (typeof value === 'number') return value;
-   if (typeof value === 'string') return Number(value);
-   if (value?.$numberLong) return Number(value.$numberLong);
-   if (typeof value?.low === 'number' && typeof value?.high === 'number') {
-      return value.high * 4294967296 + (value.low >>> 0);
-   }
-
-   return NaN;
-}
-
 export default function Schedule() {
    const [weekOffset, setWeekOffset] = useState(0);
    const [schedule, setSchedule] = useState(null);
@@ -124,12 +113,14 @@ export default function Schedule() {
             const data = await res.json();
 
             const status = {};
+            const weekStartMs = weekStart.getTime();
+            const weekEndMs = weekEnd.getTime();
 
             for (const report of data?.body ?? []) {
-               const reportStartMs = getReportTimestamp(report.startDate ?? report.startTime);
+               const reportStartMs = Number(report.startDate);
 
-               if (!report.clusterId == null || Number.isNaN(reportStartMs)) continue;
-               if (reportStartMs < weekStart.getTime() || reportStartMs > weekEnd.getTime()) {
+               if (!report.clusterId || Number.isNaN(reportStartMs)) continue;
+               if (reportStartMs < weekStartMs || reportStartMs > weekEndMs) {
                   continue;
                }
 

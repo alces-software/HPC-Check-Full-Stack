@@ -6,6 +6,45 @@ import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import { FaClipboardList, FaRegCopy, FaCheck, FaLightbulb } from 'react-icons/fa';
 
+function getTodayTimeMs(value) {
+   const numericValue = Number(value);
+
+   if (Number.isNaN(numericValue)) return null;
+
+   let hours;
+   let minutes;
+
+   if (Number.isInteger(numericValue) && numericValue >= 100) {
+      hours = Math.floor(numericValue / 100);
+      minutes = numericValue % 100;
+   } else {
+      hours = Math.floor(numericValue);
+      minutes = Math.round((numericValue - hours) * 60);
+   }
+
+   if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
+
+   const date = new Date();
+   date.setHours(hours, minutes, 0, 0);
+
+   return date.getTime();
+}
+
+function getTimeRemainingMs(endTimeMs) {
+   if (!endTimeMs) return 0;
+
+   return Math.max(0, endTimeMs - Date.now());
+}
+
+function formatTimeRemaining(milliseconds) {
+   const totalSeconds = Math.floor(milliseconds / 1000);
+   const hours = Math.floor(totalSeconds / 3600);
+   const minutes = Math.floor((totalSeconds % 3600) / 60);
+   const seconds = totalSeconds % 60;
+
+   return [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':');
+}
+
 function getNodeText(node) {
    if (node === null || node === undefined || typeof node === 'boolean') return '';
    if (typeof node === 'string' || typeof node === 'number') return String(node);
@@ -66,9 +105,13 @@ export default function Form() {
    const [steps, setSteps] = useState([]);
    const [allNames, setAllNames] = useState([]);
    const [startTime] = useState(() => Date.now());
+   const [windowReady, setWindowReady] = useState(false);
+   const [endTimeMs, setEndTimeMs] = useState(null);
+   const [timeRemainingMs, setTimeRemainingMs] = useState(0);
    const [submitting, setSubmitting] = useState(false);
    const [nameID] = useState(() => Cookies.get('selectedPersonId') || '');
    const [cookieCluster] = useState(() => Cookies.get('currentCluster') || '');
+   const canSubmit = windowReady && timeRemainingMs > 0;
 
    const [editingMethodId, setEditingMethodId] = useState(null);
    const [editedMethodContent, setEditedMethodContent] = useState('');
@@ -79,6 +122,55 @@ export default function Form() {
 
    const router = useRouter();
    const redirected = useRef(false);
+   const timeLimitRedirected = useRef(false);
+   const isFinalTwentyMinutes = windowReady && timeRemainingMs <= 20 * 60 * 1000;
+
+   useEffect(() => {
+      if (!endTimeMs) {
+         return;
+      }
+
+      const timer = setInterval(() => {
+         setTimeRemainingMs(getTimeRemainingMs(endTimeMs));
+      }, 1000);
+
+      return () => clearInterval(timer);
+   }, [endTimeMs]);
+
+   useEffect(() => {
+      if (!nameID) {
+         return;
+      }
+
+      async function getTeamTimeLimit() {
+         try {
+            const personRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/id/${nameID}`);
+            const personData = await personRes.json();
+            const teamId = personData.body?.teamId;
+
+            if (!teamId) {
+               setWindowReady(true);
+               return;
+            }
+
+            const teamRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/id/${teamId}`);
+            const teamData = await teamRes.json();
+            const endMs = getTodayTimeMs(teamData.body?.end_window);
+
+            if (endMs !== null) {
+               setTimeRemainingMs(getTimeRemainingMs(endMs));
+               setEndTimeMs(endMs);
+            }
+
+            setWindowReady(true);
+         } catch (err) {
+            console.error('Failed to load team time limit:', err);
+            setWindowReady(true);
+         }
+      }
+
+      getTeamTimeLimit();
+   }, [nameID]);
 
    useEffect(() => {
       if ((!nameID || !cookieCluster) && !redirected.current) {
@@ -96,6 +188,20 @@ export default function Form() {
       }
       getNames();
    }, []);
+
+   useEffect(() => {
+      if (!windowReady || timeRemainingMs > 0 || timeLimitRedirected.current) return;
+
+      if (nameID && cookieCluster) {
+         timeLimitRedirected.current = true;
+
+         alert(
+            'You have exceeded the time limit for checks. Speak to your manager or system administrator. You will now be redirected to the home page.'
+         );
+
+         router.push('/');
+      }
+   }, [windowReady, timeRemainingMs, nameID, cookieCluster, router]);
 
    const name = allNames.find((p) => p.id === nameID)?.name;
 
@@ -156,8 +262,32 @@ export default function Form() {
    }
 
    useEffect(() => {
-      getSteps();
-   }, [getSteps]);
+      if (!clusterId) return;
+
+      let ignore = false;
+
+      async function loadSteps() {
+         try {
+            const res = await fetch(
+               `${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`
+            );
+
+            const data = await res.json();
+
+            if (!ignore) {
+               setSteps(data.body ?? []);
+            }
+         } catch (err) {
+            console.error(err);
+         }
+      }
+
+      loadSteps();
+
+      return () => {
+         ignore = true;
+      };
+   }, [clusterId]);
 
    useEffect(() => {
       async function getBonusChallenge() {
@@ -718,13 +848,32 @@ export default function Form() {
                {/* submit */}
                <button
                   type="submit"
-                  disabled={submitting || steps.length === 0}
+                  disabled={submitting || steps.length === 0 || !canSubmit}
                   aria-disabled={submitting || steps.length === 0}
                   className="mt-10 w-full cursor-pointer rounded-2xl border border-blue-200/25 bg-gradient-to-r from-blue-500 via-blue-500 to-indigo-600 py-4 text-lg font-semibold text-white shadow-xl shadow-blue-950/30 transition duration-200 hover:-translate-y-0.5 hover:border-blue-100/40 hover:from-blue-400 hover:via-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-200/60 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
                >
                   {submitting ? 'Submitting...' : 'Submit Report'}
                </button>
             </form>
+         </div>
+
+         <div className="fixed bottom-4 right-4 z-30 rounded-3xl border border-white/10 bg-white/10 px-4 py-3 text-right shadow-2xl backdrop-blur-xl">
+            <div className="flex items-center gap-3">
+               <span className="text-xs font-semibold uppercase tracking-wide text-white/80">
+                  Time remaining
+               </span>
+               <span
+                  className={`text-xl font-bold tabular-nums ${
+                     isFinalTwentyMinutes ? 'text-red-500' : 'text-white'
+                  }`}
+               >
+                  {!windowReady
+                     ? '--:--:--'
+                     : timeRemainingMs > 0
+                       ? formatTimeRemaining(timeRemainingMs)
+                       : 'END'}
+               </span>
+            </div>
          </div>
       </main>
    );

@@ -6,12 +6,41 @@ import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headless
 import { FaLayerGroup, FaUser, FaUsers } from 'react-icons/fa';
 import { IoIosSettings } from 'react-icons/io';
 
+function timeNumberToInput(value) {
+   const numericValue = Number(value);
+
+   if (Number.isNaN(numericValue)) return '';
+
+   let hours;
+   let minutes;
+
+   if (Number.isInteger(numericValue) && numericValue >= 100) {
+      hours = Math.floor(numericValue / 100);
+      minutes = numericValue % 100;
+   } else {
+      hours = Math.floor(numericValue);
+      minutes = Math.round((numericValue - hours) * 60);
+   }
+
+   if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return '';
+
+   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
+function timeInputToInt(value) {
+   const [hours, minutes] = value.split(':').map(Number);
+
+   return hours + minutes / 60;
+}
+
 export default function TeamSettingsPage() {
    const searchParams = useSearchParams();
    const teamId = searchParams.get('id');
 
    const [team, setTeam] = useState([]);
    const [clustersPerDay, setClustersPerDay] = useState(0);
+   const [startWindow, setStartWindow] = useState('');
+   const [endWindow, setEndWindow] = useState('');
    const [loadingTeams, setLoadingTeams] = useState(true);
 
    const loadTeam = useCallback(async () => {
@@ -21,6 +50,8 @@ export default function TeamSettingsPage() {
 
          setTeam(data.body);
          setClustersPerDay(data.body.clusters_per_day);
+         setStartWindow(timeNumberToInput(data.body.start_window));
+         setEndWindow(timeNumberToInput(data.body.end_window));
       } catch (err) {
          console.error('Failed to fetch teams:', err);
          setTeam([]);
@@ -251,12 +282,27 @@ export default function TeamSettingsPage() {
          setSavingSettings(true);
          setStatusMessage('');
 
+         const startWindowInt = timeInputToInt(startWindow);
+         const endWindowInt = timeInputToInt(endWindow);
+
          if (clustersPerDay < 0) {
             setStatusMessage("Can't set clusters per day to zero.");
             setStatusType('error');
             return;
-         } else if (clustersPerDay === team.clusters_per_day) {
-            setStatusMessage("There's no changes made to settings to save.");
+         } else if (!startWindow || !endWindow) {
+            setStatusMessage('Please select a start and end time.');
+            setStatusType('error');
+            return;
+         } else if (startWindowInt >= endWindowInt) {
+            setStatusMessage('Start time must be before end time.');
+            setStatusType('error');
+            return;
+         } else if (
+            clustersPerDay === team.clusters_per_day &&
+            startWindowInt === team.start_window &&
+            endWindowInt === team.end_window
+         ) {
+            setStatusMessage('There are no settings changes to save.');
             setStatusType('error');
             return;
          }
@@ -268,7 +314,9 @@ export default function TeamSettingsPage() {
             },
             body: JSON.stringify({
                id: teamId,
-               clusters_per_day: clustersPerDay
+               clusters_per_day: clustersPerDay,
+               start_window: startWindowInt,
+               end_window: endWindowInt
             })
          });
 
@@ -280,7 +328,9 @@ export default function TeamSettingsPage() {
 
          setTeam((prev) => ({
             ...prev,
-            clusters_per_day: clustersPerDay
+            clusters_per_day: clustersPerDay,
+            start_window: startWindowInt,
+            end_window: endWindowInt
          }));
 
          setStatusMessage('Settings updated successfully.');
@@ -519,6 +569,32 @@ export default function TeamSettingsPage() {
                         min={1}
                         className="w-full rounded-xl border border-slate-600 bg-slate-800/80 px-3 py-3 text-white outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
                      />
+                  </div>
+
+                  <div className="mt-4 flex flex-col gap-3">
+                     <label className="text-sm text-slate-300">
+                        <strong>Time window for cluster checks</strong>
+                     </label>
+
+                     <div className="flex items-center gap-3">
+                        <input
+                           type="time"
+                           value={startWindow}
+                           onChange={(event) => setStartWindow(event.target.value)}
+                           aria-label="Check window start time"
+                           className="min-w-0 flex-1 rounded-xl cursor-pointer border border-slate-600 bg-slate-800/80 px-3 py-3 text-white outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
+                        />
+
+                        <span className="shrink-0 text-sm font-semibold text-slate-300">to</span>
+
+                        <input
+                           type="time"
+                           value={endWindow}
+                           onChange={(event) => setEndWindow(event.target.value)}
+                           aria-label="Check window end time"
+                           className="min-w-0 flex-1 cursor-pointer rounded-xl border border-slate-600 bg-slate-800/80 px-3 py-3 text-white outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
+                        />
+                     </div>
                   </div>
 
                   {/* optional future button hook */}
