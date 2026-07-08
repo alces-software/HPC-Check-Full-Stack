@@ -37,7 +37,7 @@ module.exports = (db) => {
                }))
             );
 
-         // Get the overview report for that day or provided day
+         // Get the overview report for today or a provided day
          const startOfDay = date ? new Date(date) : new Date();
          startOfDay.setHours(0, 0, 0, 0);
 
@@ -52,9 +52,7 @@ module.exports = (db) => {
          });
 
          if (!overviewReport) {
-            return res
-               .status(404)
-               .json({ success: false, error: 'There is no overview report for today' });
+            return res.status(404).json({ success: false, error: 'There is no overview report' });
          }
 
          // Get reports
@@ -74,16 +72,18 @@ module.exports = (db) => {
                   .toArray();
 
                const ResultsWithTitles = await Promise.all(
-                  results.map(async (data) => {
-                     const instruction = await db
-                        .collection('instruction')
-                        .findOne({ _id: new ObjectId(data.instructionId) });
+                  results
+                     .map(async (data) => {
+                        const instruction = await db
+                           .collection('instruction')
+                           .findOne({ _id: new ObjectId(data.instructionId) });
 
-                     return {
-                        title: instruction.title,
-                        ...data
-                     };
-                  })
+                        return {
+                           title: instruction.title,
+                           ...data
+                        };
+                     })
+                     .filter((r) => r.note || !r.passed)
                );
 
                return {
@@ -91,12 +91,7 @@ module.exports = (db) => {
                   person: people.find((p) => p.id === rest.personId)?.name,
                   cluster: cluster.find((c) => c.id === rest.clusterId)?.name,
                   ...rest,
-                  results: ResultsWithTitles.map((r) => ({
-                     title: r.title,
-                     instructionId: r.instructionId,
-                     passed: r.passed,
-                     note: r.note
-                  })).filter((r) => r.note || !r.passed)
+                  results: ResultsWithTitles
                };
             })
          );
