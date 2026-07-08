@@ -214,113 +214,76 @@ export default function ResultsPage() {
                   </div>
                </div>
 
-               {/* WEEK DATE RANGE */}
-               {mode === 'week' && (
-                  <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 p-4 backdrop-blur-sm sm:p-5">
-                     <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                           <h3 className="font-medium text-white">Custom Date Range</h3>
-                           <p className="mt-1 text-xs text-slate-400">
-                              Leave empty to use the current week.
-                           </p>
-                        </div>
-
-                        {(startDate || endDate) && (
-                           <button
-                              onClick={() => {
-                                 setStartDate('');
-                                 setEndDate('');
-                              }}
-                              className="w-full rounded-lg border border-white/10 px-3 py-1.5 text-xs text-slate-300 transition hover:bg-white/5 hover:text-white sm:w-auto sm:py-1"
-                           >
-                              Reset
-                           </button>
+               <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 p-4 backdrop-blur-sm sm:p-5">
+                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                     <div>
+                        {mode !== 'cluster' ? (
+                           <div>
+                              <h3 className="font-medium text-white">Custom Date Range</h3>
+                              <p className="mt-1 text-xs text-slate-400">
+                                 Leave empty to use the current week.
+                              </p>
+                           </div>
+                        ) : (
+                           <div>
+                              <h3 className="font-medium text-white">
+                                 Cluster Date Range (optional)
+                              </h3>
+                              <p className="mt-1 text-xs text-slate-400">
+                                 Filter cluster reports by date range
+                              </p>
+                           </div>
                         )}
                      </div>
 
-                     <div className="grid min-w-0 gap-3 sm:gap-4 md:grid-cols-2">
-                        <div className="relative min-w-0 max-w-full">
-                           <input
-                              type="date"
-                              value={startDate}
-                              onChange={(e) => setStartDate(e.target.value)}
-                              className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
-                                 startDate ? 'text-white' : 'text-transparent sm:text-white'
-                              }`}
-                           />
-                           {!startDate && (
-                              <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
-                                 Start date
-                              </span>
-                           )}
-                        </div>
+                     {(startDate || endDate) && (
+                        <button
+                           onClick={() => {
+                              setStartDate('');
+                              setEndDate('');
+                           }}
+                           className="w-full rounded-lg border border-white/10 px-3 py-1.5 text-xs text-slate-300 transition hover:bg-white/5 hover:text-white sm:w-auto sm:py-1"
+                        >
+                           Reset
+                        </button>
+                     )}
+                  </div>
 
-                        <div className="relative min-w-0 max-w-full">
-                           <input
-                              type="date"
-                              value={endDate}
-                              min={startDate || undefined}
-                              onChange={(e) => setEndDate(e.target.value)}
-                              className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
-                                 endDate ? 'text-white' : 'text-transparent sm:text-white'
-                              }`}
-                           />
-                           {!endDate && (
-                              <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
-                                 End date
-                              </span>
-                           )}
-                        </div>
+                  <div className="grid min-w-0 gap-3 sm:gap-4 md:grid-cols-2">
+                     <div className="relative min-w-0 max-w-full">
+                        <input
+                           type="date"
+                           value={startDate}
+                           onChange={(e) => setStartDate(e.target.value)}
+                           className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
+                              startDate ? 'text-white' : 'text-transparent sm:text-white'
+                           }`}
+                        />
+                        {!startDate && (
+                           <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
+                              Start date
+                           </span>
+                        )}
+                     </div>
+
+                     <div className="relative min-w-0 max-w-full">
+                        <input
+                           type="date"
+                           value={endDate}
+                           min={startDate || undefined}
+                           onChange={(e) => setEndDate(e.target.value)}
+                           className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
+                              endDate ? 'text-white' : 'text-transparent sm:text-white'
+                           }`}
+                        />
+                        {!endDate && (
+                           <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
+                              End date
+                           </span>
+                        )}
                      </div>
                   </div>
-               )}
-
-               {/* CLUSTER DATE RANGE (NEW BUT MATCHING STYLE) */}
-               {mode === 'cluster' && (
-                  <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 p-4 backdrop-blur-sm sm:p-5">
-                     <div className="mb-4">
-                        <h3 className="font-medium text-white">Cluster Date Range (optional)</h3>
-                        <p className="mt-1 text-xs text-slate-400">
-                           Filter cluster reports by date range
-                        </p>
-                     </div>
-
-                     <div className="grid min-w-0 gap-3 sm:gap-4 md:grid-cols-2">
-                        <div className="relative min-w-0 max-w-full">
-                           <input
-                              type="date"
-                              value={startDate}
-                              onChange={(e) => setStartDate(e.target.value)}
-                              className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
-                                 startDate ? 'text-white' : 'text-transparent sm:text-white'
-                              }`}
-                           />
-                           {!startDate && (
-                              <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
-                                 Start date
-                              </span>
-                           )}
-                        </div>
-
-                        <div className="relative min-w-0 max-w-full">
-                           <input
-                              type="date"
-                              value={endDate}
-                              min={startDate || undefined}
-                              onChange={(e) => setEndDate(e.target.value)}
-                              className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
-                                 endDate ? 'text-white' : 'text-transparent sm:text-white'
-                              }`}
-                           />
-                           {!endDate && (
-                              <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
-                                 End date
-                              </span>
-                           )}
-                        </div>
-                     </div>
-                  </div>
-               )}
+               </div>
 
                {/* CLUSTER SELECT */}
                {mode === 'cluster' && (

@@ -6,6 +6,45 @@ import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import { FaClipboardList, FaRegCopy, FaCheck, FaLightbulb } from 'react-icons/fa';
 
+function getTodayTimeMs(value) {
+   const numericValue = Number(value);
+
+   if (Number.isNaN(numericValue)) return null;
+
+   let hours;
+   let minutes;
+
+   if (Number.isInteger(numericValue) && numericValue >= 100) {
+      hours = Math.floor(numericValue / 100);
+      minutes = numericValue % 100;
+   } else {
+      hours = Math.floor(numericValue);
+      minutes = Math.round((numericValue - hours) * 60);
+   }
+
+   if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
+
+   const date = new Date();
+   date.setHours(hours, minutes, 0, 0);
+
+   return date.getTime();
+}
+
+function getTimeRemainingMs(endTimeMs) {
+   if (!endTimeMs) return 0;
+
+   return Math.max(0, endTimeMs - Date.now());
+}
+
+function formatTimeRemaining(milliseconds) {
+   const totalSeconds = Math.floor(milliseconds / 1000);
+   const hours = Math.floor(totalSeconds / 3600);
+   const minutes = Math.floor((totalSeconds % 3600) / 60);
+   const seconds = totalSeconds % 60;
+
+   return [hours, minutes, seconds].map((value) => String(value).padStart(2, '0')).join(':');
+}
+
 function getNodeText(node) {
    if (node === null || node === undefined || typeof node === 'boolean') return '';
    if (typeof node === 'string' || typeof node === 'number') return String(node);
@@ -30,7 +69,7 @@ function CopyablePre({ children }) {
    }
 
    return (
-      <div className="not-prose relative my-4 overflow-hidden rounded-xl border border-white/10 bg-slate-950">
+      <div className="not-prose mt-0 mb-0 relative my-4 overflow-hidden rounded-xl border border-white/10 bg-slate-950">
          <button
             type="button"
             onClick={copyCode}
@@ -56,6 +95,9 @@ export default function Form() {
    const [bonusChallenge, setBonusChallenge] = useState(null);
    const [bonusCompleted, setBonusCompleted] = useState(false);
 
+   const [checkFocus, setCheckFocus] = useState(null);
+   const [focusReflection, setFocusReflection] = useState('');
+
    //METHOD-HIDING SETTINGS
    const [hiddenMethodIds, setHiddenMethodIds] = useState([]);
    const [revealedMethodIds, setRevealedMethodIds] = useState([]);
@@ -66,9 +108,13 @@ export default function Form() {
    const [steps, setSteps] = useState([]);
    const [allNames, setAllNames] = useState([]);
    const [startTime] = useState(() => Date.now());
+   const [windowReady, setWindowReady] = useState(false);
+   const [endTimeMs, setEndTimeMs] = useState(null);
+   const [timeRemainingMs, setTimeRemainingMs] = useState(0);
    const [submitting, setSubmitting] = useState(false);
    const [nameID] = useState(() => Cookies.get('selectedPersonId') || '');
    const [cookieCluster] = useState(() => Cookies.get('currentCluster') || '');
+   const canSubmit = windowReady && timeRemainingMs > 0;
 
    const [editingMethodId, setEditingMethodId] = useState(null);
    const [editedMethodContent, setEditedMethodContent] = useState('');
@@ -79,6 +125,55 @@ export default function Form() {
 
    const router = useRouter();
    const redirected = useRef(false);
+   const timeLimitRedirected = useRef(false);
+   const isFinalTwentyMinutes = windowReady && timeRemainingMs <= 20 * 60 * 1000;
+
+   useEffect(() => {
+      if (!endTimeMs) {
+         return;
+      }
+
+      const timer = setInterval(() => {
+         setTimeRemainingMs(getTimeRemainingMs(endTimeMs));
+      }, 1000);
+
+      return () => clearInterval(timer);
+   }, [endTimeMs]);
+
+   useEffect(() => {
+      if (!nameID) {
+         return;
+      }
+
+      async function getTeamTimeLimit() {
+         try {
+            const personRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/id/${nameID}`);
+            const personData = await personRes.json();
+            const teamId = personData.body?.teamId;
+
+            if (!teamId) {
+               setWindowReady(true);
+               return;
+            }
+
+            const teamRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/teams/id/${teamId}`);
+            const teamData = await teamRes.json();
+            const endMs = getTodayTimeMs(teamData.body?.end_window);
+
+            if (endMs !== null) {
+               setTimeRemainingMs(getTimeRemainingMs(endMs));
+               setEndTimeMs(endMs);
+            }
+
+            setWindowReady(true);
+         } catch (err) {
+            console.error('Failed to load team time limit:', err);
+            setWindowReady(true);
+         }
+      }
+
+      getTeamTimeLimit();
+   }, [nameID]);
 
    useEffect(() => {
       if ((!nameID || !cookieCluster) && !redirected.current) {
@@ -97,6 +192,20 @@ export default function Form() {
       getNames();
    }, []);
 
+   useEffect(() => {
+      if (!windowReady || timeRemainingMs > 0 || timeLimitRedirected.current) return;
+
+      if (nameID && cookieCluster) {
+         timeLimitRedirected.current = true;
+
+         alert(
+            'You have exceeded the time limit for checks. Speak to your manager or system administrator. You will now be redirected to the home page.'
+         );
+
+         router.push('/');
+      }
+   }, [windowReady, timeRemainingMs, nameID, cookieCluster, router]);
+
    const name = allNames.find((p) => p.id === nameID)?.name;
 
    // GET CLUSTERS
@@ -111,24 +220,6 @@ export default function Form() {
 
    const clusterId = allClusters.find((c) => c.id === cookieCluster)?.id;
    const clusterName = allClusters.find((c) => c.id === cookieCluster)?.name;
-
-   // NEW CODE - REVIEW
-   const getSteps = useCallback(async () => {
-      if (!clusterId) return;
-
-      try {
-         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`);
-         const data = await res.json();
-
-         const loadedSteps = data.body ?? [];
-         const selectedHiddenMethodIds = chooseHiddenMethods(loadedSteps);
-
-         setSteps(loadedSteps);
-         setHiddenMethodIds(selectedHiddenMethodIds);
-      } catch (err) {
-         console.error(err);
-      }
-   }, [clusterId]);
 
    function chooseHiddenMethods(loadedSteps) {
       const hiddenIds = [];
@@ -147,6 +238,23 @@ export default function Form() {
       return hiddenIds;
    }
 
+   const getSteps = useCallback(async () => {
+      if (!clusterId) return;
+
+      try {
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`);
+         const data = await res.json();
+
+         const loadedSteps = data.body ?? [];
+         const selectedHiddenMethodIds = chooseHiddenMethods(loadedSteps);
+
+         setSteps(loadedSteps);
+         setHiddenMethodIds(selectedHiddenMethodIds);
+      } catch (err) {
+         console.error(err);
+      }
+   }, [clusterId]);
+
    function revealMethod(methodId) {
       setRevealedMethodIds((currentIds) => {
          if (currentIds.includes(methodId)) return currentIds;
@@ -156,8 +264,32 @@ export default function Form() {
    }
 
    useEffect(() => {
-      getSteps();
-   }, [getSteps]);
+      if (!clusterId) return;
+
+      let ignore = false;
+
+      async function loadSteps() {
+         try {
+            const res = await fetch(
+               `${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`
+            );
+
+            const data = await res.json();
+
+            if (!ignore) {
+               setSteps(data.body ?? []);
+            }
+         } catch (err) {
+            console.error(err);
+         }
+      }
+
+      loadSteps();
+
+      return () => {
+         ignore = true;
+      };
+   }, [clusterId]);
 
    useEffect(() => {
       async function getBonusChallenge() {
@@ -177,6 +309,27 @@ export default function Form() {
       }
 
       getBonusChallenge();
+   }, []);
+
+   useEffect(() => {
+      async function getCheckFocus() {
+         try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/check-focus/random`);
+            const data = await res.json();
+
+            if (!data.success) {
+               setCheckFocus(null);
+               return;
+            }
+
+            setCheckFocus(data.body);
+         } catch (error) {
+            console.error('Failed to fetch check focus:', error);
+            setCheckFocus(null);
+         }
+      }
+
+      getCheckFocus();
    }, []);
 
    function toggleStep(stepId) {
@@ -230,7 +383,14 @@ export default function Form() {
                     bonusChallengeId: bonusChallenge.id,
                     completed: bonusCompleted
                  }
-               : null
+               : null,
+
+         checkFocusResult: checkFocus
+            ? {
+                 checkFocusId: checkFocus.id,
+                 reflection: focusReflection.trim()
+              }
+            : null
       };
 
       try {
@@ -372,6 +532,19 @@ export default function Form() {
                   </p>
                </div>
 
+               {/* Focus*/}
+               {checkFocus && (
+                  <section className="mb-8 rounded-2xl border border-purple-400/30 bg-purple-500/10 p-4 md:p-6">
+                     <p className="text-sm font-semibold uppercase tracking-wide text-purple-300">
+                        Today&apos;s Focus
+                     </p>
+
+                     <h2 className="mt-1 text-xl font-semibold text-white">{checkFocus.title}</h2>
+
+                     <p className="mt-2 text-slate-200">{checkFocus.description}</p>
+                  </section>
+               )}
+
                {/* Steps */}
                <div className="space-y-6">
                   {steps.length == 0 && (
@@ -449,7 +622,6 @@ export default function Form() {
                                                             alert('Please enter method content');
                                                             return;
                                                          }
-                                                         // alert(sanitizedContent)
 
                                                          updateMethod(method.id, sanitizedContent);
                                                       }}
@@ -462,14 +634,10 @@ export default function Form() {
                                           ) : (
                                              <>
                                                 <div className="flex gap-3">
-                                                   <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-xs font-semibold text-blue-300">
-                                                      {i + 1}
-                                                   </span>
-
                                                    <div className="prose prose-invert max-w-none overflow-x-auto">
                                                       {isMethodHidden && !isMethodRevealed ? (
                                                          <div className="flex items-center gap-3">
-                                                            <p className="text-yellow-200">
+                                                            <p className="text-yellow-200 mt-0 mb-0">
                                                                Independent challenge — work this
                                                                method out yourself.
                                                             </p>
@@ -478,7 +646,7 @@ export default function Form() {
                                                                onClick={() =>
                                                                   revealMethod(method.id)
                                                                }
-                                                               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20"
+                                                               className="flex h-8 w-8 shrink-0 cursor-pointer transition-all items-center justify-center rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20"
                                                                aria-label="Reveal method guidance"
                                                                title="Reveal guidance"
                                                             >
@@ -595,9 +763,6 @@ export default function Form() {
                                           <button
                                              type="button"
                                              onClick={() => {
-                                                // setEditing(false)
-                                                // setAddMethod(false)
-
                                                 setEditingStepID(null);
                                                 setAddMethodStepID(null);
                                                 setNewMethod('');
@@ -673,6 +838,29 @@ export default function Form() {
                      );
                   })}
                </div>
+
+               {/* Focus Text Box */}
+               {checkFocus && (
+                  <section className="mt-8 rounded-2xl border border-purple-400/30 bg-purple-500/10 p-4 md:p-6">
+                     <p className="text-sm font-semibold uppercase tracking-wide text-purple-300">
+                        Focus Reflection
+                     </p>
+
+                     <p className="mt-2 text-slate-200">
+                        Did today&apos;s focus change what you noticed during the check?
+                     </p>
+
+                     <textarea
+                        name="focusReflection"
+                        rows={4}
+                        placeholder="Optional reflection..."
+                        value={focusReflection}
+                        onChange={(e) => setFocusReflection(e.target.value)}
+                        className="mt-4 w-full rounded-xl border border-purple-400/20 bg-slate-900/50 p-3 text-white placeholder:text-slate-500"
+                     />
+                  </section>
+               )}
+
                {/* Bonus challenges */}
                {bonusChallenge && (
                   <section className="mt-8 rounded-2xl border border-yellow-400/30 bg-yellow-500/10 p-4 md:p-6">
@@ -718,13 +906,32 @@ export default function Form() {
                {/* submit */}
                <button
                   type="submit"
-                  disabled={submitting || steps.length === 0}
+                  disabled={submitting || steps.length === 0 || !canSubmit}
                   aria-disabled={submitting || steps.length === 0}
                   className="mt-10 w-full cursor-pointer rounded-2xl border border-blue-200/25 bg-gradient-to-r from-blue-500 via-blue-500 to-indigo-600 py-4 text-lg font-semibold text-white shadow-xl shadow-blue-950/30 transition duration-200 hover:-translate-y-0.5 hover:border-blue-100/40 hover:from-blue-400 hover:via-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-200/60 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
                >
                   {submitting ? 'Submitting...' : 'Submit Report'}
                </button>
             </form>
+         </div>
+
+         <div className="fixed bottom-4 right-4 z-30 rounded-3xl border border-white/10 bg-white/10 px-4 py-3 text-right shadow-2xl backdrop-blur-xl">
+            <div className="flex items-center gap-3">
+               <span className="text-xs font-semibold uppercase tracking-wide text-white/80">
+                  Time remaining
+               </span>
+               <span
+                  className={`text-xl font-bold tabular-nums ${
+                     isFinalTwentyMinutes ? 'text-red-500' : 'text-white'
+                  }`}
+               >
+                  {!windowReady
+                     ? '--:--:--'
+                     : timeRemainingMs > 0
+                       ? formatTimeRemaining(timeRemainingMs)
+                       : 'END'}
+               </span>
+            </div>
          </div>
       </main>
    );

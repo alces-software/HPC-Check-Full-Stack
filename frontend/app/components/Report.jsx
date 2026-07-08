@@ -275,6 +275,32 @@ export default function Report() {
                   </section>
                )}
 
+               {/* Focus Challenge*/}
+               {report.checkFocusResult && (
+                  <section className="mt-6 rounded-2xl border border-purple-400/30 bg-purple-500/10 p-4 md:p-6">
+                     <p className="text-sm font-semibold uppercase tracking-wide text-purple-300">
+                        Today&apos;s Focus
+                     </p>
+
+                     <h2 className="mt-1 text-xl font-semibold text-white">
+                        {report.checkFocusResult.title}
+                     </h2>
+
+                     <p className="mt-2 text-slate-200">{report.checkFocusResult.description}</p>
+
+                     {report.checkFocusResult.reflection && (
+                        <div className="mt-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">
+                           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                              Reflection
+                           </p>
+                           <p className="mt-2 text-slate-200">
+                              {report.checkFocusResult.reflection}
+                           </p>
+                        </div>
+                     )}
+                  </section>
+               )}
+
                {/* FOOTER */}
                <div className="mt-6 border-t border-white/10 pt-6">
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -81,6 +81,14 @@ module.exports = (db) => {
             });
          }
 
+         let checkFocus = null;
+         const checkFocusResult = report.checkFocusResult;
+         if (checkFocusResult && ObjectId.isValid(checkFocusResult.checkFocusId)) {
+            checkFocus = await db.collection('checkFocus').findOne({
+               _id: new ObjectId(checkFocusResult.checkFocusId)
+            });
+         }
+
          return res.status(200).json({
             success: true,
             body: {
@@ -103,6 +111,14 @@ module.exports = (db) => {
                           title: bonusChallenge.title,
                           description: bonusChallenge.description,
                           completed: bonusChallengeResult.completed
+                       }
+                     : null,
+               checkFocusResult:
+                  checkFocusResult && checkFocus
+                     ? {
+                          title: checkFocus.title,
+                          description: checkFocus.description,
+                          reflection: checkFocusResult.reflection
                        }
                      : null
             }

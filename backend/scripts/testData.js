@@ -10,6 +10,8 @@ module.exports.seedData = async (db) => {
    const methodCol = db.collection('method');
    const bonusChallengeCol = db.collection('bonusChallenge');
 
+   const checkFocusCol = db.collection('checkFocus');
+
    // -----------------------------
    // Helpers
    // -----------------------------
@@ -52,12 +54,16 @@ module.exports.seedData = async (db) => {
       {
          _id: id(),
          name: 'Platform Ops',
-         clusters_per_day: 2
+         clusters_per_day: 2,
+         start_window: 9,
+         end_window: 12
       },
       {
          _id: id(),
          name: 'AI Engineering',
-         clusters_per_day: 2
+         clusters_per_day: 2,
+         start_window: 9,
+         end_window: 12
       }
    ];
 
@@ -223,6 +229,64 @@ module.exports.seedData = async (db) => {
    ];
 
    await bonusChallengeCol.insertMany(bonusChallenges);
+
+   // -----------------------------
+   // CHECKING OPERATIONAL FOCUS OF THE CHECK
+   // E.G. GRUMPY OLD RESEARCHER
+   // -----------------------------
+
+   const checkFocus = [
+      {
+         _id: id(),
+         title: 'New User',
+         description:
+            'Imagine you are a new user to the cluster what might annoy you doing these checks',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Grumpy old researcher',
+         description:
+            'Imagine you are a grumpy old researcher what seems repetitive/boring within the checks?',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Cautious storage user',
+         description:
+            'Imagine you think something is wrong with the storage how do you disprove this?',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'On-Call incident response',
+         description:
+            'Imagine you are responding to an issue outside normal hours. Consider whether important information, errors, and next steps are easy to find quickly.',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'A Smart User',
+         description:
+            'Imagine you are a an experience hpc cluster engineer but its your first time using the cluster. Is everything where it should be?',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Job Failure Investigator',
+         description:
+            'Imagine a user has submitted a job that failed. Consider whether they could quickly understand what happened and where to find useful logs or error messages',
+         active: true
+      },
+      {
+         _id: id(),
+         title: 'Efficient User',
+         description:
+            'Look for unnecessary repeated actions, slow workflows or places where a user has to do more work than should be necessary.',
+         active: true
+      }
+   ];
+   await checkFocusCol.insertMany(checkFocus);
 
    // -----------------------------
    // INSTRUCTION TEMPLATES (shared pattern)
