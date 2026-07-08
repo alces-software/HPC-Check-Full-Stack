@@ -183,6 +183,19 @@ export default function Schedule() {
       }
    }
 
+      useEffect(() => {
+      if (swapTarget) {
+         document.body.style.overflow = 'hidden';
+      } else {
+         document.body.style.overflow = '';
+      }
+
+      return () => {
+         document.body.style.overflow = '';
+      };
+   }, [swapTarget]);
+
+
    if (loading || !schedule) {
       return (
          <main className="flex items-center justify-center py-10">
@@ -447,62 +460,85 @@ export default function Schedule() {
             </div>
          </div>
 
-         {/* ========================= */}
-         {/* FANCY SWAP MODAL */}
+          {/* ========================= */}
+         {/* SWAP MODAL */}
          {/* ========================= */}
          {swapTarget && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
-               <div className="w-full max-w-[min(520px,calc(100vw-2rem))] max-h-[calc(100vh-4rem)] overflow-hidden rounded-3xl border border-white/10 bg-slate-900/90 p-6 shadow-2xl">
-                  {/* Title */}
-                  <div className="text-center">
-                     <h3 className="text-xl font-bold text-white">Swap Assignment</h3>
-                     <p className="mt-1 text-sm text-white/60">Replace {swapTarget.personName}</p>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-md">
+               <div className="w-full max-w-lg rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl">
+                  {/* Header */}
+                  <div className="mb-6">
+                     <h3 className="text-3xl font-bold text-white">Swap Assignment</h3>
+
+                     <p className="mt-2 text-slate-300">
+                        Choose a replacement for{' '}
+                        <span className="font-semibold text-white">{swapTarget.personName}</span>
+                     </p>
                   </div>
 
-                  {/* Visual swap indicator */}
-                  <div className="my-6 flex flex-col items-center gap-2 text-white">
-                     <div className="text-sm text-white/50">Current</div>
-                     <div className="text-2xl font-bold">{swapTarget.personName}</div>
+                  {/* Summary */}
+                  <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-5">
+                     <div className="flex items-center justify-between gap-4">
+                        <div>
+                           <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                              Current
+                           </p>
 
-                     <div className="my-2 text-3xl text-green-400 animate-pulse">⇅</div>
+                           <p className="mt-1 text-lg font-semibold text-white">
+                              {swapTarget.personName}
+                           </p>
+                        </div>
 
-                     <div className="text-sm text-white/50">
-                        {selectedSwapPerson ? 'Selected' : 'Choose replacement'}
-                     </div>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10">
+                           <IoSwapHorizontal className="text-xl text-amber-200" />
+                        </div>
 
-                     <div className="text-2xl font-bold text-green-300">
-                        {selectedSwapPerson?.name || '—'}
+                        <div className="text-right">
+                           <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                              Replacement
+                           </p>
+
+                           <p className="mt-1 text-lg font-semibold text-green-300">
+                              {selectedSwapPerson?.name || 'Select below'}
+                           </p>
+                        </div>
                      </div>
                   </div>
 
-                  {/* Options */}
-                  <div className="space-y-2 max-h-56 overflow-auto p-2">
+                  {/* People */}
+                  <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
                      {swapTarget.options
                         .filter((p) => p.id !== swapTarget.personId)
-                        .map((p) => (
-                           <div
-                              key={p.id}
-                              onClick={() => setSelectedSwapPerson(p)}
-                              className={`cursor-pointer rounded-2xl border px-4 py-3 transition-all duration-200 ${
-                                 selectedSwapPerson?.id === p.id
-                                    ? 'border-green-400 bg-green-500/20 scale-[1.02]'
-                                    : 'border-white/10 bg-white/5 hover:bg-white/10'
-                              }`}
-                           >
-                              <div className="font-semibold text-white">{p.name}</div>
-                              <div className="text-xs text-white/50">Tap to select</div>
-                           </div>
-                        ))}
+                        .map((p) => {
+                           const selected = selectedSwapPerson?.id === p.id;
+
+                           return (
+                              <button
+                                 key={p.id}
+                                 type="button"
+                                 onClick={() => setSelectedSwapPerson(p)}
+                                 className={`flex w-full cursor-pointer items-center justify-between rounded-xl border px-4 py-3 text-left transition-all ${
+                                    selected
+                                       ? 'border-green-400/40 bg-green-500/10'
+                                       : 'border-white/10 bg-white/5 hover:bg-white/10'
+                                 }`}
+                              >
+                                 <span className="font-semibold text-white">{p.name}</span>
+
+                                 {selected && <IoMdDoneAll className="text-xl text-green-400" />}
+                              </button>
+                           );
+                        })}
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-6 flex gap-3">
+                  <div className="mt-8 flex justify-end gap-3">
                      <button
                         onClick={() => {
                            setSwapTarget(null);
                            setSelectedSwapPerson(null);
                         }}
-                        className="flex-1 rounded-xl bg-white/10 py-3 text-white hover:bg-white/20"
+                        className="rounded-lg cursor-pointer bg-white/10 px-5 py-2.5 text-white transition hover:bg-white/20"
                      >
                         Cancel
                      </button>
@@ -510,10 +546,10 @@ export default function Schedule() {
                      <button
                         disabled={!selectedSwapPerson}
                         onClick={() => swapPerson(selectedSwapPerson.id)}
-                        className={`flex-1 rounded-xl py-3 font-bold transition ${
+                        className={`rounded-lg px-5 py-2.5 font-semibold transition ${
                            selectedSwapPerson
-                              ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:scale-[1.02]'
-                              : 'bg-white/10 text-white/40 cursor-not-allowed'
+                              ? 'bg-green-500/20 cursor-pointer text-green-200 hover:bg-green-500/30'
+                              : 'cursor-not-allowed bg-white/10 text-white/40'
                         }`}
                      >
                         Confirm Swap
