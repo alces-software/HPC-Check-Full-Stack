@@ -267,11 +267,11 @@ export default function PoolClustersPage() {
                                  </div>
 
                                  <button
-                                    type="button"
                                     onClick={() => handleRemoveCluster(cluster.id)}
-                                    className="ml-3 rounded-full border border-red-400/40 bg-red-500/10 px-2.5 py-1 text-sm text-red-200 transition hover:bg-red-500/20"
+                                    className="ml-3 cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
+                                    title="Delete pool"
                                  >
-                                    ×
+                                    ✕
                                  </button>
                               </div>
                            ))

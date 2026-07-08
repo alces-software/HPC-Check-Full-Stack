@@ -15,25 +15,31 @@ module.exports = (db) => {
 
          // Check id
          if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing team id' });
+            return res.status(400).json({ success: false, error: 'Missing team ID' });
+         }
+
+         if (typeof id !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The team ID provided is not a string' });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
+            return res.status(400).json({ success: false, error: 'The team ID provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
+            return res.status(400).json({ success: false, error: 'Invalid team ID provided' });
          }
 
-         const poolResults = await db.collection('team').findOne({
+         const pool = await db.collection('team').findOne({
             _id: new ObjectId(sanitizedId)
          });
 
-         if (!poolResults) {
-            return res.status(404).json({ success: false, error: "team doesn't exist" });
+         if (!pool) {
+            return res.status(404).json({ success: false, error: "Team doesn't exist" });
          }
 
          // Get the teamPool
@@ -43,23 +49,18 @@ module.exports = (db) => {
             return res.status(404).json({ success: false, error: 'Team does not have any pools' });
          }
 
-         // Get all pool IDs
-         const poolIds = teamPools.map((tp) => new ObjectId(tp.poolId));
-
          // Fetch all pool documents
-         const pools = await db
+         const allPools = await db
             .collection('pool')
-            .find({ _id: { $in: poolIds } })
+            .find({ _id: { $in: teamPools.map((tp) => new ObjectId(tp.poolId)) } })
             .toArray();
-
-         const response = pools.map(({ _id, ...pool }) => ({
-            id: _id,
-            ...pool
-         }));
 
          return res.json({
             success: true,
-            body: response
+            body: allPools.map(({ _id, ...pool }) => ({
+               id: _id,
+               ...pool
+            }))
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

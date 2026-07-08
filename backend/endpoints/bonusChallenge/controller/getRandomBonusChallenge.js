@@ -9,11 +9,13 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
+         // Check to see if the user gets a bonus question
          if (Math.random() >= 0.4) {
             return res.status(200).json({ success: true });
          }
 
-         const bonusChallenge = await db
+         // Get a random bonus question from the database
+         const response = await db
             .collection('bonusChallenge')
             .aggregate([
                {
@@ -35,13 +37,14 @@ module.exports = (db) => {
                }))
             );
 
-         if (!bonusChallenge) {
+         // Check if a bonus question was chosen
+         if (!response) {
             return res
                .status(404)
                .json({ success: false, error: 'No active bonus challenges found' });
          }
 
-         return res.status(200).json({ success: true, body: bonusChallenge[0] });
+         return res.status(200).json({ success: true, body: response[0] });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }

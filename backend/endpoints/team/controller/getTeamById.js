@@ -14,24 +14,24 @@ module.exports = (db) => {
          const { id } = req.params || {};
 
          // Check id
+         if (!id) {
+            return res.status(400).json({ success: false, error: 'Missing teams ID' });
+         }
+
          if (typeof id !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The team id provided is not a string' });
-         }
-
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing teams id' });
+               .json({ success: false, error: 'The team ID provided is not a string' });
          }
 
          const sanitizedId = String(id).trim();
 
          if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
+            return res.status(400).json({ success: false, error: 'The team ID provided is empty' });
          }
 
          if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
+            return res.status(400).json({ success: false, error: 'Invalid team ID provided' });
          }
 
          // Get the team

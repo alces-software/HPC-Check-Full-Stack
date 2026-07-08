@@ -55,8 +55,6 @@ export default function TeamSettingsPage () {
       }
    }, [teamId]);
 
-   const [allPools, setAllPools] = useState([]);
-
    useEffect(() => {
       loadTeam();
    }, [loadTeam]);
@@ -101,7 +99,7 @@ export default function TeamSettingsPage () {
 
          setPools(data.body ?? []);
       } catch (err) {
-         console.error('Failed to fetch availablepools:', err);
+         console.error('Failed to fetch available pools:', err);
          setPools([]);
       }
    }, [teamId]);
@@ -295,12 +293,27 @@ export default function TeamSettingsPage () {
          setSavingSettings(true);
          setStatusMessage('');
 
+         const startWindowInt = timeInputToInt(startWindow);
+         const endWindowInt = timeInputToInt(endWindow);
+
          if (clustersPerDay < 0) {
             setStatusMessage("Can't set clusters per day to zero.");
             setStatusType('error');
             return;
-         } else if (clustersPerDay === team.clusters_per_day) {
-            setStatusMessage("There's no changes made to settings to save.");
+         } else if (!startWindow || !endWindow) {
+            setStatusMessage('Please select a start and end time.');
+            setStatusType('error');
+            return;
+         } else if (startWindowInt >= endWindowInt) {
+            setStatusMessage('Start time must be before end time.');
+            setStatusType('error');
+            return;
+         } else if (
+            clustersPerDay === team.clusters_per_day &&
+            startWindowInt === team.start_window &&
+            endWindowInt === team.end_window
+         ) {
+            setStatusMessage('There are no settings changes to save.');
             setStatusType('error');
             return;
          }
@@ -312,7 +325,9 @@ export default function TeamSettingsPage () {
             },
             body: JSON.stringify({
                id: teamId,
-               clusters_per_day: clustersPerDay
+               clusters_per_day: clustersPerDay,
+               start_window: startWindowInt,
+               end_window: endWindowInt
             })
          });
 
@@ -324,7 +339,9 @@ export default function TeamSettingsPage () {
 
          setTeam(prev => ({
             ...prev,
-            clusters_per_day: clustersPerDay
+            clusters_per_day: clustersPerDay,
+            start_window: startWindowInt,
+            end_window: endWindowInt
          }));
 
          setStatusMessage('Settings updated successfully.');
@@ -572,7 +589,7 @@ export default function TeamSettingsPage () {
                                        className='ml-3 rounded-full border border-red-400/40 bg-red-500/10 px-2.5 py-1 text-sm text-red-200 transition hover:bg-red-500/20'
                                        aria-label={`Remove ${pool.name} from team`}
                                     >
-                                       ×
+                                       ✕
                                     </button>
                                  </div>
                               ))

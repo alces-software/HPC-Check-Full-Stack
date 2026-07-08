@@ -13,6 +13,13 @@ module.exports = (db) => {
       try {
          const { date } = req.query || {};
 
+         // Check date
+         if (typeof date !== 'number') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The data provided is not a number' });
+         }
+
          // Get people
          const people = await db
             .collection('person')
@@ -41,7 +48,7 @@ module.exports = (db) => {
          const startOfDay = date ? new Date(date) : new Date();
          startOfDay.setHours(0, 0, 0, 0);
 
-         const endOfDay = new Date();
+         const endOfDay = new Date(startOfDay);
          endOfDay.setHours(23, 59, 59, 999);
 
          const overviewReport = await db.collection('overviewReport').findOne({
@@ -72,18 +79,16 @@ module.exports = (db) => {
                   .toArray();
 
                const ResultsWithTitles = await Promise.all(
-                  results
-                     .map(async (data) => {
-                        const instruction = await db
-                           .collection('instruction')
-                           .findOne({ _id: new ObjectId(data.instructionId) });
+                  results.map(async (data) => {
+                     const instruction = await db
+                        .collection('instruction')
+                        .findOne({ _id: new ObjectId(data.instructionId) });
 
-                        return {
-                           title: instruction.title,
-                           ...data
-                        };
-                     })
-                     .filter((r) => r.note || !r.passed)
+                     return {
+                        title: instruction.title,
+                        ...data
+                     };
+                  })
                );
 
                return {
@@ -91,7 +96,7 @@ module.exports = (db) => {
                   person: people.find((p) => p.id === rest.personId)?.name,
                   cluster: cluster.find((c) => c.id === rest.clusterId)?.name,
                   ...rest,
-                  results: ResultsWithTitles
+                  results: ResultsWithTitles.filter((r) => r.note || !r.passed)
                };
             })
          );

@@ -14,14 +14,14 @@ module.exports = (db) => {
          const { id } = req.params || {};
 
          // Check id
+         if (!id) {
+            return res.status(400).json({ success: false, error: 'Missing the report id' });
+         }
+
          if (typeof id !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The report id provided is not a string' });
-         }
-
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing the report id' });
          }
 
          const sanitisedId = String(id).trim();
@@ -36,6 +36,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'Invalid report id' });
          }
 
+         // Get report
          const report = await db.collection('report').findOne({
             _id: new ObjectId(sanitisedId)
          });

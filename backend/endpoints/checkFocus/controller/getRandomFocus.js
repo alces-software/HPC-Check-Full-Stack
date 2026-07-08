@@ -9,10 +9,12 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
+         // Check to see if the user gets a focus
          if (Math.random() >= 0.2) {
             return res.status(200).json({ success: true, body: null });
          }
 
+         // Get a random focus from the database
          const checkFocus = await db
             .collection('checkFocus')
             .aggregate([
@@ -35,6 +37,7 @@ module.exports = (db) => {
                }))
             );
 
+         // Check if a focus was chosen
          if (!checkFocus[0]) {
             return res.status(404).json({ success: false, error: 'No active focuses found' });
          }

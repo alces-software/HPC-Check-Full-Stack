@@ -250,6 +250,7 @@ export default function Form() {
 
          setSteps(loadedSteps);
          setHiddenMethodIds(selectedHiddenMethodIds);
+         setRevealedMethodIds([]);
       } catch (err) {
          console.error(err);
       }
@@ -264,32 +265,8 @@ export default function Form() {
    }
 
    useEffect(() => {
-      if (!clusterId) return;
-
-      let ignore = false;
-
-      async function loadSteps() {
-         try {
-            const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`
-            );
-
-            const data = await res.json();
-
-            if (!ignore) {
-               setSteps(data.body ?? []);
-            }
-         } catch (err) {
-            console.error(err);
-         }
-      }
-
-      loadSteps();
-
-      return () => {
-         ignore = true;
-      };
-   }, [clusterId]);
+      getSteps();
+   }, [getSteps]);
 
    useEffect(() => {
       async function getBonusChallenge() {
@@ -719,7 +696,7 @@ export default function Form() {
                                                 onClick={() => setAddMethodStepID(step.id)}
                                                 className="mt-8 cursor-pointer rounded-xl border border-emerald-300/25 bg-emerald-400/10 px-5 py-2.5 text-sm font-semibold text-emerald-100 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-emerald-300/45 hover:bg-emerald-400/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
                                              >
-                                                Add Method ＋
+                                                Add Method +
                                              </button>
                                           ) : (
                                              <div className="mt-4">
@@ -769,7 +746,7 @@ export default function Form() {
                                              }}
                                              className="mt-8 cursor-pointer rounded-xl border border-slate-300/20 bg-slate-100/10 px-5 py-2.5 text-sm font-semibold text-slate-200 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-slate-200/40 hover:bg-slate-100/15 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-200/40 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
                                           >
-                                             Close Editor Ｘ
+                                             Close Editor X
                                           </button>
                                        </div>
                                     </>

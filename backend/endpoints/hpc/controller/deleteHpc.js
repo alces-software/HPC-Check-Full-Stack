@@ -11,31 +11,37 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params;
+         const { id: rawClusterId } = req.params;
 
-         // Check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing hpc id' });
+         // Check cluster id
+         if (rawClusterId === undefined || rawClusterId === null) {
+            return res.status(400).json({ success: false, error: 'Missing cluster ID' });
          }
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length === 0) {
+         if (typeof rawClusterId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: "The hpc id you've provided is empty" });
+               .json({ success: false, error: 'The cluster ID provided is not a string' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
+         const clusterId = rawClusterId.trim();
+
+         if (!clusterId) {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster ID provided is empty' });
          }
 
-         // Check cluster exists
-         const existingCluster = await db.collection('cluster').findOneAndDelete({
-            _id: new ObjectId(sanitizedId)
+         if (!ObjectId.isValid(clusterId)) {
+            return res.status(400).json({ success: false, error: 'Invalid cluster ID provided' });
+         }
+
+         // Get cluster
+         const cluster = await db.collection('cluster').findOneAndDelete({
+            _id: new ObjectId(clusterId)
          });
 
-         if (!existingCluster) {
+         if (!cluster) {
             return res.status(409).json({
                success: false,
                error: "HPC doesn't exists"
@@ -46,7 +52,7 @@ module.exports = (db) => {
          const reports = await db
             .collection('report')
             .find({
-               clusterId: sanitizedId
+               clusterId: clusterId
             })
             .toArray()
             .then((res) =>
@@ -74,7 +80,7 @@ module.exports = (db) => {
          const instructions = await db
             .collection('instruction')
             .find({
-               clusterId: new ObjectId(sanitizedId)
+               clusterId: new ObjectId(clusterId)
             })
             .toArray()
             .then((res) =>

@@ -16,6 +16,12 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: "Missing pool's name" });
          }
 
+         if (typeof name !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The name provided is not a string' });
+         }
+
          const sanitizedName = String(name).trim();
 
          if (sanitizedName.length === 0) {
@@ -23,14 +29,14 @@ module.exports = (db) => {
          }
 
          // Make sure the person exists
-         const existingPerson = await db.collection('pool').findOne({
+         const person = await db.collection('pool').findOne({
             name: {
                $regex: `^${sanitizedName}$`,
                $options: 'i'
             }
          });
 
-         if (existingPerson) {
+         if (person) {
             return res
                .status(409)
                .json({ success: false, error: 'Pool with this name already exits' });
