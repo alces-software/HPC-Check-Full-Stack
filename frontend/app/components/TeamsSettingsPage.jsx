@@ -536,12 +536,11 @@ export default function TeamSettingsPage() {
                                     </div>
 
                                     <button
-                                       type="button"
                                        onClick={() => handleRemovePool(pool.id)}
-                                       className="ml-3 rounded-full border border-red-400/40 bg-red-500/10 px-2.5 py-1 text-sm text-red-200 transition hover:bg-red-500/20"
-                                       aria-label={`Remove ${pool.name} from team`}
+                                       className="ml-3 cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
+                                       title="Delete user"
                                     >
-                                       ×
+                                       ✕
                                     </button>
                                  </div>
                               ))
