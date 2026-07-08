@@ -226,6 +226,12 @@
                },
                "assigned": {
                   "bsonType": "bool"
+               },
+               "start_window": {
+                  "bsonType": "number"
+               },
+               "end_window": {
+                  "bsonType": "number"
                }
             }
          }

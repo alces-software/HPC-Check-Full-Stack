@@ -44,7 +44,9 @@ module.exports = (db) => {
             body: {
                id: results._id.toString(),
                name: results.name,
-               clusters_per_day: results.clusters_per_day
+               clusters_per_day: results.clusters_per_day,
+                  start_window: results.start_window,
+                  end_window: results.end_window
             }
          });
       } catch (error) {
