@@ -207,7 +207,7 @@ export default function Schedule() {
 
    return (
       <main className="space-y-8">
-         <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
+         <div className="rounded-3xl p-8 ">
             {/* Header */}
             <div className="mb-6 grid gap-4 text-center md:grid-cols-[1fr_auto] md:items-start md:text-left">
                <div className="order-1md:col-start-1 md:row-start-1">
@@ -318,7 +318,7 @@ export default function Schedule() {
                         {/* Day header */}
                         <div
                            className={`flex items-center justify-between px-6 py-4 ${
-                              isToday ? 'bg-green-500/20' : 'bg-slate-800/50'
+                              isToday ? 'bg-green-500/20' : 'bg-slate-900/60'
                            }`}
                         >
                            <div>

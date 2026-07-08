@@ -479,16 +479,14 @@ export default function Form() {
 
    return (
       <main className="flex justify-center space-y-8">
-         <div className="relative z-10 w-full max-w-6xl">
+         <div className="relative z-10 w-full">
             <form
                onSubmit={handleSubmit}
-               className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl"
+               className="p-10"
             >
                {/* Header */}
-               <div className="mb-10 text-center">
-                  <div className="mb-4 flex justify-center">
-                     <FaClipboardList className="h-20 w-20 text-blue-300" aria-hidden="true" />
-                  </div>
+               <div className="mb-10 text-left">
+                  
 
                   <h1 className="text-4xl sm:text-5xl font-bold text-white">
                      Process Documentation
@@ -840,7 +838,7 @@ export default function Form() {
                   type="submit"
                   disabled={submitting || steps.length === 0 || !canSubmit}
                   aria-disabled={submitting || steps.length === 0}
-                  className="mt-10 w-full cursor-pointer rounded-2xl border border-blue-200/25 bg-gradient-to-r from-blue-500 via-blue-500 to-indigo-600 py-4 text-lg font-semibold text-white shadow-xl shadow-blue-950/30 transition duration-200 hover:-translate-y-0.5 hover:border-blue-100/40 hover:from-blue-400 hover:via-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-200/60 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
+                  className="mt-10 w-full cursor-pointer rounded-4xl border border-slate-200/25 bg-gradient-to-r from-blue-500 via-blue-500 to-indigo-600 py-4 text-lg font-semibold text-white shadow-xl shadow-blue-950/30 transition duration-200 hover:-translate-y-0.5 hover:border-blue-100/40 hover:from-blue-400 hover:via-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-blue-200/60 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
                >
                   {submitting ? 'Submitting...' : 'Submit Report'}
                </button>
