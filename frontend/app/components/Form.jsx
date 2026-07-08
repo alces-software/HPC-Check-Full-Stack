@@ -30,7 +30,7 @@ function CopyablePre({ children }) {
    }
 
    return (
-      <div className="not-prose relative my-4 overflow-hidden rounded-xl border border-white/10 bg-slate-950">
+      <div className="not-prose mt-0 mb-0 relative my-4 overflow-hidden rounded-xl border border-white/10 bg-slate-950">
          <button
             type="button"
             onClick={copyCode}
@@ -56,7 +56,6 @@ export default function Form() {
    const [bonusChallenge, setBonusChallenge] = useState(null);
    const [bonusCompleted, setBonusCompleted] = useState(false);
 
-   //METHOD-HIDING SETTINGS
    const [hiddenMethodIds, setHiddenMethodIds] = useState([]);
    const [revealedMethodIds, setRevealedMethodIds] = useState([]);
    const MAX_HIDDEN_METHODS = 2;
@@ -111,25 +110,6 @@ export default function Form() {
 
    const clusterId = allClusters.find((c) => c.id === cookieCluster)?.id;
    const clusterName = allClusters.find((c) => c.id === cookieCluster)?.name;
-
-   // NEW CODE - REVIEW
-   const getSteps = useCallback(async () => {
-      if (!clusterId) return;
-
-      try {
-         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`);
-         const data = await res.json();
-
-         const loadedSteps = data.body ?? [];
-         const selectedHiddenMethodIds = chooseHiddenMethods(loadedSteps);
-
-         setSteps(loadedSteps);
-         setHiddenMethodIds(selectedHiddenMethodIds);
-      } catch (err) {
-         console.error(err);
-      }
-   }, [clusterId]);
-
    function chooseHiddenMethods(loadedSteps) {
       const hiddenIds = [];
 
@@ -146,6 +126,23 @@ export default function Form() {
       }
       return hiddenIds;
    }
+
+   const getSteps = useCallback(async () => {
+      if (!clusterId) return;
+
+      try {
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`);
+         const data = await res.json();
+
+         const loadedSteps = data.body ?? [];
+         const selectedHiddenMethodIds = chooseHiddenMethods(loadedSteps);
+
+         setSteps(loadedSteps);
+         setHiddenMethodIds(selectedHiddenMethodIds);
+      } catch (err) {
+         console.error(err);
+      }
+   }, [clusterId]);
 
    function revealMethod(methodId) {
       setRevealedMethodIds((currentIds) => {
@@ -227,9 +224,9 @@ export default function Form() {
          bonusChallengeResult:
             bonusChallenge && bonusCompleted
                ? {
-                    bonusChallengeId: bonusChallenge.id,
-                    completed: bonusCompleted
-                 }
+                  bonusChallengeId: bonusChallenge.id,
+                  completed: bonusCompleted
+               }
                : null
       };
 
@@ -449,7 +446,6 @@ export default function Form() {
                                                             alert('Please enter method content');
                                                             return;
                                                          }
-                                                         // alert(sanitizedContent)
 
                                                          updateMethod(method.id, sanitizedContent);
                                                       }}
@@ -462,14 +458,10 @@ export default function Form() {
                                           ) : (
                                              <>
                                                 <div className="flex gap-3">
-                                                   <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-xs font-semibold text-blue-300">
-                                                      {i + 1}
-                                                   </span>
-
                                                    <div className="prose prose-invert max-w-none overflow-x-auto">
                                                       {isMethodHidden && !isMethodRevealed ? (
                                                          <div className="flex items-center gap-3">
-                                                            <p className="text-yellow-200">
+                                                            <p className="text-yellow-200 mt-0 mb-0">
                                                                Independent challenge — work this
                                                                method out yourself.
                                                             </p>
@@ -478,7 +470,7 @@ export default function Form() {
                                                                onClick={() =>
                                                                   revealMethod(method.id)
                                                                }
-                                                               className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20"
+                                                               className="flex h-8 w-8 shrink-0 cursor-pointer transition-all items-center justify-center rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20"
                                                                aria-label="Reveal method guidance"
                                                                title="Reveal guidance"
                                                             >
@@ -595,9 +587,6 @@ export default function Form() {
                                           <button
                                              type="button"
                                              onClick={() => {
-                                                // setEditing(false)
-                                                // setAddMethod(false)
-
                                                 setEditingStepID(null);
                                                 setAddMethodStepID(null);
                                                 setNewMethod('');
@@ -663,11 +652,10 @@ export default function Form() {
                               }
                               rows={4}
                               placeholder={isCompleted ? 'Notes (optional)' : 'What went wrong?'}
-                              className={`mt-4 w-full rounded-xl border p-3 text-white ${
-                                 isCompleted
+                              className={`mt-4 w-full rounded-xl border p-3 text-white ${isCompleted
                                     ? 'border-white/10 bg-slate-900/50'
                                     : 'border-red-500/30 bg-red-900/20'
-                              }`}
+                                 }`}
                            />
                         </section>
                      );
