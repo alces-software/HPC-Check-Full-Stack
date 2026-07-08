@@ -250,6 +250,7 @@ export default function Form() {
 
          setSteps(loadedSteps);
          setHiddenMethodIds(selectedHiddenMethodIds);
+         setRevealedMethodIds([]);
       } catch (err) {
          console.error(err);
       }
@@ -264,32 +265,8 @@ export default function Form() {
    }
 
    useEffect(() => {
-      if (!clusterId) return;
-
-      let ignore = false;
-
-      async function loadSteps() {
-         try {
-            const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`
-            );
-
-            const data = await res.json();
-
-            if (!ignore) {
-               setSteps(data.body ?? []);
-            }
-         } catch (err) {
-            console.error(err);
-         }
-      }
-
-      loadSteps();
-
-      return () => {
-         ignore = true;
-      };
-   }, [clusterId]);
+      getSteps();
+   }, [getSteps]);
 
    useEffect(() => {
       async function getBonusChallenge() {
@@ -386,12 +363,12 @@ export default function Form() {
                : null,
 
          checkFocusResult:
-         checkFocus
-        ?{
-         checkFocusId: checkFocus.id,
-         reflection: focusReflection.trim() 
-         }
-         :null
+            checkFocus
+               ? {
+                  checkFocusId: checkFocus.id,
+                  reflection: focusReflection.trim()
+               }
+               : null
       };
 
       try {
@@ -925,15 +902,14 @@ export default function Form() {
                   Time remaining
                </span>
                <span
-                  className={`text-xl font-bold tabular-nums ${
-                     isFinalTwentyMinutes ? 'text-red-500' : 'text-white'
-                  }`}
+                  className={`text-xl font-bold tabular-nums ${isFinalTwentyMinutes ? 'text-red-500' : 'text-white'
+                     }`}
                >
                   {!windowReady
                      ? '--:--:--'
                      : timeRemainingMs > 0
-                       ? formatTimeRemaining(timeRemainingMs)
-                       : 'END'}
+                        ? formatTimeRemaining(timeRemainingMs)
+                        : 'END'}
                </span>
             </div>
          </div>
