@@ -362,13 +362,12 @@ export default function Form() {
                  }
                : null,
 
-         checkFocusResult:
-            checkFocus
-               ? {
-                  checkFocusId: checkFocus.id,
-                  reflection: focusReflection.trim()
-               }
-               : null
+         checkFocusResult: checkFocus
+            ? {
+                 checkFocusId: checkFocus.id,
+                 reflection: focusReflection.trim()
+              }
+            : null
       };
 
       try {
@@ -899,14 +898,15 @@ export default function Form() {
                   Time remaining
                </span>
                <span
-                  className={`text-xl font-bold tabular-nums ${isFinalTwentyMinutes ? 'text-red-500' : 'text-white'
-                     }`}
+                  className={`text-xl font-bold tabular-nums ${
+                     isFinalTwentyMinutes ? 'text-red-500' : 'text-white'
+                  }`}
                >
                   {!windowReady
                      ? '--:--:--'
                      : timeRemainingMs > 0
-                        ? formatTimeRemaining(timeRemainingMs)
-                        : 'END'}
+                       ? formatTimeRemaining(timeRemainingMs)
+                       : 'END'}
                </span>
             </div>
          </div>
