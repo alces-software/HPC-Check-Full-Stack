@@ -12,7 +12,7 @@ module.exports = (db) => {
          const { day } = req.body || {};
 
          // Check day
-         if (typeof id !== 'string') {
+         if (typeof day !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The day provided is not a string' });

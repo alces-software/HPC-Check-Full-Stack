@@ -9,6 +9,7 @@ module.exports = async (db) => {
          .get('/rota', require('./controller/getAllRota')(db))
          .get('/rota/person/:id', require('./controller/getRotaByPerson')(db))
          .get('/rota/week/:date', require('./controller/getRotaByWeek')(db))
+         .get('/rota/day/:date', require('./controller/getRotaByDay')(db))
          //POST
          .post('/rota/override', require('./controller/addOverride')(db))
          .post('/rota/closed', require('./controller/addClosedDay')(db))
