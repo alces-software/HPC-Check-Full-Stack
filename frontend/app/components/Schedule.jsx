@@ -183,7 +183,7 @@ export default function Schedule() {
       }
    }
 
-      useEffect(() => {
+   useEffect(() => {
       if (swapTarget) {
          document.body.style.overflow = 'hidden';
       } else {
@@ -194,7 +194,6 @@ export default function Schedule() {
          document.body.style.overflow = '';
       };
    }, [swapTarget]);
-
 
    if (loading || !schedule) {
       return (
@@ -216,23 +215,17 @@ export default function Schedule() {
                   <p className="mt-2  text-slate-300">Week beginning {formattedWeekBeginning}</p>
                </div>
 
- 
-
-            {/* KEYS */}
-{/* 
+               {/* KEYS */}
+               {/* 
                <div className="order-2 flex pt-4 col-span-1 md:col-span-2 justify-center md:order-1 md:col-start-1 md:row-start-2 md:justify-end"> */}
-                  <div className="order-2 grid grid-cols-2 col-span-1 md:col-span-2  justify-center gap-3 pt-4 lg:flex lg:flex-nowrap md:order-3 md:col-start-1 md:row-start-2 md:justify-end">
-
-                     <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+               <div className="order-2 grid grid-cols-2 col-span-1 md:col-span-2  justify-center gap-3 pt-4 lg:flex lg:flex-nowrap md:order-3 md:col-start-1 md:row-start-2 md:justify-end">
+                  <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-green-300/20 bg-green-500/10 text-green-400">
                         <IoMdDoneAll className="h-4 w-4" aria-hidden="true" />
                      </span>
 
                      <span className="font-semibold text-white">Completed Check</span>
                   </div>
-
-
-                 
 
                   <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-sky-300/20 bg-sky-500/10 text-sky-200/90">
@@ -242,17 +235,13 @@ export default function Schedule() {
                      <span className="font-semibold text-white">Pending Check</span>
                   </div>
 
-
-               
-
-                   <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                  <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-red-300/20 bg-red-500/10 text-red-200/90">
                         <IoCloseSharp className="h-5 w-5" aria-hidden="true" />
                      </span>
 
                      <span className="font-semibold text-white">Missed Check</span>
                   </div>
-
 
                   <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10 text-amber-200/90">
@@ -460,7 +449,7 @@ export default function Schedule() {
             </div>
          </div>
 
-          {/* ========================= */}
+         {/* ========================= */}
          {/* SWAP MODAL */}
          {/* ========================= */}
          {swapTarget && (
