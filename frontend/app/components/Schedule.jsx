@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import { IoSwapHorizontal } from 'react-icons/io5';
 import { IoIosArrowForward, IoMdDoneAll } from 'react-icons/io';
 import { BsThreeDots } from 'react-icons/bs';
+import { IoCloseSharp } from 'react-icons/io5';
 
 function formatDateParam(date) {
    const year = date.getFullYear();
@@ -197,26 +198,49 @@ export default function Schedule() {
          <div className="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
             {/* Header */}
             <div className="mb-6 grid gap-4 text-center md:grid-cols-[1fr_auto] md:items-start md:text-left">
-               <div className="order-1 md:col-start-1 md:row-start-1">
+               <div className="order-1md:col-start-1 md:row-start-1">
                   <h1 className="text-4xl font-bold text-white">Weekly Schedule</h1>
-                  <p className="mt-2 text-slate-300">Week beginning {formattedWeekBeginning}</p>
+                  <p className="mt-2  text-slate-300">Week beginning {formattedWeekBeginning}</p>
                </div>
 
-               <div className="order-2 flex justify-center md:order-3 md:col-start-2 md:row-start-2 md:justify-end">
+ 
+
+            {/* KEYS */}
+{/* 
+               <div className="order-2 flex pt-4 col-span-1 md:col-span-2 justify-center md:order-1 md:col-start-1 md:row-start-2 md:justify-end"> */}
+                  <div className="order-2 grid grid-cols-2 col-span-1 md:col-span-2  justify-center gap-3 pt-4 lg:flex lg:flex-nowrap md:order-3 md:col-start-1 md:row-start-2 md:justify-end">
+
+                     <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-green-300/20 bg-green-500/10 text-green-400">
+                        <IoMdDoneAll className="h-4 w-4" aria-hidden="true" />
+                     </span>
+
+                     <span className="font-semibold text-white">Completed Check</span>
+                  </div>
+
+
+                 
+
                   <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-sky-300/20 bg-sky-500/10 text-sky-200/90">
                         <BsThreeDots className="h-4 w-4" aria-hidden="true" />
                      </span>
 
-                     <span className="font-semibold text-white">Check pending</span>
+                     <span className="font-semibold text-white">Pending Check</span>
                   </div>
-                  <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
-                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-green-300/20 bg-green-500/10 text-green-400">
-                        <IoMdDoneAll className="h-4 w-4" aria-hidden="true" />
+
+
+               
+
+                   <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-red-300/20 bg-red-500/10 text-red-200/90">
+                        <IoCloseSharp className="h-5 w-5" aria-hidden="true" />
                      </span>
 
-                     <span className="font-semibold text-white">Check complete</span>
+                     <span className="font-semibold text-white">Missed Check</span>
                   </div>
+
+
                   <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-amber-300/20 bg-amber-500/10 text-amber-200/90">
                         <IoSwapHorizontal className="text-base" aria-hidden="true" />
@@ -372,10 +396,12 @@ export default function Schedule() {
                                                 return (
                                                    <span
                                                       key={cluster.id}
-                                                      className={`flex items-center gap-2 rounded-full ${
+                                                      className={`flex items-center  rounded-full ${
                                                          hasReport
-                                                            ? 'bg-green-500/20 px-3 py-1 text-sm text-green-200'
-                                                            : 'bg-blue-500/20 px-3 py-1 text-sm text-blue-200'
+                                                            ? 'bg-green-500/20 px-3 gap-2 py-1 text-sm text-green-200'
+                                                            : isCurrentOrFuture
+                                                              ? 'bg-blue-500/20 px-3 py-1 gap-2 text-sm text-blue-200'
+                                                              : 'bg-red-500/20 px-3 py-1 gap-1 text-sm text-red-200'
                                                       }`}
                                                    >
                                                       {cluster.name}
@@ -383,7 +409,9 @@ export default function Schedule() {
                                                          className={`flex h-5 w-5 shrink-0 items-center justify-center  ${
                                                             hasReport
                                                                ? 'text-green-400'
-                                                               : 'text-blue-200/90'
+                                                               : isCurrentOrFuture
+                                                                 ? 'text-blue-200/90'
+                                                                 : 'text-red-200/90'
                                                          }`}
                                                       >
                                                          {hasReport ? (
@@ -391,11 +419,16 @@ export default function Schedule() {
                                                                className="h-5 w-5"
                                                                aria-hidden="true"
                                                             />
-                                                         ) : (
+                                                         ) : isCurrentOrFuture ? (
                                                             <BsThreeDots
                                                                className="h-5 w-5"
                                                                aria-hidden="true"
                                                             />
+                                                         ) : (
+                                                            <IoCloseSharp
+                                                               className="h-7 w-7"
+                                                               aria-hidden="true"
+                                                            ></IoCloseSharp>
                                                          )}
                                                       </span>
                                                    </span>
