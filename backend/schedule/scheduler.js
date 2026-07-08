@@ -271,6 +271,7 @@ async function getScheduleForDay (db, date) {
 
    return lock;
 }
+
 /**
  * Build the schedule for a specific calendar date.
  *
