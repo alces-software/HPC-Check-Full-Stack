@@ -4,7 +4,6 @@ export default function ReportSkeleton() {
          <div className="relative z-10 w-full max-w-5xl">
             <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
                <div className="animate-pulse space-y-8">
-
                   <div className="flex justify-center">
                      <div className="h-20 w-20 rounded-full bg-white/10" />
                   </div>
@@ -26,7 +25,7 @@ export default function ReportSkeleton() {
                      </div>
 
                      <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                        {[1, 2, 3, 4].map(i => (
+                        {[1, 2, 3, 4].map((i) => (
                            <div
                               key={i}
                               className="h-32 rounded-2xl border border-white/10 bg-white/5"
@@ -34,7 +33,6 @@ export default function ReportSkeleton() {
                         ))}
                      </div>
                   </div>
-
                </div>
             </div>
          </div>

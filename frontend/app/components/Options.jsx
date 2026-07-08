@@ -401,7 +401,8 @@ export default function Options() {
                   </p>
                </div>
 
-               {portalEl && confirmPrompt &&
+               {portalEl &&
+                  confirmPrompt &&
                   createPortal(
                      <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
                         <div className="mb-6 rounded-2xl border border-yellow-400/20 bg-yellow-500/10 p-5 text-slate-100 shadow-2xl backdrop-blur-xl">

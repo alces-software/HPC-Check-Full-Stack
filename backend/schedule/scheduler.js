@@ -21,56 +21,53 @@ async function getTeams(db) {
 }
 
 async function getTeamsOrderedByEffectiveCapacity(db) {
-    const teams = await getTeams(db);
+   const teams = await getTeams(db);
 
-    const teamStats = await Promise.all(
-        teams.map(async (team) => {
-            // Pools this team belongs to
-            const pools = await db
-                .collection("teampool")
-                .find({ teamId: team.id })
-                .toArray();
+   const teamStats = await Promise.all(
+      teams.map(async (team) => {
+         // Pools this team belongs to
+         const pools = await db.collection('teampool').find({ teamId: team.id }).toArray();
 
-            const poolIds = pools.map(p => p.poolId);
+         const poolIds = pools.map((p) => p.poolId);
 
-            // All clusters available to this team
-            const clusters = await db
-                .collection("cluster")
-                .find({ poolId: { $in: poolIds } })
-                .toArray();
+         // All clusters available to this team
+         const clusters = await db
+            .collection('cluster')
+            .find({ poolId: { $in: poolIds } })
+            .toArray();
 
-            let exclusiveCount = 0;
+         let exclusiveCount = 0;
 
-            // Count clusters that are only available to this team
-            for (const cluster of clusters) {
-                const otherTeams = await db
-                    .collection("teampool")
-                    .find({
-                        poolId: cluster.poolId,
-                        teamId: { $ne: team.id }
-                    })
-                    .limit(1)
-                    .toArray();
+         // Count clusters that are only available to this team
+         for (const cluster of clusters) {
+            const otherTeams = await db
+               .collection('teampool')
+               .find({
+                  poolId: cluster.poolId,
+                  teamId: { $ne: team.id }
+               })
+               .limit(1)
+               .toArray();
 
-                if (otherTeams.length === 0) {
-                    exclusiveCount++;
-                }
+            if (otherTeams.length === 0) {
+               exclusiveCount++;
             }
+         }
 
-            return {
-                ...team,
-                effectiveCapacity: team.capacity - exclusiveCount
-            };
-        })
-    );
+         return {
+            ...team,
+            effectiveCapacity: team.capacity - exclusiveCount
+         };
+      })
+   );
 
-    // Shuffle first so equal capacities become random
-    teamStats.sort(() => Math.random() - 0.5);
+   // Shuffle first so equal capacities become random
+   teamStats.sort(() => Math.random() - 0.5);
 
-    // Then stable sort by descending effective capacity
-    teamStats.sort((a, b) => b.effectiveCapacity - a.effectiveCapacity);
+   // Then stable sort by descending effective capacity
+   teamStats.sort((a, b) => b.effectiveCapacity - a.effectiveCapacity);
 
-    return teamStats;
+   return teamStats;
 }
 
 async function isWorkingDay(db, date) {
