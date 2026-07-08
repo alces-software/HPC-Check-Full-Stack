@@ -267,7 +267,7 @@ export default function PoolClustersPage () {
                                     clusters.map(cluster => (
                                         <div
                                             key={cluster.id}
-                                            className='flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white'
+                                            className='flex items-center justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white'
                                         >
                                             <div>
                                                 <p className='font-medium'>{cluster.name}</p>

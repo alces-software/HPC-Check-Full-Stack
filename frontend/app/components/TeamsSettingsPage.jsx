@@ -61,6 +61,7 @@ export default function TeamSettingsPage () {
     const [statusMessage, setStatusMessage] = useState('');
     const [statusType, setStatusType] = useState('success');
     const [savingSettings, setSavingSettings] = useState(false);
+    const [pendingRemovalPool, setPendingRemovalPool] = useState(null);
 
     const getTeamUsers = useCallback(async () => {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/people/team/${teamId}`);
@@ -212,9 +213,18 @@ export default function TeamSettingsPage () {
         }
     };
 
-    async function handleRemovePool (poolId) {
+    const openRemovePoolConfirmation = poolId => {
+        const poolToRemove = teamPools.find(pool => pool.id === poolId);
+        setPendingRemovalPool(poolToRemove || { id: poolId, name: 'this pool' });
+    };
+
+    async function confirmRemovePool () {
+        if (!pendingRemovalPool) {
+            return;
+        }
+
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool/team/${poolId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool/team/${pendingRemovalPool.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -230,15 +240,17 @@ export default function TeamSettingsPage () {
                 throw new Error(data.message || 'Failed to remove pool from team.');
             }
 
-            const removedPool = teamPools.find(pool => pool.id === poolId);
+            const removedPool = teamPools.find(pool => pool.id === pendingRemovalPool.id);
             if (removedPool) {
                 setPools(previousPools => [...previousPools, removedPool]);
             }
 
-            setTeamPools(previousPools => previousPools.filter(pool => pool.id !== poolId));
+            setTeamPools(previousPools => previousPools.filter(pool => pool.id !== pendingRemovalPool.id));
+            setPendingRemovalPool(null);
             showStatus('Pool removed from team.');
         } catch (err) {
             console.error(err);
+            setPendingRemovalPool(null);
             showStatus('Failed to remove pool from team.', 'error');
         }
     }
@@ -514,7 +526,7 @@ export default function TeamSettingsPage () {
                                                 </Link>
                                                 <button
                                                     type='button'
-                                                    onClick={() => handleRemovePool(pool.id)}
+                                                    onClick={() => openRemovePoolConfirmation(pool.id)}
                                                     className='ml-3 rounded-full border border-red-400/40 bg-red-500/10 px-2.5 py-1 text-sm text-red-200 transition hover:bg-red-500/20'
                                                     aria-label={`Remove ${pool.name} from team`}
                                                 >
@@ -565,6 +577,40 @@ export default function TeamSettingsPage () {
                     </div>
                 </div>
             </div>
+
+            {pendingRemovalPool && (
+                <div className='fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm'>
+                    <div className='w-full max-w-md rounded-3xl border border-red-400/20 bg-slate-900/95 p-6 shadow-2xl'>
+                        <div className='mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-2xl text-red-300'>
+                            !
+                        </div>
+
+                        <h3 className='text-xl font-semibold text-white'>Remove pool from team?</h3>
+
+                        <p className='mt-2 text-sm text-slate-300'>
+                            This will remove <span className='font-semibold text-white'>{pendingRemovalPool.name}</span> from this team.
+                        </p>
+
+                        <div className='mt-6 flex justify-end gap-3'>
+                            <button
+                                type='button'
+                                onClick={() => setPendingRemovalPool(null)}
+                                className='rounded-xl border border-slate-600 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800'
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type='button'
+                                onClick={confirmRemovePool}
+                                className='rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500'
+                            >
+                                Remove Pool
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
