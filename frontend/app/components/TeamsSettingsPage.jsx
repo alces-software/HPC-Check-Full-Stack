@@ -28,12 +28,6 @@ function timeNumberToInput(value) {
    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
-function timeInputToInt(value) {
-   const [hours, minutes] = value.split(':').map(Number);
-
-   return hours + minutes / 60;
-}
-
 export default function TeamSettingsPage() {
    const searchParams = useSearchParams();
    const teamId = searchParams.get('id');
@@ -117,7 +111,21 @@ export default function TeamSettingsPage() {
    const getTeamPools = useCallback(async () => {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool/team/${teamId}`);
       const data = await res.json();
-      setTeamPools(data.body);
+      const pools = data.body ?? [];
+
+      const enrichedPools = await Promise.all(
+         pools.map(async (pool) => {
+            const clusterRes = await fetch(
+               `${process.env.NEXT_PUBLIC_API_URL}/hpc/pool/${pool.id}`
+            );
+            const clusterData = await clusterRes.json();
+            return {
+               ...pool,
+               clusters: clusterData.body ?? []
+            };
+         })
+      );
+      setTeamPools(enrichedPools);
    }, [teamId]);
 
    useEffect(() => {
@@ -500,7 +508,7 @@ export default function TeamSettingsPage() {
                                     <ListboxOption
                                        key={pool.id}
                                        value={pool.id}
-                                       className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-emerald-500/20 data-[selected]:font-semibold"
+                                       className="cursor-pointer px-4 py-3 text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold"
                                     >
                                        {pool.name}
                                     </ListboxOption>
@@ -532,21 +540,54 @@ export default function TeamSettingsPage() {
                                     key={pool.id}
                                     className="flex items-center justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
                                  >
-                                    <Link href={`/pools?id=${pool.id}`} className="flex-1">
-                                       <p className="font-medium text-white transition hover:text-emerald-300">
-                                          {pool.name}
-                                       </p>
+                                    <div className="relative flex-1">
+                                       {/* Full card click target */}
+                                       <Link
+                                          href={`/pools?id=${pool.id}`}
+                                          className="absolute inset-0 z-0"
+                                          aria-label={`View ${pool.name}`}
+                                       />
 
-                                       <p className="text-xs text-slate-400">{pool.id}</p>
+                                       {/* Card content */}
+                                       <div className="relative z-10 pointer-events-none">
+                                          <p className="font-medium text-white transition hover:text-amber-300">
+                                             {pool.name}
+                                          </p>
 
-                                       <p className="mt-1 text-xs text-emerald-300">
-                                          View pool settings
-                                       </p>
-                                    </Link>
+                                          <p className="text-xs text-slate-400">{pool.id}</p>
+
+                                          {pool.clusters.length > 0 && (
+                                             <div className="mt-3">
+                                                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-500">
+                                                   Clusters
+                                                </p>
+
+                                                <div className="flex flex-col gap-2">
+                                                   {pool.clusters.map((cluster) => (
+                                                      <Link
+                                                         key={cluster.id}
+                                                         href={`/clusters?id=${cluster.id}`}
+                                                         className="relative z-20 pointer-events-auto w-fit"
+                                                      >
+                                                         <span className="block rounded-lg bg-slate-700/80 px-2.5 py-1 text-xs text-slate-200 ring-1 ring-slate-600 transition hover:ring-cyan-400/50">
+                                                            {cluster.name}
+                                                         </span>
+                                                      </Link>
+                                                   ))}
+                                                </div>
+                                             </div>
+                                          )}
+
+                                          <p className="mt-3 text-xs text-cyan-300">
+                                             View pool settings
+                                          </p>
+                                       </div>
+                                    </div>
                                     <button
+                                       type="button"
                                        onClick={() => openRemovePoolConfirmation(pool.id)}
-                                       className="ml-3 cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
-                                       title="Delete pool"
+                                       className="ml-3 rounded-full border border-red-400/40 bg-red-500/10 px-2.5 py-1 text-sm text-red-200 transition hover:bg-red-500/20"
+                                       aria-label={`Remove ${pool.name} from team`}
                                     >
                                        ✕
                                     </button>
