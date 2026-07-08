@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   format:
+    name: format
     runs-on: ubuntu-latest
 
     steps:
