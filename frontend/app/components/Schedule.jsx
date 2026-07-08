@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import { IoSwapHorizontal } from 'react-icons/io5';
 import { IoIosArrowForward, IoMdDoneAll } from 'react-icons/io';
 import { BsThreeDots } from 'react-icons/bs';
-import { RxCross2 } from "react-icons/rx";
+import { RxCross2 } from 'react-icons/rx';
 
 function formatDateParam(date) {
    const year = date.getFullYear();
@@ -74,7 +74,8 @@ export default function Schedule() {
       try {
          setLoading(true);
          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/rota/week/${weekBeginning.toISOString().split('T')[0]
+            `${process.env.NEXT_PUBLIC_API_URL}/rota/week/${
+               weekBeginning.toISOString().split('T')[0]
             }`
          );
 
@@ -311,20 +312,23 @@ export default function Schedule() {
                   return (
                      <div
                         key={dayKey}
-                        className={`overflow-hidden rounded-2xl border ${isToday
-                           ? 'border-green-400/40 bg-green-500/10'
-                           : 'border-white/10 bg-white/5'
-                           }`}
+                        className={`overflow-hidden rounded-2xl border ${
+                           isToday
+                              ? 'border-green-400/40 bg-green-500/10'
+                              : 'border-white/10 bg-white/5'
+                        }`}
                      >
                         {/* Day header */}
                         <div
-                           className={`flex items-center justify-between px-6 py-4 ${isToday ? 'bg-green-500/20' : 'bg-slate-800/50'
-                              }`}
+                           className={`flex items-center justify-between px-6 py-4 ${
+                              isToday ? 'bg-green-500/20' : 'bg-slate-800/50'
+                           }`}
                         >
                            <div>
                               <h2
-                                 className={`text-lg font-semibold ${isToday ? 'text-green-300' : 'text-white'
-                                    }`}
+                                 className={`text-lg font-semibold ${
+                                    isToday ? 'text-green-300' : 'text-white'
+                                 }`}
                               >
                                  {dayLabel}
                               </h2>
@@ -351,10 +355,11 @@ export default function Schedule() {
                                     return (
                                        <div
                                           key={person.id}
-                                          className={`grid gap-4 px-6 py-4 md:grid-cols-[200px_1fr] ${index !== arr.length - 1
-                                             ? 'border-b border-white/10'
-                                             : ''
-                                             }`}
+                                          className={`grid gap-4 px-6 py-4 md:grid-cols-[200px_1fr] ${
+                                             index !== arr.length - 1
+                                                ? 'border-b border-white/10'
+                                                : ''
+                                          }`}
                                        >
                                           <div className="flex items-center gap-3 font-semibold text-white">
                                              {name}
@@ -397,17 +402,19 @@ export default function Schedule() {
                                                    <div key={cluster.id}>
                                                       {isCurrentOrFuture ? (
                                                          <span
-                                                            className={`flex items-center gap-2 rounded-full ${hasReport
-                                                               ? 'bg-green-500/20 px-3 py-1 text-sm text-green-200'
-                                                               : 'bg-blue-500/20 px-3 py-1 text-sm text-blue-200'
-                                                               }`}
+                                                            className={`flex items-center gap-2 rounded-full ${
+                                                               hasReport
+                                                                  ? 'bg-green-500/20 px-3 py-1 text-sm text-green-200'
+                                                                  : 'bg-blue-500/20 px-3 py-1 text-sm text-blue-200'
+                                                            }`}
                                                          >
                                                             {cluster.name}
                                                             <span
-                                                               className={`flex h-5 w-5 shrink-0 items-center justify-center  ${hasReport
-                                                                  ? 'text-green-400'
-                                                                  : 'text-blue-200/90'
-                                                                  }`}
+                                                               className={`flex h-5 w-5 shrink-0 items-center justify-center  ${
+                                                                  hasReport
+                                                                     ? 'text-green-400'
+                                                                     : 'text-blue-200/90'
+                                                               }`}
                                                             >
                                                                {hasReport ? (
                                                                   <IoMdDoneAll
@@ -424,17 +431,19 @@ export default function Schedule() {
                                                          </span>
                                                       ) : (
                                                          <span
-                                                            className={`flex items-center gap-2 rounded-full ${hasReport
-                                                               ? 'bg-green-500/20 px-3 py-1 text-sm text-green-200'
-                                                               : 'bg-red-500/20 px-3 py-1 text-sm text-blue-200'
-                                                               }`}
+                                                            className={`flex items-center gap-2 rounded-full ${
+                                                               hasReport
+                                                                  ? 'bg-green-500/20 px-3 py-1 text-sm text-green-200'
+                                                                  : 'bg-red-500/20 px-3 py-1 text-sm text-blue-200'
+                                                            }`}
                                                          >
                                                             {cluster.name}
                                                             <span
-                                                               className={`flex h-5 w-5 shrink-0 items-center justify-center  ${hasReport
-                                                                  ? 'text-green-400'
-                                                                  : 'text-red-200/90'
-                                                                  }`}
+                                                               className={`flex h-5 w-5 shrink-0 items-center justify-center  ${
+                                                                  hasReport
+                                                                     ? 'text-green-400'
+                                                                     : 'text-red-200/90'
+                                                               }`}
                                                             >
                                                                {hasReport ? (
                                                                   <IoMdDoneAll
@@ -477,10 +486,8 @@ export default function Schedule() {
                      <h3 className="text-3xl font-bold text-white">Swap Assignment</h3>
 
                      <p className="mt-2 text-slate-300">
-                        Choose a replacement for{" "}
-                        <span className="font-semibold text-white">
-                           {swapTarget.personName}
-                        </span>
+                        Choose a replacement for{' '}
+                        <span className="font-semibold text-white">{swapTarget.personName}</span>
                      </p>
                   </div>
 
@@ -507,7 +514,7 @@ export default function Schedule() {
                            </p>
 
                            <p className="mt-1 text-lg font-semibold text-green-300">
-                              {selectedSwapPerson?.name || "Select below"}
+                              {selectedSwapPerson?.name || 'Select below'}
                            </p>
                         </div>
                      </div>
@@ -525,18 +532,15 @@ export default function Schedule() {
                                  key={p.id}
                                  type="button"
                                  onClick={() => setSelectedSwapPerson(p)}
-                                 className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition-all ${selected
-                                    ? "border-green-400/40 bg-green-500/10"
-                                    : "border-white/10 bg-white/5 hover:bg-white/10"
-                                    }`}
+                                 className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition-all ${
+                                    selected
+                                       ? 'border-green-400/40 bg-green-500/10'
+                                       : 'border-white/10 bg-white/5 hover:bg-white/10'
+                                 }`}
                               >
-                                 <span className="font-semibold text-white">
-                                    {p.name}
-                                 </span>
+                                 <span className="font-semibold text-white">{p.name}</span>
 
-                                 {selected && (
-                                    <IoMdDoneAll className="text-xl text-green-400" />
-                                 )}
+                                 {selected && <IoMdDoneAll className="text-xl text-green-400" />}
                               </button>
                            );
                         })}
@@ -557,10 +561,11 @@ export default function Schedule() {
                      <button
                         disabled={!selectedSwapPerson}
                         onClick={() => swapPerson(selectedSwapPerson.id)}
-                        className={`rounded-lg px-5 py-2.5 font-semibold transition ${selectedSwapPerson
-                           ? "bg-green-500/20 text-green-200 hover:bg-green-500/30"
-                           : "cursor-not-allowed bg-white/10 text-white/40"
-                           }`}
+                        className={`rounded-lg px-5 py-2.5 font-semibold transition ${
+                           selectedSwapPerson
+                              ? 'bg-green-500/20 text-green-200 hover:bg-green-500/30'
+                              : 'cursor-not-allowed bg-white/10 text-white/40'
+                        }`}
                      >
                         Confirm Swap
                      </button>
