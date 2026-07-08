@@ -1,5 +1,6 @@
 const { ObjectId } = require('mongodb');
 const { getDaily } = require('../scheduleLogic');
+const enrichSchedule = require('../enrichSchedule');
 
 /**
  * @param {import('mongodb').Db} db
@@ -51,34 +52,21 @@ module.exports = (db) => {
          const today = new Date();
          const scheduleForToday = await getDaily(db, today);
 
-         const assignedClusterIds = scheduleForToday[id] || [];
+         if (scheduleForToday && scheduleForToday.closed) {
+            return res.status(200).json({
+               success: true,
+               body: { closed: true }
+            });
+         }
 
-         // 3. Fetch cluster details in batch (better than per-loop lookup)
-         const clusters = assignedClusterIds.length
-            ? await db
-                 .collection('cluster')
-                 .find({
-                    _id: { $in: assignedClusterIds.map((c) => new ObjectId(c)) }
-                 })
-                 .toArray()
-            : [];
+         // Use helper to enrich schedule and pick this person's entry
+         const enriched = await enrichSchedule(db, scheduleForToday, { includeTeam: false });
 
-         const clusterMap = Object.fromEntries(clusters.map((c) => [c._id.toString(), c.name]));
-
-         // 4. Build response (same structure as weekly endpoint)
-         const result = {
-            [person.name]: {
-               id: person._id.toString(),
-               clusters: assignedClusterIds.map((id) => ({
-                  id,
-                  name: clusterMap[id] ?? id
-               }))
-            }
-         };
+         const personEntry = enriched[person.name] ?? { id: person._id.toString(), clusters: [] };
 
          return res.status(200).json({
             success: true,
-            body: result
+            body: { [person.name]: personEntry }
          });
       } catch (error) {
          return res.status(500).json({

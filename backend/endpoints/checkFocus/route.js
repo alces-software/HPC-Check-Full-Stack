@@ -1,7 +1,5 @@
 module.exports = (db) =>
+   require('express')
+      .Router()
 
-    require('express')
-
-        .Router()
-
-        .get('/check-focus/random', require('./controller/getRandomFocus')(db));
+      .get('/check-focus/random', require('./controller/getRandomFocus')(db));

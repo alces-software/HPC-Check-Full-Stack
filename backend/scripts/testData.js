@@ -12,7 +12,6 @@ module.exports.seedData = async (db) => {
 
    const checkFocusCol = db.collection('checkFocus');
 
-
    // -----------------------------
    // Helpers
    // -----------------------------
@@ -240,43 +239,50 @@ module.exports.seedData = async (db) => {
       {
          _id: id(),
          title: 'New User',
-         description: 'Imagine you are a new user to the cluster what might annoy you doing these checks',
+         description:
+            'Imagine you are a new user to the cluster what might annoy you doing these checks',
          active: true
       },
       {
          _id: id(),
          title: 'Grumpy old researcher',
-         description: 'Imagine you are a grumpy old researcher what seems repetitive/boring within the checks?',
+         description:
+            'Imagine you are a grumpy old researcher what seems repetitive/boring within the checks?',
          active: true
       },
       {
          _id: id(),
          title: 'Cautious storage user',
-         description: 'Imagine you think something is wrong with the storage how do you disprove this?',
+         description:
+            'Imagine you think something is wrong with the storage how do you disprove this?',
          active: true
       },
       {
          _id: id(),
          title: 'On-Call incident response',
-         description: "Imagine you are responding to an issue outside normal hours. Consider whether important information, errors, and next steps are easy to find quickly.",
+         description:
+            'Imagine you are responding to an issue outside normal hours. Consider whether important information, errors, and next steps are easy to find quickly.',
          active: true
       },
       {
          _id: id(),
          title: 'A Smart User',
-         description: 'Imagine you are a an experience hpc cluster engineer but its your first time using the cluster. Is everything where it should be?',
+         description:
+            'Imagine you are a an experience hpc cluster engineer but its your first time using the cluster. Is everything where it should be?',
          active: true
       },
       {
          _id: id(),
          title: 'Job Failure Investigator',
-         description: 'Imagine a user has submitted a job that failed. Consider whether they could quickly understand what happened and where to find useful logs or error messages',
+         description:
+            'Imagine a user has submitted a job that failed. Consider whether they could quickly understand what happened and where to find useful logs or error messages',
          active: true
       },
       {
          _id: id(),
          title: 'Efficient User',
-         description: 'Look for unnecessary repeated actions, slow workflows or places where a user has to do more work than should be necessary.',
+         description:
+            'Look for unnecessary repeated actions, slow workflows or places where a user has to do more work than should be necessary.',
          active: true
       }
    ];

@@ -14,7 +14,9 @@ async function getDaily(db, day = new Date()) {
    });
 
    if (isClosed) {
-      return {};
+      return {
+         closed: true
+      };
    }
 
    const overrides = await db

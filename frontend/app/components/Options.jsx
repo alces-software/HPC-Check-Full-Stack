@@ -484,7 +484,7 @@ export default function Options() {
                               people.map((person) => (
                                  <div
                                     key={person.id}
-                                    className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
+                                    className="flex items-center justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                                  >
                                     <div>
                                        <p className="font-medium text-white">{person.name}</p>
@@ -547,7 +547,7 @@ export default function Options() {
                               clusters.map((cluster) => (
                                  <div
                                     key={cluster.id}
-                                    className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
+                                    className="flex items-center justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                                  >
                                     <div>
                                        <Link
@@ -621,13 +621,19 @@ export default function Options() {
                               pools.map((pool) => (
                                  <div
                                     key={pool.id}
-                                    className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
+                                    className="flex items-center justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                                  >
-                                    <div>
-                                       <p className="font-medium text-white">{pool.name}</p>
+                                    <Link href={`/pools?id=${pool.id}`} className="flex-1">
+                                       <p className="font-medium text-white transition hover:text-amber-300">
+                                          {pool.name}
+                                       </p>
 
                                        <p className="text-xs text-slate-400">{pool.id}</p>
-                                    </div>
+
+                                       <p className="mt-1 text-xs text-cyan-300">
+                                          View pool settings
+                                       </p>
+                                    </Link>
 
                                     <button
                                        onClick={() => handleDeletePool(pool.id, pool.name)}
@@ -684,7 +690,7 @@ export default function Options() {
                               teams.map((team) => (
                                  <div
                                     key={team.id}
-                                    className="flex items-start justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
+                                    className="flex items-center justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white backdrop-blur-md transition hover:border-white/20"
                                  >
                                     <Link href={`/teams?id=${team.id}`} className="flex-1">
                                        <p className="font-medium text-white transition hover:text-amber-300">

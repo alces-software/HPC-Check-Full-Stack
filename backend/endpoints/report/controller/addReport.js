@@ -11,8 +11,15 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { clusterId, personId, startTime, endTime, results, bonusChallengeResult, checkFocusResult } =
-            req.body || {};
+         const {
+            clusterId,
+            personId,
+            startTime,
+            endTime,
+            results,
+            bonusChallengeResult,
+            checkFocusResult
+         } = req.body || {};
 
          // Check cluster id
          if (typeof clusterId !== 'string') {
