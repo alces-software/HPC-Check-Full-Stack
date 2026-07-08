@@ -19,8 +19,23 @@ export default function ClusterSettingsPage() {
       try {
          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc`);
          const data = await res.json();
+         const clusterResponse = data.body ?? [];
+         const enrichedClusters = await Promise.all(
+            clusterResponse.map(async (cluster) => {
+               const poolRes = await fetch(
+                  `${process.env.NEXT_PUBLIC_API_URL}/pool/id/${cluster.poolId}`
+               );
+               const poolData = await poolRes.json();
+               return {
+                  ...cluster,
+                  pool: poolData.body ?? []
+               };
+            })
+         );
 
-         setClusters(data.body ?? []);
+         console.log(enrichedClusters);
+
+         setClusters(enrichedClusters);
       } catch (err) {
          console.error('Failed to fetch clusters:', err);
          setClusters([]);
@@ -356,19 +371,15 @@ export default function ClusterSettingsPage() {
 
                   <p className="mt-3 text-lg text-slate-300">Cluster settings and overview</p>
 
-                  <div className="mt-6 flex flex-wrap justify-center gap-3">
+                  <div className="mt-6 space-y-3">
                      {!hasChecks ? (
-                        <>
+                        <div className="flex flex-wrap justify-center gap-3">
                            <span className="rounded-full border border-blue-400/30 bg-blue-500/20 px-4 py-2 text-sm font-semibold text-blue-200">
                               No checks have been performed for this cluster
                            </span>
-
-                           <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-mono text-sm text-slate-300">
-                              id: {clusterId}
-                           </span>
-                        </>
+                        </div>
                      ) : (
-                        <>
+                        <div className="flex flex-wrap justify-center gap-3">
                            {status ? (
                               <span className="rounded-full border border-green-400/30 bg-green-500/20 px-4 py-2 text-sm font-semibold text-green-300">
                                  Status: Healthy
@@ -384,12 +395,18 @@ export default function ClusterSettingsPage() {
                                  Last Checked: {recentCheckDate}
                               </span>
                            )}
-
-                           <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-mono text-sm text-slate-300">
-                              id: {clusterId}
-                           </span>
-                        </>
+                        </div>
                      )}
+
+                     <div className="flex flex-wrap justify-center gap-3 border-t border-white/10 pt-3">
+                        <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-mono text-sm text-slate-300">
+                           id: {clusterId}
+                        </span>
+
+                        <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-mono text-sm text-slate-300">
+                           pool: {cluster.pool.name}
+                        </span>
+                     </div>
                   </div>
                </div>
 
