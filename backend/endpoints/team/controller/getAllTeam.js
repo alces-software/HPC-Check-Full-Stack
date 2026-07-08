@@ -14,18 +14,9 @@ module.exports = (db) => {
             .find({})
             .toArray()
             .then((res) =>
-<<<<<<< HEAD
-               res.map((data) => ({
-                  id: data._id.toString(),
-                  name: data.name,
-                  clusters_per_day: data.clusters_per_day,
-                  start_window: data.start_window,
-                  end_window: data.end_window
-=======
                res.map(({ _id, ...rest }) => ({
                   id: _id.toString(),
                   ...rest
->>>>>>> origin/main
                }))
             );
 

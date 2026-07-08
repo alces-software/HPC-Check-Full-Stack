@@ -46,17 +46,7 @@ module.exports = (db) => {
          // Return team information
          return res.status(200).json({
             success: true,
-<<<<<<< HEAD
-            body: {
-               id: results._id.toString(),
-               name: results.name,
-               clusters_per_day: results.clusters_per_day,
-                  start_window: results.start_window,
-                  end_window: results.end_window
-            }
-=======
             body: response
->>>>>>> origin/main
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

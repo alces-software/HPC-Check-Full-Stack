@@ -260,18 +260,6 @@
                },
                "clusters_per_day": {
                   "bsonType": "int"
-<<<<<<< HEAD
-               },
-               "assigned": {
-                  "bsonType": "bool"
-               },
-               "start_window": {
-                  "bsonType": "number"
-               },
-               "end_window": {
-                  "bsonType": "number"
-=======
->>>>>>> origin/main
                }
             }
          }

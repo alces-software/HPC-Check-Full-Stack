@@ -123,7 +123,6 @@ export default function PersonalSchedule() {
                return;
             }
 
-<<<<<<< HEAD
             // Get time limits
             if (!teamId) {
                setWindowReady(true);
@@ -145,8 +144,6 @@ export default function PersonalSchedule() {
                }
             }
 
-=======
->>>>>>> origin/main
             const personEntry = Object.values(rotaData.body)[0];
 
             const todaysClusters = personEntry?.clusters || [];
@@ -224,7 +221,6 @@ export default function PersonalSchedule() {
                      {name}&apos;s Clusters
                   </h1>
 
-<<<<<<< HEAD
                   {!windowReady ? (
                      <p className="mt-2 text-slate-300">Checking when checks are available...</p>
                   ) : beforeWindow ? (
@@ -239,11 +235,6 @@ export default function PersonalSchedule() {
                   ) : (
                      <p className="mt-2 text-slate-300">Select a cluster to complete your report</p>
                   )}
-=======
-                  <p className="mt-3 text-lg text-slate-300">
-                     Select a cluster to complete your report.
-                  </p>
->>>>>>> origin/main
                </div>
 
                {/* Clusters */}
