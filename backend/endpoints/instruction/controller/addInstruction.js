@@ -11,123 +11,130 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { title, expectedTime, description, clusterId, good, bad } = req.body || {};
+         const {
+            title: rawTitle,
+            expectedTime: rawExpectedTime,
+            description: rawDescription,
+            clusterId: rawClusterId,
+            good: rawGood,
+            bad: rawBad
+         } = req.body || {};
 
          // Check title
-         if (!title) {
+         if (rawTitle === undefined || rawTitle === null) {
             return res.status(400).json({ success: false, error: 'Missing instruction title' });
          }
 
-         if (typeof title !== 'string') {
+         if (typeof rawTitle !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The title provided is not a string' });
          }
 
-         const sanitizedTitle = String(title).trim();
+         const title = rawTitle.trim();
 
-         if (sanitizedTitle.length == 0) {
+         if (!title) {
             return res.status(400).json({ success: false, error: 'The title provided is empty' });
          }
 
          // Check expected time
-         if (!expectedTime) {
+         if (rawExpectedTime === undefined || rawExpectedTime === null) {
             return res.status(400).json({ success: false, error: 'Missing expected time' });
          }
 
-         if (typeof expectedTime !== 'string') {
+         if (typeof rawExpectedTime !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The expected time provided is not a string' });
          }
 
-         const sanitizedExpectedTime = String(expectedTime).trim();
+         const expectedTime = rawExpectedTime.trim();
 
-         if (sanitizedExpectedTime.length == 0) {
+         if (!expectedTime) {
             return res
                .status(400)
                .json({ success: false, error: 'The expected time provided is empty' });
          }
 
          // Check description
-         if (!description) {
+         if (rawDescription === undefined || rawDescription === null) {
             return res.status(400).json({ success: false, error: 'Missing description' });
          }
 
-         if (typeof description !== 'string') {
+         if (typeof rawDescription !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The description provided is not a string' });
          }
 
-         const sanitizedDescription = String(description).trim();
+         const description = rawDescription.trim();
 
-         if (sanitizedDescription.length == 0) {
+         if (!description) {
             return res
                .status(400)
                .json({ success: false, error: 'The descriptions provided is empty' });
          }
 
          // Check cluster id
-         if (!clusterId) {
+         if (rawClusterId === undefined || rawClusterId === null) {
             return res.status(400).json({ success: false, error: 'Missing cluster id' });
          }
 
-         if (typeof clusterId !== 'string') {
+         if (typeof rawClusterId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The cluster id provided is not a string' });
          }
 
-         const sanitizedClusterId = String(clusterId).trim();
+         const clusterId = rawClusterId.trim();
 
-         if (sanitizedClusterId.length == 0) {
+         if (!clusterId) {
             return res
                .status(400)
                .json({ success: false, error: 'The cluster id provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedClusterId)) {
+         if (!ObjectId.isValid(clusterId)) {
             return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
          }
 
          // Check good
-         if (!good) {
+         if (rawGood === undefined || rawGood === null) {
             return res.status(400).json({ success: false, error: 'Missing instruction title' });
          }
 
-         if (typeof good !== 'string') {
+         if (typeof rawGood !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The good provided is not a string' });
          }
 
-         const sanitizedGood = String(good).trim();
+         const good = rawGood.trim();
 
-         if (sanitizedGood.length == 0) {
+         if (!good) {
             return res.status(400).json({ success: false, error: 'The good provided is empty' });
          }
 
          // Check bad
-         if (!bad) {
+         if (rawBad === undefined || rawBad === null) {
             return res.status(400).json({ success: false, error: 'Missing instruction title' });
          }
 
-         if (typeof bad !== 'string') {
+         if (typeof rawBad !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The bad provided is not a string' });
          }
 
-         const sanitizedBad = String(bad).trim();
+         const bad = rawBad.trim();
 
-         if (sanitizedBad.length == 0) {
+         if (bad.length == 0) {
             return res.status(400).json({ success: false, error: 'The bad provided is empty' });
          }
 
          // Get cluster
          const cluster = await db.collection('cluster').findOne({
-            _id: new ObjectId(sanitizedClusterId)
+            _id: new ObjectId(clusterId)
          });
 
          if (!cluster) {
@@ -138,16 +145,14 @@ module.exports = (db) => {
 
          // Add to database
          await db.collection('instruction').insertOne({
-            title: sanitizedTitle,
-            expectedTime: sanitizedExpectedTime,
-            description: sanitizedDescription,
-            clusterId: sanitizedClusterId,
-            good: sanitizedGood,
-            bad: sanitizedBad,
+            title: title,
+            expectedTime: expectedTime,
+            description: description,
+            clusterId: clusterId,
+            good: good,
+            bad: bad,
             position:
-               (await db
-                  .collection('instruction')
-                  .countDocuments({ clusterId: sanitizedClusterId })) + 1
+               (await db.collection('instruction').countDocuments({ clusterId: clusterId })) + 1
          });
 
          return res.status(200).json({ success: true });

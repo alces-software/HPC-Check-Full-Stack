@@ -11,28 +11,28 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawInstructionId } = req.params || {};
 
-         // Check id
-         if (!id) {
+         // Check instruction id
+         if (rawInstructionId === undefined || rawInstructionId === null) {
             return res.status(400).json({ success: false, error: 'Missing instruction id' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawInstructionId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The instruction id provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const instructionId = rawInstructionId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!instructionId) {
             return res
                .status(400)
                .json({ success: false, error: 'The instruction id provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(instructionId)) {
             return res
                .status(400)
                .json({ success: false, error: 'Invalid instruction id provided' });
@@ -40,7 +40,7 @@ module.exports = (db) => {
 
          // Get instruction
          const response = await db.collection('instruction').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(instructionId)
          });
 
          if (!response) {
