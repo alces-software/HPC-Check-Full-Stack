@@ -30,7 +30,7 @@ function timeNumberToInput(value) {
 function timeInputToInt(value) {
    const [hours, minutes] = value.split(':').map(Number);
 
-   return hours + (minutes / 60);
+   return hours + minutes / 60;
 }
 
 export default function TeamSettingsPage() {
