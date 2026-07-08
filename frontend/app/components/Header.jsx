@@ -9,9 +9,13 @@ import { IoChevronDown, IoClose, IoMenu } from 'react-icons/io5';
 export default function Header() {
    const [allClusters, setAllClusters] = useState([]);
    const [teams, setTeams] = useState([]);
+   const [pools, setPools] = useState([]);
+
    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
    const [mobileClustersOpen, setMobileClustersOpen] = useState(false);
    const [mobileTeamsOpen, setMobileTeamsOpen] = useState(false);
+   const [mobilePoolsOpen, setMobilePoolsOpen] = useState(false);
+
    const pathname = usePathname();
 
    const loadClusters = useCallback(async () => {
@@ -44,15 +48,32 @@ export default function Header() {
       }
    }, []);
 
+   const loadPools = useCallback(async () => {
+      try {
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pool`, {
+            cache: 'no-store'
+         });
+
+         const data = await res.json();
+
+         setPools(data.body ?? []);
+      } catch (err) {
+         console.error('Failed to fetch pools:', err);
+         setPools([]);
+      }
+   }, []);
+
    useEffect(() => {
       loadClusters();
       loadTeams();
-   }, [loadClusters, loadTeams]);
+      loadPools();
+   }, [loadClusters, loadTeams, loadPools]);
 
    useEffect(() => {
       function handleDataUpdated() {
          loadClusters();
          loadTeams();
+         loadPools();
       }
 
       window.addEventListener('header-data-updated', handleDataUpdated);
@@ -60,7 +81,7 @@ export default function Header() {
       return () => {
          window.removeEventListener('header-data-updated', handleDataUpdated);
       };
-   }, [loadClusters, loadTeams]);
+   }, [loadClusters, loadTeams, loadPools]);
 
    const navItems = [
       { href: '/', label: 'Home' },
@@ -73,6 +94,7 @@ export default function Header() {
 
    const isClustersActive = pathname.startsWith('/clusters');
    const isTeamsActive = pathname.startsWith('/teams');
+   const isPoolsActive = pathname.startsWith('/pools');
 
    function closeMobileMenu() {
       setMobileMenuOpen(false);
@@ -126,95 +148,70 @@ export default function Header() {
                      );
                   })}
 
-                  {/* CLUSTERS DROPDOWN */}
-                  <div className="group relative">
-                     <button
-                        type="button"
-                        className={[
-                           'flex cursor-pointer items-center gap-1 text-md font-medium transition',
-                           isClustersActive ? 'text-blue-300' : 'text-slate-200 hover:text-blue-300'
-                        ].join(' ')}
-                     >
-                        Clusters
-                        <span className="text-xs transition group-hover:rotate-180">▼</span>
-                     </button>
+                  {/* CLUSTERS */}
+                  <Dropdown label="Clusters" active={isClustersActive}>
+                     {allClusters.length === 0 ? (
+                        <p className="px-4 py-3 text-md text-slate-400">No clusters found</p>
+                     ) : (
+                        allClusters.map((cluster) => {
+                           const id = cluster.id || cluster._id;
 
-                     <div className="pointer-events-none invisible absolute right-0 top-full z-50 w-72 translate-y-2 pt-3 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                        <div className="max-h-80 overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/95 p-2 shadow-2xl backdrop-blur-xl">
-                           {allClusters.length === 0 ? (
-                              <p className="px-4 py-3 text-md text-slate-400">No clusters found</p>
-                           ) : (
-                              allClusters.map((cluster) => {
-                                 const clusterId = cluster.id || cluster._id;
+                           return (
+                              <Link
+                                 key={id}
+                                 href={`/clusters?id=${id}`}
+                                 className="block rounded-xl px-4 py-3 text-md text-slate-200 transition hover:bg-blue-500/20 hover:text-white"
+                              >
+                                 {cluster.name}
+                              </Link>
+                           );
+                        })
+                     )}
+                  </Dropdown>
 
-                                 const isClusterItemActive =
-                                    pathname === `/clusters?id=${clusterId}`;
+                  {/* TEAMS */}
+                  <Dropdown label="Teams" active={isTeamsActive}>
+                     {teams.length === 0 ? (
+                        <p className="px-4 py-3 text-md text-slate-400">No teams found</p>
+                     ) : (
+                        teams.map((team) => {
+                           const id = team.id || team._id;
 
-                                 return (
-                                    <Link
-                                       key={clusterId}
-                                       href={`/clusters?id=${clusterId}`}
-                                       className={[
-                                          'block rounded-xl px-4 py-3 text-md transition',
-                                          isClusterItemActive
-                                             ? 'bg-blue-500/20 text-blue-200'
-                                             : 'text-slate-200 hover:bg-blue-500/20 hover:text-white'
-                                       ].join(' ')}
-                                    >
-                                       <span className="block font-medium">{cluster.name}</span>
-                                    </Link>
-                                 );
-                              })
-                           )}
-                        </div>
-                     </div>
-                  </div>
+                           return (
+                              <Link
+                                 key={id}
+                                 href={`/teams?id=${id}`}
+                                 className="block rounded-xl px-4 py-3 text-md text-slate-200 transition hover:bg-blue-500/20 hover:text-white"
+                              >
+                                 {team.name}
+                              </Link>
+                           );
+                        })
+                     )}
+                  </Dropdown>
 
-                  {/* TEAMS DROPDOWN */}
-                  <div className="group relative">
-                     <button
-                        type="button"
-                        className={[
-                           'flex cursor-pointer items-center gap-1 text-md font-medium transition',
-                           isTeamsActive ? 'text-blue-300' : 'text-slate-200 hover:text-blue-300'
-                        ].join(' ')}
-                     >
-                        Teams
-                        <span className="text-xs transition group-hover:rotate-180">▼</span>
-                     </button>
+                  {/* POOLS */}
+                  <Dropdown label="Pools" active={isPoolsActive}>
+                     {pools.length === 0 ? (
+                        <p className="px-4 py-3 text-md text-slate-400">No pools found</p>
+                     ) : (
+                        pools.map((pool) => {
+                           const id = pool.id || pool._id;
 
-                     <div className="pointer-events-none invisible absolute right-0 top-full z-50 w-72 translate-y-2 pt-3 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                        <div className="max-h-80 overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/95 p-2 shadow-2xl backdrop-blur-xl">
-                           {teams.length === 0 ? (
-                              <p className="px-4 py-3 text-md text-slate-400">No teams found</p>
-                           ) : (
-                              teams.map((team) => {
-                                 const teamId = team.id || team._id;
-
-                                 const isTeamItemActive = pathname === `/teams?id=${teamId}`;
-
-                                 return (
-                                    <Link
-                                       key={teamId}
-                                       href={`/teams?id=${teamId}`}
-                                       className={[
-                                          'block rounded-xl px-4 py-3 text-md transition',
-                                          isTeamItemActive
-                                             ? 'bg-blue-500/20 text-blue-200'
-                                             : 'text-slate-200 hover:bg-blue-500/20 hover:text-white'
-                                       ].join(' ')}
-                                    >
-                                       <span className="block font-medium">{team.name}</span>
-                                    </Link>
-                                 );
-                              })
-                           )}
-                        </div>
-                     </div>
-                  </div>
+                           return (
+                              <Link
+                                 key={id}
+                                 href={`/pools?id=${id}`}
+                                 className="block rounded-xl px-4 py-3 text-md text-slate-200 transition hover:bg-blue-500/20 hover:text-white"
+                              >
+                                 {pool.name}
+                              </Link>
+                           );
+                        })
+                     )}
+                  </Dropdown>
                </nav>
             </div>
-
             {mobileMenuOpen && (
                <div className="mt-3 rounded-2xl border border-white/10 bg-slate-900/95 p-3 shadow-2xl backdrop-blur-xl lg:hidden">
                   <nav className="space-y-1">
@@ -239,100 +236,155 @@ export default function Header() {
                         );
                      })}
 
-                     <div className="pt-2">
-                        <button
-                           type="button"
-                           onClick={() => setMobileClustersOpen((isOpen) => !isOpen)}
-                           className={[
-                              'flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition',
-                              isClustersActive
-                                 ? 'bg-blue-500/20 text-blue-200'
-                                 : 'text-slate-200 hover:bg-blue-500/15 hover:text-white'
-                           ].join(' ')}
-                        >
-                           Clusters
-                           <IoChevronDown
-                              className={[
-                                 'transition',
-                                 mobileClustersOpen ? 'rotate-180' : ''
-                              ].join(' ')}
-                              aria-hidden="true"
-                           />
-                        </button>
+                     {/* MOBILE CLUSTERS */}
+                     <MobileDropdown
+                        label="Clusters"
+                        open={mobileClustersOpen}
+                        setOpen={setMobileClustersOpen}
+                        active={isClustersActive}
+                     >
+                        {allClusters.length === 0 ? (
+                           <p className="px-3 py-2 text-sm text-slate-400">No clusters found</p>
+                        ) : (
+                           allClusters.map((cluster) => {
+                              const id = cluster.id || cluster._id;
 
-                        {mobileClustersOpen && (
-                           <div className="mt-1 max-h-64 space-y-1 overflow-y-auto rounded-xl border border-white/10 bg-white/[0.03] p-2">
-                              {allClusters.length === 0 ? (
-                                 <p className="px-3 py-2 text-sm text-slate-400">
-                                    No clusters found
-                                 </p>
-                              ) : (
-                                 allClusters.map((cluster) => {
-                                    const clusterId = cluster.id || cluster._id;
-
-                                    return (
-                                       <Link
-                                          key={clusterId}
-                                          href={`/clusters?id=${clusterId}`}
-                                          onClick={closeMobileMenu}
-                                          className="block rounded-lg px-3 py-2 text-sm text-slate-200 transition hover:bg-blue-500/15 hover:text-white"
-                                       >
-                                          {cluster.name}
-                                       </Link>
-                                    );
-                                 })
-                              )}
-                           </div>
+                              return (
+                                 <Link
+                                    key={id}
+                                    href={`/clusters?id=${id}`}
+                                    onClick={closeMobileMenu}
+                                    className="block rounded-lg px-3 py-2 text-sm text-slate-200 transition hover:bg-blue-500/15 hover:text-white"
+                                 >
+                                    {cluster.name}
+                                 </Link>
+                              );
+                           })
                         )}
-                     </div>
+                     </MobileDropdown>
 
-                     <div className="pt-2">
-                        <button
-                           type="button"
-                           onClick={() => setMobileTeamsOpen((isOpen) => !isOpen)}
-                           className={[
-                              'flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition',
-                              isTeamsActive
-                                 ? 'bg-blue-500/20 text-blue-200'
-                                 : 'text-slate-200 hover:bg-blue-500/15 hover:text-white'
-                           ].join(' ')}
-                        >
-                           Teams
-                           <IoChevronDown
-                              className={['transition', mobileTeamsOpen ? 'rotate-180' : ''].join(
-                                 ' '
-                              )}
-                              aria-hidden="true"
-                           />
-                        </button>
+                     {/* MOBILE TEAMS */}
+                     <MobileDropdown
+                        label="Teams"
+                        open={mobileTeamsOpen}
+                        setOpen={setMobileTeamsOpen}
+                        active={isTeamsActive}
+                     >
+                        {teams.length === 0 ? (
+                           <p className="px-3 py-2 text-sm text-slate-400">No teams found</p>
+                        ) : (
+                           teams.map((team) => {
+                              const id = team.id || team._id;
 
-                        {mobileTeamsOpen && (
-                           <div className="mt-1 max-h-64 space-y-1 overflow-y-auto rounded-xl border border-white/10 bg-white/[0.03] p-2">
-                              {teams.length === 0 ? (
-                                 <p className="px-3 py-2 text-sm text-slate-400">No teams found</p>
-                              ) : (
-                                 teams.map((team) => {
-                                    const teamId = team.id || team._id;
-
-                                    return (
-                                       <Link
-                                          key={teamId}
-                                          href={`/teams?id=${teamId}`}
-                                          onClick={closeMobileMenu}
-                                          className="block rounded-lg px-3 py-2 text-sm text-slate-200 transition hover:bg-blue-500/15 hover:text-white"
-                                       >
-                                          {team.name}
-                                       </Link>
-                                    );
-                                 })
-                              )}
-                           </div>
+                              return (
+                                 <Link
+                                    key={id}
+                                    href={`/teams?id=${id}`}
+                                    onClick={closeMobileMenu}
+                                    className="block rounded-lg px-3 py-2 text-sm text-slate-200 transition hover:bg-blue-500/15 hover:text-white"
+                                 >
+                                    {team.name}
+                                 </Link>
+                              );
+                           })
                         )}
-                     </div>
+                     </MobileDropdown>
+
+                     {/* MOBILE POOLS */}
+                     <MobileDropdown
+                        label="Pools"
+                        open={mobilePoolsOpen}
+                        setOpen={setMobilePoolsOpen}
+                        active={isPoolsActive}
+                     >
+                        {pools.length === 0 ? (
+                           <p className="px-3 py-2 text-sm text-slate-400">No pools found</p>
+                        ) : (
+                           pools.map((pool) => {
+                              const id = pool.id || pool._id;
+
+                              return (
+                                 <Link
+                                    key={id}
+                                    href={`/pools?id=${id}`}
+                                    onClick={closeMobileMenu}
+                                    className="block rounded-lg px-3 py-2 text-sm text-slate-200 transition hover:bg-blue-500/15 hover:text-white"
+                                 >
+                                    {pool.name}
+                                 </Link>
+                              );
+                           })
+                        )}
+                     </MobileDropdown>
                   </nav>
                </div>
             )}
          </div>
       </header>
+   );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Desktop Dropdown Component
+|--------------------------------------------------------------------------
+*/
+
+function Dropdown({ label, active, children }) {
+   return (
+      <div className="group relative">
+         <button
+            type="button"
+            className={[
+               'flex cursor-pointer items-center gap-1 text-md font-medium transition',
+               active ? 'text-blue-300' : 'text-slate-200 hover:text-blue-300'
+            ].join(' ')}
+         >
+            {label}
+            <span className="text-xs transition group-hover:rotate-180">▼</span>
+         </button>
+
+         <div className="pointer-events-none invisible absolute right-0 top-full z-50 w-72 translate-y-2 pt-3 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+            <div className="max-h-80 overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/95 p-2 shadow-2xl backdrop-blur-xl">
+               {children}
+            </div>
+         </div>
+      </div>
+   );
+}
+
+/*
+|--------------------------------------------------------------------------
+| Mobile Dropdown Component
+|--------------------------------------------------------------------------
+*/
+
+function MobileDropdown({ label, open, setOpen, active, children }) {
+   return (
+      <div className="pt-2">
+         <button
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            className={[
+               'flex w-full cursor-pointer items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition',
+               active
+                  ? 'bg-blue-500/20 text-blue-200'
+                  : 'text-slate-200 hover:bg-blue-500/15 hover:text-white'
+            ].join(' ')}
+         >
+            {label}
+
+            <IoChevronDown
+               className={['transition', open ? 'rotate-180' : ''].join(' ')}
+               aria-hidden="true"
+            />
+         </button>
+
+         {open && (
+            <div className="mt-1 max-h-64 space-y-1 overflow-y-auto rounded-xl border border-white/10 bg-white/[0.03] p-2">
+               {children}
+            </div>
+         )}
+      </div>
    );
 }
