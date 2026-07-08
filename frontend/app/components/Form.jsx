@@ -250,6 +250,7 @@ export default function Form() {
 
          setSteps(loadedSteps);
          setHiddenMethodIds(selectedHiddenMethodIds);
+         setRevealedMethodIds([]);
       } catch (err) {
          console.error(err);
       }
@@ -264,32 +265,8 @@ export default function Form() {
    }
 
    useEffect(() => {
-      if (!clusterId) return;
-
-      let ignore = false;
-
-      async function loadSteps() {
-         try {
-            const res = await fetch(
-               `${process.env.NEXT_PUBLIC_API_URL}/instruction/all/${clusterId}`
-            );
-
-            const data = await res.json();
-
-            if (!ignore) {
-               setSteps(data.body ?? []);
-            }
-         } catch (err) {
-            console.error(err);
-         }
-      }
-
-      loadSteps();
-
-      return () => {
-         ignore = true;
-      };
-   }, [clusterId]);
+      getSteps();
+   }, [getSteps]);
 
    useEffect(() => {
       async function getBonusChallenge() {
