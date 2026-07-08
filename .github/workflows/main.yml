@@ -21,19 +21,17 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Format frontend
         working-directory: frontend
         run: |
-          npm i
-          npm run format
+          npx prettier --write .
 
       - name: Format backend
         working-directory: backend
         run: |
-          npm i
-          npm run format
+          npx prettier --write .
 
       - name: Commit formatting changes
         run: |
