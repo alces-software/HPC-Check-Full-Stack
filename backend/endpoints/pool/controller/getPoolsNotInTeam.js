@@ -11,33 +11,40 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawTeamId } = req.params || {};
 
-         // Check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing team id' });
+         // Check team id
+         if (rawTeamId === undefined || rawTeamId === null) {
+            return res.status(400).json({ success: false, error: 'Missing team ID' });
          }
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
+         if (typeof rawTeamId !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The team ID provided is not a string' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
+         const teamId = rawTeamId.trim();
+
+         if (!teamId) {
+            return res.status(400).json({ success: false, error: 'The team ID provided is empty' });
          }
 
-         const poolResults = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedId)
+         if (!ObjectId.isValid(teamId)) {
+            return res.status(400).json({ success: false, error: 'Invalid team ID provided' });
+         }
+
+         // Get pool
+         const pool = await db.collection('team').findOne({
+            _id: new ObjectId(teamId)
          });
 
-         if (!poolResults) {
-            return res.status(404).json({ success: false, error: "team doesn't exist" });
+         if (!pool) {
+            return res.status(404).json({ success: false, error: "Team doesn't exist" });
          }
 
          // Get the teamPool
-         const teamPools = await db.collection('teampool').find({ teamId: sanitizedId }).toArray();
+         const teamPools = await db.collection('teampool').find({ teamId }).toArray();
 
          if (teamPools.length === 0) {
             return res.status(404).json({ success: false, error: 'Team does not have any pools' });
@@ -47,19 +54,17 @@ module.exports = (db) => {
          const poolIds = teamPools.map((tp) => new ObjectId(tp.poolId));
 
          // Fetch all pool documents
-         const pools = await db
+         const allPools = await db
             .collection('pool')
             .find({ _id: { $nin: poolIds } })
             .toArray();
 
-         const response = pools.map(({ _id, ...pool }) => ({
-            id: _id,
-            ...pool
-         }));
-
          return res.json({
             success: true,
-            body: response
+            body: allPools.map(({ _id, ...rest }) => ({
+               id: _id,
+               ...rest
+            }))
          });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });

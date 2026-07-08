@@ -14,14 +14,14 @@ module.exports = (db) => {
          const { id } = req.params || {};
 
          // Check id
+         if (!id) {
+            return res.status(400).json({ success: false, error: 'Missing the report id' });
+         }
+
          if (typeof id !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The report id provided is not a string' });
-         }
-
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing the report id' });
          }
 
          const sanitisedId = String(id).trim();
@@ -36,6 +36,7 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'Invalid report id' });
          }
 
+         // Get report
          const report = await db.collection('report').findOne({
             _id: new ObjectId(sanitisedId)
          });
@@ -81,6 +82,14 @@ module.exports = (db) => {
             });
          }
 
+         let checkFocus = null;
+         const checkFocusResult = report.checkFocusResult;
+         if (checkFocusResult && ObjectId.isValid(checkFocusResult.checkFocusId)) {
+            checkFocus = await db.collection('checkFocus').findOne({
+               _id: new ObjectId(checkFocusResult.checkFocusId)
+            });
+         }
+
          return res.status(200).json({
             success: true,
             body: {
@@ -103,6 +112,14 @@ module.exports = (db) => {
                           title: bonusChallenge.title,
                           description: bonusChallenge.description,
                           completed: bonusChallengeResult.completed
+                       }
+                     : null,
+               checkFocusResult:
+                  checkFocusResult && checkFocus
+                     ? {
+                          title: checkFocus.title,
+                          description: checkFocus.description,
+                          reflection: checkFocusResult.reflection
                        }
                      : null
             }

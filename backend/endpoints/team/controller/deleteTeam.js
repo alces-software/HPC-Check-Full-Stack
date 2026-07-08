@@ -11,26 +11,32 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params;
+         const { id: rawTeamId } = req.params || {};
 
-         // Check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: "Missing team's id" });
+         // Check team id
+         if (rawTeamId === undefined || rawTeamId === null) {
+            return res.status(400).json({ success: false, error: 'Missing team ID' });
          }
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
+         if (typeof rawTeamId !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The team ID provided is not a string' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
+         const teamId = rawTeamId.trim();
+
+         if (!teamId) {
+            return res.status(400).json({ success: false, error: 'The team ID provided is empty' });
+         }
+
+         if (!ObjectId.isValid(teamId)) {
+            return res.status(400).json({ success: false, error: 'Invalid team ID provided' });
          }
 
          // Check if team exists
          const existingTeam = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(teamId)
          });
 
          if (!existingTeam) {
@@ -38,32 +44,22 @@ module.exports = (db) => {
          }
 
          // Check if people are linked to the team
-         const hasPeople = await db
-            .collection('person')
-            .find({
-               teamId: sanitizedId
-            })
-            .toArray();
+         const people = await db.collection('person').find({ teamId }).toArray();
 
-         if (hasPeople.length > 0) {
+         if (people.length > 0) {
             return res.status(409).json({ success: false, error: 'This team has people' });
          }
 
          // Check if clusters are linked to the team
-         const hasClusters = await db
-            .collection('teampool')
-            .find({
-               teamId: sanitizedId
-            })
-            .toArray();
+         const clusters = await db.collection('teampool').find({ teamId }).toArray();
 
-         if (hasClusters.length > 0) {
+         if (clusters.length > 0) {
             return res.status(409).json({ success: false, error: 'This team has pools' });
          }
 
          // Delete the team
          await db.collection('team').deleteOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(teamId)
          });
 
          return res.status(200).json({ success: true });

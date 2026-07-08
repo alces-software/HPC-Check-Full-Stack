@@ -11,34 +11,34 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawTeamId } = req.params || {};
 
          // Check id
-         if (typeof id !== 'string') {
+         if (rawTeamId === undefined || rawTeamId === null) {
+            return res.status(400).json({ success: false, error: 'Missing team ID' });
+         }
+
+         if (typeof rawTeamId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The team id provided is not a string' });
+               .json({ success: false, error: 'The team ID provided is not a string' });
          }
 
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing team id' });
+         const teamId = rawTeamId.trim();
+
+         if (!teamId) {
+            return res.status(400).json({ success: false, error: 'The team ID provided is empty' });
          }
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The team id provided is empty' });
-         }
-
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
+         if (!ObjectId.isValid(teamId)) {
+            return res.status(400).json({ success: false, error: 'Invalid team ID provided' });
          }
 
          // Get the people
          const response = await db
             .collection('person')
             .find({
-               teamId: { $ne: sanitizedId }
+               teamId: { $ne: teamId }
             })
             .toArray()
             .then((res) =>

@@ -11,51 +11,51 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id, content } = req.body;
+         const { id: rawMethodId, content: rawContent } = req.body;
 
-         // Check id
-         if (typeof id !== 'string') {
+         // Check method id
+         if (rawMethodId === undefined || rawMethodId === null) {
+            return res.status(400).json({ success: false, error: 'Missing method ID' });
+         }
+
+         if (typeof rawMethodId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The method id provided is not a string' });
          }
 
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing method id' });
-         }
+         const methodId = rawMethodId.trim();
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length === 0) {
+         if (!methodId) {
             return res
                .status(400)
                .json({ success: false, error: 'The method id provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(methodId)) {
             return res.status(400).json({ success: false, error: 'Invalid method id provided' });
          }
 
          // Check content
-         if (typeof id !== 'string') {
+         if (rawContent === undefined || rawContent === null) {
+            return res.status(400).json({ success: false, error: 'Missing method content' });
+         }
+
+         if (typeof rawContent !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The content provided is not a string' });
          }
 
+         const content = rawContent.trim();
+
          if (!content) {
-            return res.status(400).json({ success: false, error: 'Missing method content' });
-         }
-
-         const sanitizedContent = String(content).trim();
-
-         if (sanitizedContent.length == 0) {
             return res.status(400).json({ success: false, error: 'The content provided is empty' });
          }
 
          // Make sure the method is in the database
          const method = await db.collection('method').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(methodId)
          });
 
          if (!method) {
@@ -65,7 +65,7 @@ module.exports = (db) => {
          // Update the method in the database
          await db
             .collection('method')
-            .updateOne({ _id: new ObjectId(sanitizedId) }, { $set: { content: sanitizedContent } });
+            .updateOne({ _id: new ObjectId(methodId) }, { $set: { content } });
 
          return res.status(200).json({ success: true });
       } catch (error) {

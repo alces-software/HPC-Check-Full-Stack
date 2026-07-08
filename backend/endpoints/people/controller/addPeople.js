@@ -9,41 +9,39 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { name } = req.body || {};
+         const { name: rawName } = req.body || {};
 
          // Check name
-         if (typeof id !== 'string') {
+         if (rawName === undefined || rawName === null) {
+            return res.status(400).json({ success: false, error: 'Missing the persons name' });
+         }
+
+         if (typeof rawName !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The name provided is not a string' });
          }
 
+         const name = rawName.trim();
+
          if (!name) {
-            return res.status(400).json({ success: false, error: 'Missing the persons name' });
-         }
-
-         const sanitizedName = String(name).trim();
-
-         if (sanitizedName.length === 0) {
             return res.status(400).json({ success: false, error: 'The name provided is empty' });
          }
 
          // Make sure the person exists
-         const existingPerson = await db.collection('person').findOne({
+         const person = await db.collection('person').findOne({
             name: {
-               $regex: `^${sanitizedName}$`,
+               $regex: `^${name}$`,
                $options: 'i'
             }
          });
 
-         if (existingPerson) {
+         if (person) {
             return res.status(409).json({ success: false, error: 'Person already exits' });
          }
 
          // Add person to the database
-         await db.collection('person').insertOne({
-            name: sanitizedName
-         });
+         await db.collection('person').insertOne({ name });
 
          return res.status(200).json({ success: true });
       } catch (error) {

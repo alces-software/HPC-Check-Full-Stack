@@ -11,48 +11,47 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawClusterId } = req.params || {};
 
-         // Check id
-         if (typeof id !== 'string') {
+         // Check cluster id
+         if (rawClusterId === undefined || rawClusterId === null) {
+            return res.status(400).json({ success: false, error: 'Missing cluster ID' });
+         }
+
+         if (typeof rawClusterId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The cluster id provided is not a string' });
+               .json({ success: false, error: 'The cluster ID provided is not a string' });
          }
 
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing cluster id' });
-         }
+         const clusterId = rawClusterId.trim();
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length === 0) {
+         if (!clusterId) {
             return res
                .status(400)
-               .json({ success: false, error: 'The cluster id provided is empty' });
+               .json({ success: false, error: 'The cluster Id provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
+         if (!ObjectId.isValid(clusterId)) {
+            return res.status(400).json({ success: false, error: 'Invalid cluster ID provided' });
          }
 
          // Get all the instructions
-         const response = await db
-            .collection('instruction')
-            .find({
-               clusterId: sanitizedId
-            })
-            .toArray()
-            .then((res) =>
-               res.map(({ _id, ...rest }) => ({
-                  id: _id.toString(),
-                  ...rest
-               }))
-            );
-
-         return res
-            .status(200)
-            .json({ success: true, body: response.sort((a, b) => a.position - b.position) });
+         return res.status(200).json({
+            success: true,
+            body: await db
+               .collection('instruction')
+               .find({ clusterId })
+               .toArray()
+               .then((res) =>
+                  res
+                     .map(({ _id, ...rest }) => ({
+                        id: _id.toString(),
+                        ...rest
+                     }))
+                     .sort((a, b) => a.position - b.position)
+               )
+         });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }

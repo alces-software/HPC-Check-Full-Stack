@@ -69,6 +69,7 @@ module.exports = async (db) => {
          clusterId: value
       }))
    );
+
    const missingReports = [];
    if (rotaDaily.length != reports.length) {
       rotaDaily.forEach((person) => {

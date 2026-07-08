@@ -106,6 +106,31 @@
       "validationAction": "error"
    },
    {
+      "name": "checkFocus",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": ["_id", "title", "description", "active"],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "title": {
+                  "bsonType": "string"
+               },
+               "description": {
+                  "bsonType": "string"
+               },
+               "active": {
+                  "bsonType": "bool"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
       "name": "cluster",
       "validator": {
          "$jsonSchema": {
@@ -236,6 +261,18 @@
                      },
                      "completed": {
                         "bsonType": "bool"
+                     }
+                  }
+               },
+               "checkFocusResult": {
+                  "bsonType": "object",
+                  "required": ["checkFocusId"],
+                  "properties": {
+                     "checkFocusId": {
+                        "bsonType": "string"
+                     },
+                     "reflection": {
+                        "bsonType": "string"
                      }
                   }
                }

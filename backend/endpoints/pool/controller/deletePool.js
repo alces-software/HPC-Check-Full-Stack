@@ -11,23 +11,31 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const id = req.params?.id || req.body?.id || req.query?.id;
+         const rawPoolId = req.params?.id || req.body?.id || req.query?.id;
 
-         // Check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing pool id' });
+         // Check pool id
+         if (rawPoolId === undefined || rawPoolId === null) {
+            return res.status(400).json({ success: false, error: 'Missing pool ID' });
          }
 
-         if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ success: false, error: 'Invalid pool id provided' });
+         if (typeof rawPoolId !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The pool ID provided is not a string' });
+         }
+
+         const poolId = rawPoolId.trim();
+
+         if (!ObjectId.isValid(poolId)) {
+            return res.status(400).json({ success: false, error: 'Invalid pool ID provided' });
          }
 
          // Check if pool exits
-         const existingPerson = await db.collection('pool').findOne({
-            _id: new ObjectId(id)
+         const person = await db.collection('pool').findOne({
+            _id: new ObjectId(poolId)
          });
 
-         if (!existingPerson) {
+         if (!person) {
             return res.status(409).json({
                success: false,
                error: "Pool doesn't exist"
@@ -35,9 +43,7 @@ module.exports = (db) => {
          }
 
          // Check if pool has clusters
-         const hasClusters = await db.collection('cluster').findOne({
-            poolId: id
-         });
+         const hasClusters = await db.collection('cluster').findOne({ poolId });
 
          if (hasClusters) {
             return res
@@ -46,9 +52,7 @@ module.exports = (db) => {
          }
 
          // Check if pool is assigned to a team
-         const isAssigned = await db.collection('teampool').findOne({
-            poolId: id
-         });
+         const isAssigned = await db.collection('teampool').findOne({ poolId });
 
          if (isAssigned) {
             return res
@@ -58,7 +62,7 @@ module.exports = (db) => {
 
          // Delete the pool from the database
          await db.collection('pool').deleteOne({
-            _id: new ObjectId(id)
+            _id: new ObjectId(poolId)
          });
 
          return res.status(200).json({ success: true });

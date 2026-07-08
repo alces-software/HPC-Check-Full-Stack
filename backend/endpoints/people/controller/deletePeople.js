@@ -11,23 +11,31 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params;
+         const { id: rawPersonId } = req.params;
 
-         // Check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing persons id' });
+         // Check person id
+         if (rawPersonId === undefined || rawPersonId === null) {
+            return res.status(400).json({ success: false, error: 'Missing persons ID' });
          }
 
-         if (!ObjectId.isValid(id)) {
-            return res.status(400).json({ success: false, error: 'Invalid person id provided' });
+         if (typeof rawPersonId !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The persons ID provided is not a string' });
+         }
+
+         const personId = rawPersonId.trim();
+
+         if (!ObjectId.isValid(personId)) {
+            return res.status(400).json({ success: false, error: 'Invalid person ID provided' });
          }
 
          // Check if person exists
-         const existingPerson = await db.collection('person').findOne({
-            _id: new ObjectId(id)
+         const person = await db.collection('person').findOne({
+            _id: new ObjectId(personId)
          });
 
-         if (!existingPerson) {
+         if (!person) {
             return res.status(409).json({
                success: false,
                error: "Person doesn't exists"
@@ -35,9 +43,7 @@ module.exports = (db) => {
          }
 
          // Check if person has reports
-         const hasReports = await db.collection('report').findOne({
-            personId: id
-         });
+         const hasReports = await db.collection('report').findOne({ personId });
 
          if (hasReports) {
             return res.status(409).json({ success: false, error: 'This person has reports' });
@@ -45,7 +51,7 @@ module.exports = (db) => {
 
          // Delete the person from the database
          await db.collection('person').deleteOne({
-            _id: new ObjectId(id)
+            _id: new ObjectId(personId)
          });
 
          return res.status(200).json({ success: true });

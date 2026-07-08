@@ -11,43 +11,48 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawClusterId } = req.params || {};
 
-         // Check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing cluster id' });
+         // Check cluster id
+         if (rawClusterId === undefined || rawClusterId === null) {
+            return res.status(400).json({ success: false, error: 'Missing cluster ID' });
          }
 
-         const sanitizedId = String(id).trim();
-
-         if (sanitizedId.length === 0) {
-            return res.status(400).json({ success: false, error: 'The id provided is empty' });
+         if (typeof rawClusterId !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster ID provided is not a string' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid cluster id provided' });
+         const clusterId = rawClusterId.trim();
+
+         if (!clusterId) {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The cluster ID provided is empty' });
+         }
+
+         if (!ObjectId.isValid(clusterId)) {
+            return res.status(400).json({ success: false, error: 'Invalid cluster ID provided' });
          }
 
          // Get the cluster from the database
-         const results = await db.collection('cluster').findOne({
-            _id: new ObjectId(sanitizedId)
+         const cluster = await db.collection('cluster').findOne({
+            _id: new ObjectId(clusterId)
          });
 
-         if (!results) {
+         if (!cluster) {
             return res.status(404).json({ success: false, error: "Cluster doesn't exist" });
          }
 
-         if (!results.poolId) {
+         if (!cluster.poolId) {
             return res.status(404).json({ success: false, error: 'Cluster not assigned to pool' });
          }
 
-         return res.status(200).json({
-            success: true,
-            body: {
-               id: sanitizedId,
-               pool: results.poolId
-            }
-         });
+         cluster.id = cluster._id.toString();
+         delete cluster._id;
+
+         return res.status(200).json({ success: true, body: cluster });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }

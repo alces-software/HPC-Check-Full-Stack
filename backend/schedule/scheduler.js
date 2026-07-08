@@ -233,6 +233,45 @@ async function generateUpToDay(db, date) {
    }
 }
 
+const scheduleLocks = new Map();
+
+async function getScheduleForDay(db, date) {
+   // Normalise date
+   const startOfDay = new Date(date);
+   startOfDay.setHours(0, 0, 0, 0);
+
+   const lockKey = startOfDay.toISOString();
+
+   // If another request is already generating this day,
+   // wait for its result instead
+   if (scheduleLocks.has(lockKey)) {
+      await scheduleLocks.get(lockKey);
+
+      return db.collection('schedule').find({ day: startOfDay }).toArray();
+   }
+
+   // Create a promise representing this generation process
+   const lock = (async () => {
+      try {
+         let scheduleForDay = await db.collection('schedule').find({ day: startOfDay }).toArray();
+
+         if (scheduleForDay.length === 0) {
+            await generateUpToDay(db, date);
+
+            scheduleForDay = await db.collection('schedule').find({ day: startOfDay }).toArray();
+         }
+
+         return scheduleForDay;
+      } finally {
+         scheduleLocks.delete(lockKey);
+      }
+   })();
+
+   scheduleLocks.set(lockKey, lock);
+
+   return lock;
+}
+
 /**
  * Build the schedule for a specific calendar date.
  *
@@ -240,21 +279,8 @@ async function generateUpToDay(db, date) {
  * @param {Date|string|number} date - Date to build the schedule for.
  * @returns {Promise<Array>} Array of objects containing person IDs and cluster IDs.
  */
-async function getScheduleForDay(db, date) {
-   // Normalise date
-
-   const startOfDay = new Date(date);
-   startOfDay.setHours(0, 0, 0, 0);
-
-   // Check if schedule exists for day
-   let scheduleForDay = await db.collection('schedule').find({ day: startOfDay }).toArray();
-
-   // Generate schedule for day if not
-   if (scheduleForDay.length === 0) {
-      await generateUpToDay(db, date);
-
-      scheduleForDay = await db.collection('schedule').find({ day: startOfDay }).toArray();
-   }
+async function formatScheduleForDay(db, date) {
+   const scheduleForDay = await getScheduleForDay(db, date);
 
    // Format response
    const response = scheduleForDay.map((entry) => ({
@@ -274,4 +300,4 @@ async function getScheduleForDay(db, date) {
    return scheduleDict;
 }
 
-module.exports = getScheduleForDay;
+module.exports = formatScheduleForDay;
