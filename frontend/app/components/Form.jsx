@@ -56,7 +56,7 @@ export default function Form() {
    const [bonusChallenge, setBonusChallenge] = useState(null);
    const [bonusCompleted, setBonusCompleted] = useState(false);
 
-   const [checkFocus, setCheckFocus] = useState(null)
+   const [checkFocus, setCheckFocus] = useState(null);
    const [focusReflection, setFocusReflection] = useState('');
 
    //METHOD-HIDING SETTINGS
@@ -254,7 +254,15 @@ export default function Form() {
                   bonusChallengeId: bonusChallenge.id,
                   completed: bonusCompleted
                }
-               : null
+               : null,
+
+         checkFocusResult:
+         checkFocus
+        ?{
+         checkFocusId: checkFocus.id,
+         reflection: focusReflection.trim() 
+         }
+         :null
       };
 
       try {
@@ -457,7 +465,7 @@ export default function Form() {
                               <ul className="mt-4 space-y-2 text-slate-300">
                                  {(step.methods || []).map((method, i) => {
                                     const isMethodHidden = hiddenMethodIds.includes(method.id);
-                                    const isMethodRevealed = revealedMethodIds.includes(method.id)
+                                    const isMethodRevealed = revealedMethodIds.includes(method.id);
                                     return (
                                        <li key={method.id}>
                                           {i > 0 && <hr className="border-white/10 mb-2" />}

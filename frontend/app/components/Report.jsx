@@ -94,7 +94,7 @@ export default function Report() {
                title: `${report.cluster} report`,
                url: window.location.href
             })
-            .catch(() => {});
+            .catch(() => { });
          setShared(true);
          setTimeout(() => setShared(false), 1500);
       } catch (err) {
@@ -142,11 +142,10 @@ export default function Report() {
                      <p className="mt-2 text-slate-300">
                         Checks:
                         <span
-                           className={`ml-2 rounded-full border px-2 py-1 text-xs font-semibold uppercase tracking-wide ${
-                              report.passed
+                           className={`ml-2 rounded-full border px-2 py-1 text-xs font-semibold uppercase tracking-wide ${report.passed
                                  ? 'border-green-400/30 bg-green-500/20 text-green-300'
                                  : 'border-red-400/30 bg-red-500/20 text-red-300'
-                           }`}
+                              }`}
                         >
                            {report.passed ? 'Passed' : 'Failed'}
                         </span>
@@ -159,11 +158,10 @@ export default function Report() {
                            <button
                               type="button"
                               onClick={handleCopy}
-                              className={`cursor-pointer rounded-lg border p-2 transition-all duration-300 ${
-                                 copied
+                              className={`cursor-pointer rounded-lg border p-2 transition-all duration-300 ${copied
                                     ? 'border-green-400/40 bg-green-500/20 text-green-300'
                                     : 'border-white/10 bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white'
-                              }`}
+                                 }`}
                               title={copied ? 'Copied!' : 'Copy report link'}
                               aria-label={copied ? 'Copied!' : 'Copy report link'}
                            >
@@ -179,11 +177,10 @@ export default function Report() {
                         <button
                            type="button"
                            onClick={handleShare}
-                           className={`cursor-pointer rounded-lg border p-2 transition-all duration-300 ${
-                              shared
+                           className={`cursor-pointer rounded-lg border p-2 transition-all duration-300 ${shared
                                  ? 'border-green-400/40 bg-green-500/20 text-green-300'
                                  : 'border-white/10 bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white'
-                           }`}
+                              }`}
                            title={shared ? 'Shared!' : 'Share report'}
                            aria-label={shared ? 'Shared!' : 'Share report'}
                         >
@@ -272,6 +269,34 @@ export default function Report() {
                            — {report.bonusChallengeResult.title}
                         </span>
                      </div>
+                  </section>
+               )}
+
+               {/* Focus Challenge*/}
+               {report.checkFocusResult && (
+                  <section className="mt-6 rounded-2xl border border-purple-400/30 bg-purple-500/10 p-4 md:p-6">
+                     <p className="text-sm font-semibold uppercase tracking-wide text-purple-300">
+                        Today&apos;s Focus
+                     </p>
+
+                     <h2 className="mt-1 text-xl font-semibold text-white">
+                        {report.checkFocusResult.title}
+                     </h2>
+
+                     <p className="mt-2 text-slate-200">
+                        {report.checkFocusResult.description}
+                     </p>
+
+                     {report.checkFocusResult.reflection && (
+                        <div className="mt-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">
+                           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                              Reflection
+                           </p>
+                           <p className="mt-2 text-slate-200">
+                              {report.checkFocusResult.reflection}
+                           </p>
+                        </div>
+                     )}
                   </section>
                )}
 

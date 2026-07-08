@@ -315,6 +315,20 @@
                         "bsonType": "bool"
                      }
                   }
+               },
+               "checkFocusResult": {
+                  "bsonType": "object",
+                  "required": [
+                     "checkFocusId"
+                  ],
+                  "properties": {
+                     "checkFocusId": {
+                        "bsonType": "string"
+                     },
+                     "reflection": {
+                        "bsonType": "string"
+                     }
+                  }
                }
             }
          }
