@@ -36,9 +36,7 @@ module.exports = (db) => {
             );
 
          if (!checkFocus[0]) {
-            return res
-               .status(404)
-               .json({ success: false, error: 'No active focuses found' });
+            return res.status(404).json({ success: false, error: 'No active focuses found' });
          }
 
          return res.status(200).json({ success: true, body: checkFocus[0] });

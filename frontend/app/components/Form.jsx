@@ -380,18 +380,17 @@ export default function Form() {
          bonusChallengeResult:
             bonusChallenge && bonusCompleted
                ? {
-                  bonusChallengeId: bonusChallenge.id,
-                  completed: bonusCompleted
-               }
+                    bonusChallengeId: bonusChallenge.id,
+                    completed: bonusCompleted
+                 }
                : null,
 
-         checkFocusResult:
-         checkFocus
-        ?{
-         checkFocusId: checkFocus.id,
-         reflection: focusReflection.trim() 
-         }
-         :null
+         checkFocusResult: checkFocus
+            ? {
+                 checkFocusId: checkFocus.id,
+                 reflection: focusReflection.trim()
+              }
+            : null
       };
 
       try {
@@ -540,13 +539,9 @@ export default function Form() {
                         Today&apos;s Focus
                      </p>
 
-                     <h2 className="mt-1 text-xl font-semibold text-white">
-                        {checkFocus.title}
-                     </h2>
+                     <h2 className="mt-1 text-xl font-semibold text-white">{checkFocus.title}</h2>
 
-                     <p className="mt-2 text-slate-200">
-                        {checkFocus.description}
-                     </p>
+                     <p className="mt-2 text-slate-200">{checkFocus.description}</p>
                   </section>
                )}
 
@@ -833,10 +828,11 @@ export default function Form() {
                               }
                               rows={4}
                               placeholder={isCompleted ? 'Notes (optional)' : 'What went wrong?'}
-                              className={`mt-4 w-full rounded-xl border p-3 text-white ${isCompleted
-                                 ? 'border-white/10 bg-slate-900/50'
-                                 : 'border-red-500/30 bg-red-900/20'
-                                 }`}
+                              className={`mt-4 w-full rounded-xl border p-3 text-white ${
+                                 isCompleted
+                                    ? 'border-white/10 bg-slate-900/50'
+                                    : 'border-red-500/30 bg-red-900/20'
+                              }`}
                            />
                         </section>
                      );
