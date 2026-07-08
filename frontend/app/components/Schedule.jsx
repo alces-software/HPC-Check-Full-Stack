@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useCallback } from 'react';
 import { IoSwapHorizontal } from 'react-icons/io5';
 import { IoIosArrowForward, IoMdDoneAll } from 'react-icons/io';
 import { BsThreeDots } from 'react-icons/bs';
+import { RxCross2 } from "react-icons/rx";
 
 function formatDateParam(date) {
    const year = date.getFullYear();
@@ -224,6 +225,13 @@ export default function Schedule() {
 
                <div className="order-2 flex justify-center md:order-3 md:col-start-2 md:row-start-2 md:justify-end">
                   <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
+                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-red-300/20 bg-red-500/10 text-red-200/90">
+                        <RxCross2 className="h-4 w-4" aria-hidden="true" />
+                     </span>
+
+                     <span className="font-semibold text-white">Check missing</span>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300">
                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-sky-300/20 bg-sky-500/10 text-sky-200/90">
                         <BsThreeDots className="h-4 w-4" aria-hidden="true" />
                      </span>
@@ -386,33 +394,63 @@ export default function Schedule() {
                                                 );
 
                                                 return (
-                                                   <span
-                                                      key={cluster.id}
-                                                      className={`flex items-center gap-2 rounded-full ${hasReport
-                                                         ? 'bg-green-500/20 px-3 py-1 text-sm text-green-200'
-                                                         : 'bg-blue-500/20 px-3 py-1 text-sm text-blue-200'
-                                                         }`}
-                                                   >
-                                                      {cluster.name}
-                                                      <span
-                                                         className={`flex h-5 w-5 shrink-0 items-center justify-center  ${hasReport
-                                                            ? 'text-green-400'
-                                                            : 'text-blue-200/90'
-                                                            }`}
-                                                      >
-                                                         {hasReport ? (
-                                                            <IoMdDoneAll
-                                                               className="h-5 w-5"
-                                                               aria-hidden="true"
-                                                            />
-                                                         ) : (
-                                                            <BsThreeDots
-                                                               className="h-5 w-5"
-                                                               aria-hidden="true"
-                                                            />
-                                                         )}
-                                                      </span>
-                                                   </span>
+                                                   <div key={cluster.id}>
+                                                      {isCurrentOrFuture ? (
+                                                         <span
+                                                            className={`flex items-center gap-2 rounded-full ${hasReport
+                                                               ? 'bg-green-500/20 px-3 py-1 text-sm text-green-200'
+                                                               : 'bg-blue-500/20 px-3 py-1 text-sm text-blue-200'
+                                                               }`}
+                                                         >
+                                                            {cluster.name}
+                                                            <span
+                                                               className={`flex h-5 w-5 shrink-0 items-center justify-center  ${hasReport
+                                                                  ? 'text-green-400'
+                                                                  : 'text-blue-200/90'
+                                                                  }`}
+                                                            >
+                                                               {hasReport ? (
+                                                                  <IoMdDoneAll
+                                                                     className="h-5 w-5"
+                                                                     aria-hidden="true"
+                                                                  />
+                                                               ) : (
+                                                                  <BsThreeDots
+                                                                     className="h-5 w-5"
+                                                                     aria-hidden="true"
+                                                                  />
+                                                               )}
+                                                            </span>
+                                                         </span>
+                                                      ) : (
+                                                         <span
+                                                            className={`flex items-center gap-2 rounded-full ${hasReport
+                                                               ? 'bg-green-500/20 px-3 py-1 text-sm text-green-200'
+                                                               : 'bg-red-500/20 px-3 py-1 text-sm text-blue-200'
+                                                               }`}
+                                                         >
+                                                            {cluster.name}
+                                                            <span
+                                                               className={`flex h-5 w-5 shrink-0 items-center justify-center  ${hasReport
+                                                                  ? 'text-green-400'
+                                                                  : 'text-red-200/90'
+                                                                  }`}
+                                                            >
+                                                               {hasReport ? (
+                                                                  <IoMdDoneAll
+                                                                     className="h-5 w-5"
+                                                                     aria-hidden="true"
+                                                                  />
+                                                               ) : (
+                                                                  <RxCross2
+                                                                     className="h-5 w-5"
+                                                                     aria-hidden="true"
+                                                                  />
+                                                               )}
+                                                            </span>
+                                                         </span>
+                                                      )}
+                                                   </div>
                                                 );
                                              })}
                                           </div>

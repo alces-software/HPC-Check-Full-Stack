@@ -224,9 +224,9 @@ export default function Form() {
          bonusChallengeResult:
             bonusChallenge && bonusCompleted
                ? {
-                  bonusChallengeId: bonusChallenge.id,
-                  completed: bonusCompleted
-               }
+                    bonusChallengeId: bonusChallenge.id,
+                    completed: bonusCompleted
+                 }
                : null
       };
 
@@ -652,10 +652,11 @@ export default function Form() {
                               }
                               rows={4}
                               placeholder={isCompleted ? 'Notes (optional)' : 'What went wrong?'}
-                              className={`mt-4 w-full rounded-xl border p-3 text-white ${isCompleted
+                              className={`mt-4 w-full rounded-xl border p-3 text-white ${
+                                 isCompleted
                                     ? 'border-white/10 bg-slate-900/50'
                                     : 'border-red-500/30 bg-red-900/20'
-                                 }`}
+                              }`}
                            />
                         </section>
                      );
