@@ -891,7 +891,7 @@ export default function Form() {
                                              type="button"
                                              onClick={() => checkHpcAnswer(optionIndex)}
                                              disabled={Boolean(hpcQuestionResult)}
-                                             className={`rounded-xl border px-4 py-3 text-left text-sm font-medium transition ${
+                                             className={`rounded-xl border cursor-pointer px-4 py-3 text-left text-sm font-medium transition ${
                                                 isSelected
                                                    ? 'border-cyan-300 bg-cyan-400/20 text-white'
                                                    : 'border-white/10 bg-slate-900/40 text-slate-200 hover:border-cyan-300/40 hover:bg-cyan-400/10'
@@ -923,8 +923,8 @@ export default function Form() {
                                           }`}
                                        >
                                           {hpcQuestionResult.correct
-                                             ? 'Correct ✅'
-                                             : 'Not quite ❌'}
+                                             ? 'Correct'
+                                             : 'Not quite'}
                                        </p>
 
                                        <p className="mt-2 text-sm text-slate-200">
