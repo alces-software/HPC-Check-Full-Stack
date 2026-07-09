@@ -250,7 +250,7 @@ export default function Overview() {
                               {report.missing.map((element) => (
                                  <div
                                     key={element.clusterId}
-                                    className="rounded-xl border border-white/10 bg-slate-800/70 p-4 shadow-sm transition hover:bg-slate-800/90"
+                                    className="rounded-xl border border-white/10 bg-slate-800/70 p-4 shadow-sm transition"
                                  >
                                     <div className="flex flex-col gap-4 sm:grid sm:grid-cols-3 sm:items-center">
                                        {/* Status */}
