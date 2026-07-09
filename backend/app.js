@@ -6,7 +6,7 @@ const { startPopulateClosedDays, startDailyOverviewBuilder } = require('./servic
 const { Database } = require('./db/db');
 const { seedData } = require('./scripts/testData');
 const populateClosedDays = require('./schedule/populateClosedDays');
-const dailyOverview = require("./services/dailyReport/dailyReport");
+
 
 (async () => {
    const app = express();
@@ -23,7 +23,7 @@ const dailyOverview = require("./services/dailyReport/dailyReport");
       await seedData(databaseConnection);
    }
 
-   dailyOverview(databaseConnection);
+ 
 
    console.log('Connected to database');
 
@@ -44,6 +44,9 @@ const dailyOverview = require("./services/dailyReport/dailyReport");
 
    //Register focus routes
    app.use('/', require('./endpoints/checkFocus/route')(databaseConnection));
+
+   //Register Quiz routes
+   app.use('/', require('./endpoints/hpcQuestion/route')(databaseConnection));
 
    // Register report routes
    app.use('/', require('./endpoints/report/routes')(databaseConnection));

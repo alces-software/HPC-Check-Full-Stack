@@ -74,6 +74,16 @@ export default function Overview() {
    useEffect(() => {
       console.log(report);
    }, [report]);
+   // Calculate duration
+   function calculateDuration(start, end) {
+      const diffMs = end.getTime() - start.getTime();
+
+      const hours = Math.floor(diffMs / 1000 / 60 / 60);
+      const minutes = Math.floor((diffMs / 1000 / 60) % 60);
+      const seconds = Math.floor((diffMs / 1000) % 60);
+
+      return `${hours}h ${minutes}m ${seconds}s`;
+   }
 
    // Show loading
    if (!reportLoaded) {
@@ -213,39 +223,39 @@ export default function Overview() {
                                     </div>
 
                                     {/* Results */}
-                                    <div className="mt-5 space-y-3 border-t border-white/10 pt-4">
-                                       {console.log('Component rendered')}
+                                    {element.results.length > 0 && (
+                                       <div className="mt-5 space-y-3 border-t border-white/10 pt-4">
+                                          {element.results.map((result) => (
+                                             <div
+                                                key={`${result.instructionId}`}
+                                                className="rounded-lg border border-white/10 bg-slate-900/40 p-3 transition"
+                                             >
+                                                <div className="mb-2 flex items-start justify-between gap-3">
+                                                   <h3 className="text-sm font-semibold text-white sm:text-base">
+                                                      {result.title}
+                                                   </h3>
 
-                                       {element.results.map((result) => (
-                                          <div
-                                             key={`${result.instructionId}`}
-                                             className="rounded-lg border border-white/10 bg-slate-900/40 p-3 transition"
-                                          >
-                                             <div className="mb-2 flex items-start justify-between gap-3">
-                                                <h3 className="text-sm font-semibold text-white sm:text-base">
-                                                   {result.title}
-                                                </h3>
+                                                   <span
+                                                      className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${
+                                                         result.passed
+                                                            ? 'border-green-400/30 bg-green-500/20 text-green-300'
+                                                            : 'border-red-400/30 bg-red-500/20 text-red-300'
+                                                      }`}
+                                                   >
+                                                      {result.passed ? 'Passed' : 'Failed'}
+                                                   </span>
+                                                </div>
 
-                                                <span
-                                                   className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide ${
-                                                      result.passed
-                                                         ? 'border-green-400/30 bg-green-500/20 text-green-300'
-                                                         : 'border-red-400/30 bg-red-500/20 text-red-300'
-                                                   }`}
-                                                >
-                                                   {result.passed ? 'Passed' : 'Failed'}
-                                                </span>
+                                                <p className="block text-xs uppercase text-slate-400">
+                                                   Notes:
+                                                </p>
+                                                <p className="break-words text-sm leading-relaxed text-slate-300">
+                                                   {result.note}
+                                                </p>
                                              </div>
-
-                                             <p className="block text-xs uppercase text-slate-400">
-                                                Notes:
-                                             </p>
-                                             <p className="break-words text-sm leading-relaxed text-slate-300">
-                                                {result.note}
-                                             </p>
-                                          </div>
-                                       ))}
-                                    </div>
+                                          ))}
+                                       </div>
+                                    )}
                                  </div>
                               ))}
                            </div>
@@ -268,7 +278,7 @@ export default function Overview() {
                               {report.missing.map((element) => (
                                  <div
                                     key={element.clusterId}
-                                    className="rounded-xl border border-white/10 bg-slate-800/70 p-4 shadow-sm transition hover:bg-slate-800/90"
+                                    className="rounded-xl border border-white/10 bg-slate-800/70 p-4 shadow-sm transition"
                                  >
                                     <div className="flex flex-col gap-4 sm:grid sm:grid-cols-3 sm:items-center">
                                        {/* Status */}

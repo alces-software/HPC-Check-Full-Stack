@@ -98,6 +98,10 @@ export default function Form() {
    const [checkFocus, setCheckFocus] = useState(null);
    const [focusReflection, setFocusReflection] = useState('');
 
+   const [hpcQuestion, setHpcQuestion] = useState(null);
+   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
+   const [hpcQuestionResult, setHpcQuestionResult] = useState(null);
+
    //METHOD-HIDING SETTINGS
    const [hiddenMethodIds, setHiddenMethodIds] = useState([]);
    const [revealedMethodIds, setRevealedMethodIds] = useState([]);
@@ -287,6 +291,56 @@ export default function Form() {
 
       getBonusChallenge();
    }, []);
+
+   useEffect(() => {
+      async function getHpcQuestion() {
+         try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc-question/random`);
+            const data = await res.json();
+
+            if (!data.success) {
+               setHpcQuestion(null);
+               return;
+            }
+
+            setHpcQuestion(data.body);
+         } catch (error) {
+            console.error('Failed to fetch HPC question', error);
+            setHpcQuestion(null);
+         }
+      }
+      getHpcQuestion();
+   }, []);
+
+   async function checkHpcAnswer(answerIndex) {
+      if (!hpcQuestion || hpcQuestionResult) return;
+
+      try {
+         setSelectedAnswerIndex(answerIndex);
+
+         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/hpc-question/check`, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+               questionId: hpcQuestion.id,
+               selectedAnswerIndex: answerIndex,
+               optionOrder: hpcQuestion.optionOrder
+            })
+         });
+
+         const data = await res.json();
+
+         if (!res.ok) {
+            throw new Error(data.error || 'Failed to check answer');
+         }
+
+         setHpcQuestionResult(data.body);
+      } catch (error) {
+         console.error('Failed to check HPC answer:', error);
+      }
+   }
 
    useEffect(() => {
       async function getCheckFocus() {
@@ -507,7 +561,7 @@ export default function Form() {
                   </p>
                </div>
 
-               {/* Focus*/}
+               {/* Focus */}
                {checkFocus && (
                   <section className="mb-8 rounded-2xl border border-purple-400/30 bg-purple-500/10 p-4 md:p-6">
                      <p className="text-sm font-semibold uppercase tracking-wide text-purple-300">
@@ -525,89 +579,95 @@ export default function Form() {
                   {steps.length == 0 && (
                      <p className="text-lg text-slate-300 text-center">No instruction available</p>
                   )}
+
                   {steps.map((step, index) => {
                      const isCompleted = Boolean(completedSteps[step.id]);
-
                      const isEditing = editingStepID === step.id;
                      const isAddingMethod = addMethodStepID === step.id;
+                     const shouldShowQuiz =
+                        hpcQuestion && index === Math.floor(steps.length / 2) - 1;
 
                      return (
-                        <section
-                           key={step.id}
-                           className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6"
-                        >
-                           <div className="mb-2 flex items-center gap-3">
-                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-400/30 bg-blue-500/20 text-sm font-bold text-blue-300">
-                                 {index + 1}
-                              </span>
-
-                              <h2 className="text-xl font-semibold text-white">{step.title}</h2>
-                              {step.expectedTime && (
-                                 <span className="shrink-0 rounded-full border border-blue-400/20 bg-blue-500/20 px-3 py-1 text-right text-sm font-semibold text-blue-200">
-                                    {step.expectedTime}
+                        <div key={step.id} className="space-y-6">
+                           <section className="rounded-2xl border border-white/10 bg-white/5 p-4 md:p-6">
+                              <div className="mb-2 flex items-center gap-3">
+                                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-400/30 bg-blue-500/20 text-sm font-bold text-blue-300">
+                                    {index + 1}
                                  </span>
-                              )}
-                           </div>
 
-                           <p className="mb-4 text-slate-300">{step.description}</p>
+                                 <h2 className="text-xl font-semibold text-white">{step.title}</h2>
 
-                           <details className="mb-4 rounded-xl border border-white/10 bg-slate-900/40 p-3 md:p-4">
-                              <summary className="cursor-pointer font-medium text-blue-300">
-                                 View Methods
-                              </summary>
+                                 {step.expectedTime && (
+                                    <span className="shrink-0 rounded-full border border-blue-400/20 bg-blue-500/20 px-3 py-1 text-right text-sm font-semibold text-blue-200">
+                                       {step.expectedTime}
+                                    </span>
+                                 )}
+                              </div>
 
-                              <ul className="mt-4 space-y-2 text-slate-300">
-                                 {(step.methods || []).map((method, i) => {
-                                    const isMethodHidden = hiddenMethodIds.includes(method.id);
-                                    const isMethodRevealed = revealedMethodIds.includes(method.id);
-                                    return (
-                                       <li key={method.id}>
-                                          {i > 0 && <hr className="border-white/10 mb-2" />}
+                              <p className="mb-4 text-slate-300">{step.description}</p>
 
-                                          {editingMethodId === method.id ? (
-                                             <div className="mt-4">
-                                                <textarea
-                                                   rows={6}
-                                                   value={editedMethodContent}
-                                                   onChange={(e) =>
-                                                      setEditedMethodContent(e.target.value)
-                                                   }
-                                                   className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
-                                                />
+                              <details className="mb-4 rounded-xl border border-white/10 bg-slate-900/40 p-3 md:p-4">
+                                 <summary className="cursor-pointer font-medium text-blue-300">
+                                    View Methods
+                                 </summary>
 
-                                                <div className="mt-3 flex flex-col gap-3 md:flex-row md:justify-end">
-                                                   <button
-                                                      type="button"
-                                                      onClick={() => {
-                                                         setEditingMethodId(null);
-                                                         setEditedMethodContent('');
-                                                      }}
-                                                      className="mt-8 w-full cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
-                                                   >
-                                                      Cancel
-                                                   </button>
+                                 <ul className="mt-4 space-y-2 text-slate-300">
+                                    {(step.methods || []).map((method, i) => {
+                                       const isMethodHidden = hiddenMethodIds.includes(method.id);
+                                       const isMethodRevealed = revealedMethodIds.includes(
+                                          method.id
+                                       );
 
-                                                   <button
-                                                      type="button"
-                                                      onClick={() => {
-                                                         const sanitizedContent =
-                                                            editedMethodContent.trim();
+                                       return (
+                                          <li key={`${step.id}-${method.id}-${i}`}>
+                                             {i > 0 && <hr className="border-white/10 mb-2" />}
 
-                                                         if (sanitizedContent === '') {
-                                                            alert('Please enter method content');
-                                                            return;
-                                                         }
+                                             {editingMethodId === method.id ? (
+                                                <div className="mt-4">
+                                                   <textarea
+                                                      rows={6}
+                                                      value={editedMethodContent}
+                                                      onChange={(e) =>
+                                                         setEditedMethodContent(e.target.value)
+                                                      }
+                                                      className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
+                                                   />
 
-                                                         updateMethod(method.id, sanitizedContent);
-                                                      }}
-                                                      className="mt-8 w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
-                                                   >
-                                                      Save Changes
-                                                   </button>
+                                                   <div className="mt-3 flex flex-col gap-3 md:flex-row md:justify-end">
+                                                      <button
+                                                         type="button"
+                                                         onClick={() => {
+                                                            setEditingMethodId(null);
+                                                            setEditedMethodContent('');
+                                                         }}
+                                                         className="mt-8 w-full cursor-pointer rounded-xl border border-slate-300/25 bg-slate-500/10 px-4 py-2 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300/45 hover:bg-slate-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-slate-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
+                                                      >
+                                                         Cancel
+                                                      </button>
+
+                                                      <button
+                                                         type="button"
+                                                         onClick={() => {
+                                                            const sanitizedContent =
+                                                               editedMethodContent.trim();
+
+                                                            if (sanitizedContent === '') {
+                                                               alert('Please enter method content');
+                                                               return;
+                                                            }
+
+                                                            updateMethod(
+                                                               method.id,
+                                                               sanitizedContent
+                                                            );
+                                                         }}
+                                                         className="mt-8 w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
+                                                      >
+                                                         Save Changes
+                                                      </button>
+                                                   </div>
                                                 </div>
-                                             </div>
-                                          ) : (
-                                             <>
+                                             ) : (
                                                 <div className="flex gap-3">
                                                    <div className="prose prose-invert max-w-none overflow-x-auto">
                                                       {isMethodHidden && !isMethodRevealed ? (
@@ -616,6 +676,7 @@ export default function Form() {
                                                                Independent challenge — work this
                                                                method out yourself.
                                                             </p>
+
                                                             <button
                                                                type="button"
                                                                onClick={() =>
@@ -639,54 +700,53 @@ export default function Form() {
                                                       )}
                                                    </div>
                                                 </div>
-                                             </>
-                                          )}
+                                             )}
 
-                                          {isEditing && !(editingMethodId === method.id) && (
-                                             <div className="flex flex-col gap-3 md:flex-row md:justify-end">
-                                                <button
-                                                   type="button"
-                                                   onClick={() => {
-                                                      setEditingMethodId(method.id);
-                                                      setEditedMethodContent(method.content);
-                                                   }}
-                                                   className="mt-8 w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
-                                                >
-                                                   Edit Method
-                                                </button>
+                                             {isEditing && !(editingMethodId === method.id) && (
+                                                <div className="flex flex-col gap-3 md:flex-row md:justify-end">
+                                                   <button
+                                                      type="button"
+                                                      onClick={() => {
+                                                         setEditingMethodId(method.id);
+                                                         setEditedMethodContent(method.content);
+                                                      }}
+                                                      className="mt-8 w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
+                                                   >
+                                                      Edit Method
+                                                   </button>
 
-                                                <button
-                                                   type="button"
-                                                   onClick={() => {
-                                                      const confirmed = window.confirm(
-                                                         'Are you sure you want to delete this method?'
-                                                      );
-                                                      if (confirmed) {
-                                                         deleteMethod(method.id);
-                                                      }
-                                                   }}
-                                                   className="mt-8 w-full cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
-                                                >
-                                                   Delete Method
-                                                </button>
-                                             </div>
-                                          )}
-                                       </li>
-                                    );
-                                 })}
+                                                   <button
+                                                      type="button"
+                                                      onClick={() => {
+                                                         const confirmed = window.confirm(
+                                                            'Are you sure you want to delete this method?'
+                                                         );
 
-                                 {!isEditing ? (
-                                    <div className="flex flex-col justify-end">
-                                       <button
-                                          type="button"
-                                          onClick={() => setEditingStepID(step.id)}
-                                          className="mt-8 cursor-pointer rounded-xl border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-400/15 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
-                                       >
-                                          Edit Methods
-                                       </button>
-                                    </div>
-                                 ) : (
-                                    <>
+                                                         if (confirmed) {
+                                                            deleteMethod(method.id);
+                                                         }
+                                                      }}
+                                                      className="mt-8 w-full cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
+                                                   >
+                                                      Delete Method
+                                                   </button>
+                                                </div>
+                                             )}
+                                          </li>
+                                       );
+                                    })}
+
+                                    {!isEditing ? (
+                                       <div className="flex flex-col justify-end">
+                                          <button
+                                             type="button"
+                                             onClick={() => setEditingStepID(step.id)}
+                                             className="mt-8 cursor-pointer rounded-xl border border-white/15 bg-white/10 px-5 py-2.5 text-sm font-semibold text-slate-100 shadow-md shadow-black/20 backdrop-blur transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-400/15 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0"
+                                          >
+                                             Edit Methods
+                                          </button>
+                                       </div>
+                                    ) : (
                                        <div className="flex flex-col justify-end">
                                           {!isAddingMethod ? (
                                              <button
@@ -705,6 +765,7 @@ export default function Form() {
                                                    placeholder="Enter method..."
                                                    className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white"
                                                 />
+
                                                 <div className="mt-3 flex flex-col gap-3 md:flex-row md:justify-end">
                                                    <button
                                                       type="button"
@@ -747,69 +808,138 @@ export default function Form() {
                                              Close Editor X
                                           </button>
                                        </div>
-                                    </>
+                                    )}
+                                 </ul>
+                              </details>
+
+                              <div className="grid gap-4 md:grid-cols-2">
+                                 {step.good && (
+                                    <div className="rounded-xl border border-green-400/20 bg-green-500/10 p-4">
+                                       <p className="text-xs font-semibold uppercase tracking-wide text-green-300">
+                                          Good
+                                       </p>
+
+                                       <p className="mt-2 text-md leading-relaxed text-slate-100">
+                                          {step.good}
+                                       </p>
+                                    </div>
                                  )}
-                              </ul>
-                           </details>
 
-                           <div className="grid gap-4 md:grid-cols-2">
-                              {step.good && (
-                                 <div className="rounded-xl border border-green-400/20 bg-green-500/10 p-4">
-                                    <p className="text-xs font-semibold uppercase tracking-wide text-green-300">
-                                       Good
-                                    </p>
+                                 {step.bad && (
+                                    <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-4">
+                                       <p className="text-xs font-semibold uppercase tracking-wide text-red-300">
+                                          Bad
+                                       </p>
 
-                                    <p className="mt-2 text-md leading-relaxed text-slate-100">
-                                       {step.good}
-                                    </p>
+                                       <p className="mt-2 text-md leading-relaxed text-slate-100">
+                                          {step.bad}
+                                       </p>
+                                    </div>
+                                 )}
+                              </div>
+
+                              {/* toggle */}
+                              <div className="flex mt-5 items-center justify-between">
+                                 <span className="font-medium text-white">
+                                    <strong>Completed Successfully</strong>
+                                 </span>
+
+                                 <label className="relative inline-flex cursor-pointer items-center">
+                                    <input
+                                       type="checkbox"
+                                       checked={isCompleted}
+                                       onChange={() => toggleStep(step.id)}
+                                       className="peer sr-only"
+                                    />
+
+                                    <span className="h-7 w-14 rounded-full bg-slate-600 transition after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:bg-green-500 peer-checked:after:translate-x-7" />
+                                 </label>
+                              </div>
+
+                              {/* notes */}
+                              <textarea
+                                 name={
+                                    isCompleted
+                                       ? `step${step.id}Notes`
+                                       : `step${step.id}FailureReason`
+                                 }
+                                 rows={4}
+                                 placeholder={isCompleted ? 'Notes (optional)' : 'What went wrong?'}
+                                 className={`mt-4 w-full rounded-xl border p-3 text-white ${
+                                    isCompleted
+                                       ? 'border-white/10 bg-slate-900/50'
+                                       : 'border-red-500/30 bg-red-900/20'
+                                 }`}
+                              />
+                           </section>
+
+                           {/* Questionnaire */}
+                           {shouldShowQuiz && (
+                              <section className="rounded-2xl border border-cyan-400/30 bg-cyan-500/10 p-4 md:p-6">
+                                 <p className="text-sm font-semibold uppercase tracking-wide text-cyan-300">
+                                    HPC Quick Check
+                                 </p>
+
+                                 <h2 className="mt-2 text-xl font-semibold text-white">
+                                    {hpcQuestion.question}
+                                 </h2>
+
+                                 <div className="mt-4 grid gap-3">
+                                    {hpcQuestion.options.map((option, optionIndex) => {
+                                       const isSelected = selectedAnswerIndex === optionIndex;
+                                       const isCorrectAnswer =
+                                          hpcQuestionResult?.correctAnswerIndex === optionIndex;
+
+                                       return (
+                                          <button
+                                             key={`${hpcQuestion.id}-${optionIndex}`}
+                                             type="button"
+                                             onClick={() => checkHpcAnswer(optionIndex)}
+                                             disabled={Boolean(hpcQuestionResult)}
+                                             className={`rounded-xl border px-4 py-3 text-left text-sm font-medium transition ${
+                                                isSelected
+                                                   ? 'border-cyan-300 bg-cyan-400/20 text-white'
+                                                   : 'border-white/10 bg-slate-900/40 text-slate-200 hover:border-cyan-300/40 hover:bg-cyan-400/10'
+                                             } ${
+                                                hpcQuestionResult && isCorrectAnswer
+                                                   ? 'border-green-300 bg-green-500/20 text-green-100'
+                                                   : ''
+                                             }`}
+                                          >
+                                             {option}
+                                          </button>
+                                       );
+                                    })}
                                  </div>
-                              )}
 
-                              {step.bad && (
-                                 <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-4">
-                                    <p className="text-xs font-semibold uppercase tracking-wide text-red-300">
-                                       Bad
-                                    </p>
+                                 {hpcQuestionResult && (
+                                    <div
+                                       className={`mt-4 rounded-xl border p-4 ${
+                                          hpcQuestionResult.correct
+                                             ? 'border-green-400/30 bg-green-500/10'
+                                             : 'border-red-400/30 bg-red-500/10'
+                                       }`}
+                                    >
+                                       <p
+                                          className={`font-semibold ${
+                                             hpcQuestionResult.correct
+                                                ? 'text-green-300'
+                                                : 'text-red-300'
+                                          }`}
+                                       >
+                                          {hpcQuestionResult.correct
+                                             ? 'Correct ✅'
+                                             : 'Not quite ❌'}
+                                       </p>
 
-                                    <p className="mt-2 text-md leading-relaxed text-slate-100">
-                                       {step.bad}
-                                    </p>
-                                 </div>
-                              )}
-                           </div>
-
-                           {/* toggle */}
-                           <div className="flex mt-5 items-center justify-between">
-                              <span className="font-medium text-white">
-                                 <strong>Completed Successfully</strong>
-                              </span>
-
-                              <label className="relative inline-flex cursor-pointer items-center">
-                                 <input
-                                    type="checkbox"
-                                    checked={isCompleted}
-                                    onChange={() => toggleStep(step.id)}
-                                    className="peer sr-only"
-                                 />
-
-                                 <span className="h-7 w-14 rounded-full bg-slate-600 transition after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:bg-green-500 peer-checked:after:translate-x-7" />
-                              </label>
-                           </div>
-
-                           {/* notes */}
-                           <textarea
-                              name={
-                                 isCompleted ? `step${step.id}Notes` : `step${step.id}FailureReason`
-                              }
-                              rows={4}
-                              placeholder={isCompleted ? 'Notes (optional)' : 'What went wrong?'}
-                              className={`mt-4 w-full rounded-xl border p-3 text-white ${
-                                 isCompleted
-                                    ? 'border-white/10 bg-slate-900/50'
-                                    : 'border-red-500/30 bg-red-900/20'
-                              }`}
-                           />
-                        </section>
+                                       <p className="mt-2 text-sm text-slate-200">
+                                          {hpcQuestionResult.explanation}
+                                       </p>
+                                    </div>
+                                 )}
+                              </section>
+                           )}
+                        </div>
                      );
                   })}
                </div>
@@ -895,6 +1025,7 @@ export default function Form() {
                <span className="text-xs font-semibold uppercase tracking-wide text-white/80">
                   Time remaining
                </span>
+
                <span
                   className={`text-xl font-bold tabular-nums ${
                      isFinalTwentyMinutes ? 'text-red-500' : 'text-white'

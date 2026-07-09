@@ -7,6 +7,25 @@ import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headless
 import { FaLayerGroup, FaUser, FaUsers } from 'react-icons/fa';
 import { IoIosSettings } from 'react-icons/io';
 
+function timeInputToInt(value) {
+   if (!value) return null;
+
+   const [hours, minutes] = value.split(':').map(Number);
+
+   if (
+      Number.isNaN(hours) ||
+      Number.isNaN(minutes) ||
+      hours < 0 ||
+      hours > 23 ||
+      minutes < 0 ||
+      minutes > 59
+   ) {
+      return null;
+   }
+
+   return hours + minutes / 60;
+}
+
 function timeNumberToInput(value) {
    const numericValue = Number(value);
 

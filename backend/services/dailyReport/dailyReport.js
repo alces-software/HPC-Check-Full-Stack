@@ -6,15 +6,21 @@ const { getDaily } = require('../../endpoints/rota/scheduleLogic');
  * @param {import('mongodb').Db} db
  */
 module.exports = async (db) => {
-   // Get all the reports from today
-   const startOfDay = new Date().setHours(0, 0, 0, 0);
-   const endOfDay = new Date().setHours(23, 59, 59, 999);
+   // Get all the reports since the last daily report
+   const now = new Date();
+
+   const start = new Date(now);
+   start.setDate(start.getDate() - 1);
+   start.setHours(11, 0, 0, 0);
+
+   const end = new Date(now);
+   end.setHours(10, 59, 59, 999);
 
    // Check to see if a report exists already and if one does exit out
    const reportExists = await db.collection('overviewReport').findOne({
       date: {
-         $gte: startOfDay,
-         $lte: endOfDay
+         $gte: start,
+         $lte: end
       }
    });
 
@@ -51,8 +57,8 @@ module.exports = async (db) => {
       .collection('report')
       .find({
          startDate: {
-            $gte: startOfDay,
-            $lte: endOfDay
+            $gte: start,
+            $lte: end
          }
       })
       .toArray()
