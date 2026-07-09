@@ -11,34 +11,34 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawClusterId } = req.params || {};
 
-         // Check id
-         if (!id) {
+         // Check cluster id
+         if (rawClusterId === undefined || rawClusterId === null) {
             return res.status(400).json({ success: false, error: 'Missing cluster ID' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawClusterId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The cluster ID provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const clusterId = rawClusterId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!clusterId) {
             return res
                .status(400)
                .json({ success: false, error: 'The cluster ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(clusterId)) {
             return res.status(400).json({ success: false, error: 'Invalid cluster ID provided' });
          }
 
          // Get the cluster from the database
          const cluster = await db.collection('cluster').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(clusterId)
          });
 
          if (!cluster) {
@@ -49,13 +49,10 @@ module.exports = (db) => {
             return res.status(404).json({ success: false, error: 'Cluster not assigned to pool' });
          }
 
-         return res.status(200).json({
-            success: true,
-            body: {
-               id: sanitizedId,
-               pool: cluster.poolId
-            }
-         });
+         cluster.id = cluster._id.toString();
+         delete cluster._id;
+
+         return res.status(200).json({ success: true, body: cluster });
       } catch (error) {
          return res.status(500).json({ success: false, error: error.message });
       }

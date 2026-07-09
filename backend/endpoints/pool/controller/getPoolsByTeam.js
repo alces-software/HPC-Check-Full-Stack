@@ -11,31 +11,31 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawTeamId } = req.params || {};
 
-         // Check id
-         if (!id) {
+         // Check team id
+         if (rawTeamId === undefined || rawTeamId === null) {
             return res.status(400).json({ success: false, error: 'Missing team ID' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawTeamId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The team ID provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const teamId = rawTeamId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!teamId) {
             return res.status(400).json({ success: false, error: 'The team ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(teamId)) {
             return res.status(400).json({ success: false, error: 'Invalid team ID provided' });
          }
 
          const pool = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(teamId)
          });
 
          if (!pool) {
@@ -43,7 +43,7 @@ module.exports = (db) => {
          }
 
          // Get the teamPool
-         const teamPools = await db.collection('teampool').find({ teamId: sanitizedId }).toArray();
+         const teamPools = await db.collection('teampool').find({ teamId }).toArray();
 
          if (teamPools.length === 0) {
             return res.status(404).json({ success: false, error: 'Team does not have any pools' });
@@ -57,9 +57,9 @@ module.exports = (db) => {
 
          return res.json({
             success: true,
-            body: allPools.map(({ _id, ...pool }) => ({
-               id: _id,
-               ...pool
+            body: allPools.map(({ _id, ...rest }) => ({
+               id: _id.toString(),
+               ...rest
             }))
          });
       } catch (error) {

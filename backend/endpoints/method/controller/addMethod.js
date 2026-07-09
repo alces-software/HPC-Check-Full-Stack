@@ -11,66 +11,63 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id, content } = req.body || {};
+         const { id: rawInstructionId, content: rawContent } = req.body || {};
 
-         // Check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: 'Missing instruction id' });
+         // Check instruction id
+         if (rawInstructionId === undefined || rawInstructionId === null) {
+            return res.status(400).json({ success: false, error: 'Missing instruction ID' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawInstructionId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The instruction id provided is not a string' });
+               .json({ success: false, error: 'The instruction ID provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const instructionId = rawInstructionId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!instructionId) {
             return res
                .status(400)
-               .json({ success: false, error: 'The instruction id provided is empty' });
+               .json({ success: false, error: 'The instruction ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(instructionId)) {
             return res
                .status(400)
-               .json({ success: false, error: 'Invalid instruction id provided' });
+               .json({ success: false, error: 'Invalid instruction ID provided' });
          }
 
          // Check content
-         if (typeof content !== 'string') {
+         if (rawContent === undefined || rawContent === null) {
+            return res.status(400).json({ success: false, error: 'Missing method content' });
+         }
+
+         if (typeof rawContent !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The content provided is not a string' });
          }
 
+         const content = rawContent.trim();
+
          if (!content) {
-            return res.status(400).json({ success: false, error: 'Missing method content' });
-         }
-
-         const sanitizedContent = String(content).trim();
-
-         if (sanitizedContent.length == 0) {
             return res.status(400).json({ success: false, error: 'The content provided is empty' });
          }
 
          // Check if instruction exists
-         const instructionExists = await db.collection('instruction').findOne({
-            _id: new ObjectId(sanitizedId)
+         const instruction = await db.collection('instruction').findOne({
+            _id: new ObjectId(instructionId)
          });
 
-         if (!instructionExists) {
+         if (!instruction) {
             return res
                .status(404)
                .json({ success: false, error: "An instruction with that id doesn't exist" });
          }
 
          // Add to database
-         await db.collection('method').insertOne({
-            instructionId: sanitizedId,
-            content: sanitizedContent
-         });
+         await db.collection('method').insertOne({ instructionId, content });
 
          return res.status(200).json({ success: true });
       } catch (error) {

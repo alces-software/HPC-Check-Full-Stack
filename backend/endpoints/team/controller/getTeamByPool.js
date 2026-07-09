@@ -11,31 +11,31 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
+         const { id: rawPoolId } = req.params || {};
 
-         // Check id
-         if (!id) {
+         // Check pool id
+         if (rawPoolId === undefined || rawPoolId === null) {
             return res.status(400).json({ success: false, error: 'Missing pool ID' });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawPoolId !== 'string') {
             return res
                .status(400)
                .json({ success: false, error: 'The team ID provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const poolId = rawPoolId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!poolId) {
             return res.status(400).json({ success: false, error: 'The pool ID provided is empty' });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
+         if (!ObjectId.isValid(poolId)) {
             return res.status(400).json({ success: false, error: 'Invalid pool ID provided' });
          }
 
          const pool = await db.collection('pool').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(poolId)
          });
 
          if (!pool) {
@@ -43,7 +43,7 @@ module.exports = (db) => {
          }
 
          // Get the teamPool
-         const teamPool = await db.collection('teampool').find({ poolId: sanitizedId }).toArray();
+         const teamPool = await db.collection('teampool').find({ poolId }).toArray();
 
          if (teamPool.length === 0) {
             return res.status(404).json({ success: false, error: 'Pool does not have any teams' });
@@ -53,7 +53,7 @@ module.exports = (db) => {
          return res.status(200).json({
             success: true,
             body: teamPool.map((result) => ({
-               poolId: sanitizedId,
+               poolId,
                teamId: result.teamId
             }))
          });

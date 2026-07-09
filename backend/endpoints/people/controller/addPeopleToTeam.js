@@ -11,58 +11,58 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { id } = req.params || {};
-         const { teamId } = req.body || {};
+         const { id: rawPersonId } = req.params || {};
+         const { teamId: rawTeamId } = req.body || {};
 
-         // Check id
-         if (!id) {
-            return res.status(400).json({ success: false, error: "Missing person's id" });
+         // Check persons id
+         if (rawPersonId === undefined || rawPersonId === null) {
+            return res.status(400).json({ success: false, error: "Missing person's ID" });
          }
 
-         if (typeof id !== 'string') {
+         if (typeof rawPersonId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The persons id provided is not a string' });
+               .json({ success: false, error: 'The persons ID provided is not a string' });
          }
 
-         const sanitizedId = String(id).trim();
+         const personId = rawPersonId.trim();
 
-         if (sanitizedId.length === 0) {
+         if (!personId) {
             return res
                .status(400)
-               .json({ success: false, error: "The person's id provided is empty" });
+               .json({ success: false, error: "The person's ID provided is empty" });
          }
 
-         if (!ObjectId.isValid(sanitizedId)) {
-            return res.status(400).json({ success: false, error: 'Invalid person id provided' });
+         if (!ObjectId.isValid(personId)) {
+            return res.status(400).json({ success: false, error: 'Invalid person ID provided' });
          }
 
          // Check team id
+         if (rawTeamId === undefined || rawTeamId === null) {
+            return res.status(400).json({ success: false, error: "Missing team's ID" });
+         }
+
+         if (typeof rawTeamId !== 'string') {
+            return res
+               .status(400)
+               .json({ success: false, error: 'The team ID provided is not a string' });
+         }
+
+         const teamId = rawTeamId.trim();
+
          if (!teamId) {
-            return res.status(400).json({ success: false, error: "Missing team's id" });
-         }
-
-         if (typeof teamId !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The team id provided is not a string' });
+               .json({ success: false, error: "The team's ID provided is empty" });
          }
 
-         const sanitizedTeamId = String(teamId).trim();
-
-         if (sanitizedTeamId.length === 0) {
-            return res
-               .status(400)
-               .json({ success: false, error: "The team's id provided is empty" });
-         }
-
-         if (!ObjectId.isValid(sanitizedTeamId)) {
-            return res.status(400).json({ success: false, error: 'Invalid team id provided' });
+         if (!ObjectId.isValid(teamId)) {
+            return res.status(400).json({ success: false, error: 'Invalid team ID provided' });
          }
 
          //  Check if the person exists
          const person = await db.collection('person').findOne({
-            _id: new ObjectId(sanitizedId)
+            _id: new ObjectId(personId)
          });
 
          if (!person) {
@@ -85,7 +85,7 @@ module.exports = (db) => {
 
          // Check if the team exists
          const teamExists = await db.collection('team').findOne({
-            _id: new ObjectId(sanitizedTeamId)
+            _id: new ObjectId(teamId)
          });
 
          if (!teamExists) {
@@ -94,8 +94,8 @@ module.exports = (db) => {
 
          // Update the person in the database
          db.collection('person').updateOne(
-            { _id: new ObjectId(sanitizedId) },
-            { $set: { teamId: sanitizedTeamId } }
+            { _id: new ObjectId(personId) },
+            { $set: { teamId: teamId } }
          );
 
          return res.status(200).json({ success: true });
