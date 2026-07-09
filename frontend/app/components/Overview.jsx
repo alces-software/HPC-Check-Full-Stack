@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
-import { FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt } from 'react-icons/fa';
 
 function dateToInputValue(date) {
    if (!date) return '';
@@ -101,8 +101,6 @@ export default function Overview() {
             <div className="p-10 ">
                {/* Header */}
                <div className="mb-10 text-left">
-                  
-
                   <h1 className="text-4xl sm:text-5xl font-bold text-white">Reports Overview</h1>
 
                   <p className="mt-3 text-lg text-slate-300">
@@ -110,54 +108,37 @@ export default function Overview() {
                   </p>
                </div>
 
-           
+               <p className="text-slate-300">
+                  Select a date and view the status of all reports for that day:
+               </p>
 
+               <div className="flex mt-4 inline-flex gap-4">
+                  <div className="grid grid-cols-1">
+                     <div>
+                        <div className="flex items-end gap-1">
+                           <div className="w-full">
+                              <div className="relative">
+                                 <DatePicker
+                                    selected={inputValueToDate(date)}
+                                    onChange={(selectedDate) =>
+                                       setDate(dateToInputValue(selectedDate))
+                                    }
 
-     
-           
-                                       <p className='text-slate-300'>Select a date and view the status of all reports for that day:</p>
-           
-                                       <div className='flex mt-4 inline-flex gap-4'>
-           
-           
-           
-           
-                                           <div className="grid grid-cols-1">
-           
-                                               <div>
-           
-           
-                                                   <div className="flex items-end gap-1">
-                                                       <div className="w-full">
-           
-           
-                                                           <div className='relative'>
-           
-           
-           
-                                                               <DatePicker
-                                                                   selected={inputValueToDate(date)}
-                                                                   onChange={(selectedDate) => setDate(dateToInputValue(selectedDate))}
-                                                                  
-                                                                   dateFormat="dd/MM/yyyy"
-                                                                   placeholderText={new Date().toLocaleDateString('en-GB')}
-                                                                   className="w-full rounded-full cursor-pointer border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
-                                                                   calendarClassName="results-datepicker"
-                                                                   popperClassName="z-50"
-           
-                                                               />
-                                                               <FaCalendarAlt className="pointer-events-none absolute right-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                                                           </div>
-                                                       </div>
-           
-           
-                                                   </div>
-                                               </div>
-                                           </div>
-                                       </div>
+                                    dateFormat="dd/MM/yyyy"
+                                    placeholderText={new Date().toLocaleDateString('en-GB')}
+                                    className="w-full rounded-full cursor-pointer border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                                    calendarClassName="results-datepicker"
+                                    popperClassName="z-50"
+                                 />
+                                 <FaCalendarAlt className="pointer-events-none absolute right-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
 
-
-                                       {/* Body */}
+               {/* Body */}
                <div className="mb-6 overflow-hidden mt-6">
                   {!report.id ? (
                      <p className="flex items-center justify-center text-white">
@@ -311,25 +292,6 @@ export default function Overview() {
                      </div>
                   )}
                </div>
-           
-           
-           
-                            
-           
-           
-           
-           
-           
-           
-           
-           
-           
-           
-           
-                          
-           
-           
-           
             </div>
          </div>
       </main>

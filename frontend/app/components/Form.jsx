@@ -543,14 +543,9 @@ export default function Form() {
    return (
       <main className="flex justify-center space-y-8">
          <div className="relative z-10 w-full">
-            <form
-               onSubmit={handleSubmit}
-               className="p-10"
-            >
+            <form onSubmit={handleSubmit} className="p-10">
                {/* Header */}
                <div className="mb-10 text-left">
-                  
-
                   <h1 className="text-4xl sm:text-5xl font-bold text-white">
                      Process Documentation
                   </h1>

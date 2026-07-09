@@ -363,8 +363,6 @@ export default function ClusterSettingsPage() {
             <div className="p-10 ">
                {/* Header */}
                <div className="mb-10 text-left">
-                
-
                   <h1 className="text-5xl font-bold text-white">{cluster.name}</h1>
 
                   <p className="mt-3 text-lg text-slate-300">Cluster settings and overview</p>

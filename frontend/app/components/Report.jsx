@@ -306,16 +306,12 @@ export default function Report() {
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                      <div>
                         <p className="text-xs text-slate-400">Tester</p>
-                        <p className="text-white">
-                           {report.person}
-                        </p>
+                        <p className="text-white">{report.person}</p>
                      </div>
 
                      <div>
                         <p className="text-xs text-slate-400">Cluster</p>
-                        <p className="text-white">
-                           {report.cluster}
-                        </p>
+                        <p className="text-white">{report.cluster}</p>
                      </div>
 
                      <div>

@@ -7,7 +7,6 @@ const { Database } = require('./db/db');
 const { seedData } = require('./scripts/testData');
 const populateClosedDays = require('./schedule/populateClosedDays');
 
-
 (async () => {
    const app = express();
 
@@ -22,8 +21,6 @@ const populateClosedDays = require('./schedule/populateClosedDays');
       await databaseObject.generateDb();
       await seedData(databaseConnection);
    }
-
- 
 
    console.log('Connected to database');
 

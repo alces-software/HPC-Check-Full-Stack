@@ -213,8 +213,6 @@ export default function PersonalSchedule() {
             <div className="rounded-3xl p-10">
                {/* Header */}
                <div className="mb-10 text-left">
-                  
-
                   <h1 className="text-4xl sm:text-5xl font-bold text-white">
                      {name}&apos;s Clusters
                   </h1>
