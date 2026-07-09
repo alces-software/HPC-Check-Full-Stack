@@ -52,10 +52,6 @@ export default function Overview() {
       loadReportFromDate();
    }, [date]);
 
-   useEffect(() => {
-      console.log(report);
-   }, [report]);
-
    // Calculate duration
    function calculateDuration(start, end) {
       const diffMs = end.getTime() - start.getTime();
