@@ -11,13 +11,28 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         const { date } = req.query || {};
+         const { date: rawDate } = req.query || {};
 
          // Check date
-         if (typeof date !== 'string') {
-            return res
-               .status(400)
-               .json({ success: false, error: 'The date provided is not a string' });
+         let date = null;
+         if (rawDate !== undefined && rawDate !== null) {
+            console.log(`hello ${rawDate}`);
+
+            if (typeof rawDate !== 'string') {
+               return res
+                  .status(400)
+                  .json({ success: false, error: 'The date provided is not a string' });
+            }
+
+            let tmpDate = rawDate.trim();
+
+            if (tmpDate) {
+               tmpDate = new Date(tmpDate);
+               if (isNaN(tmpDate.getTime())) {
+                  return res.status(400).json({ success: false, error: 'Invalid date provided' });
+               }
+               date = tmpDate;
+            }
          }
 
          // Get people
@@ -45,7 +60,7 @@ module.exports = (db) => {
             );
 
          // Get the overview report for today or a provided day
-         const startOfDay = date ? new Date(date) : new Date();
+         const startOfDay = date || new Date();
          startOfDay.setHours(0, 0, 0, 0);
 
          const endOfDay = new Date(startOfDay);
@@ -59,7 +74,7 @@ module.exports = (db) => {
          });
 
          if (!overviewReport) {
-            return res.status(404).json({ success: false, error: 'There is no overview report' });
+            return res.status(200).json({ success: true, body: {} });
          }
 
          // Get reports
