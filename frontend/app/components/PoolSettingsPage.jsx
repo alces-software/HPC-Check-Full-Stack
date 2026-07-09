@@ -137,14 +137,12 @@ export default function PoolClustersPage() {
 
    return (
       <main className="flex min-h-screen items-center justify-center">
-         <div className="absolute h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
+        
 
-         <div className="relative z-10 w-full max-w-5xl">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
-               <div className="mt-8 text-center">
-                  <div className="mb-4 flex justify-center">
-                     <FaServer className="h-20 w-20 text-cyan-300" aria-hidden="true" />
-                  </div>
+         <div className="relative z-10 w-full">
+            <div className="p-10">
+               <div className="text-left">
+                 
 
                   <h1 className="text-5xl font-bold text-white">{pool.name}</h1>
 
@@ -181,7 +179,7 @@ export default function PoolClustersPage() {
                         type="button"
                         disabled={!selectedClusterId}
                         onClick={handleAddCluster}
-                        className={`rounded-xl px-5 py-3 font-semibold text-white transition ${
+                        className={`rounded-xl px-5 py-3 cursor-pointer font-semibold text-white transition ${
                            selectedClusterId
                               ? 'bg-blue-600 hover:bg-blue-500'
                               : 'cursor-not-allowed bg-slate-600 opacity-50'
@@ -202,7 +200,7 @@ export default function PoolClustersPage() {
                               key={cluster.id}
                               type="button"
                               onClick={() => setSelectedClusterId(selected ? '' : cluster.id)}
-                              className={`rounded-2xl border p-5 text-left transition ${
+                              className={`rounded-2xl border cursor-pointer p-5 text-left transition ${
                                  selected
                                     ? 'border-blue-400 bg-blue-500/20 shadow-lg shadow-blue-500/20'
                                     : 'border-white/10 bg-slate-800/70 hover:border-blue-300/50 hover:bg-slate-700/70'

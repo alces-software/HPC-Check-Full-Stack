@@ -1,7 +1,26 @@
 'use client';
 
-import { GrOverview } from 'react-icons/gr';
 import { useState, useEffect } from 'react';
+import DatePicker from 'react-datepicker';
+import { FaCalendarAlt } from "react-icons/fa";
+
+function dateToInputValue(date) {
+   if (!date) return '';
+
+   const year = date.getFullYear();
+   const month = String(date.getMonth() + 1).padStart(2, '0');
+   const day = String(date.getDate()).padStart(2, '0');
+
+   return `${year}-${month}-${day}`;
+}
+
+function inputValueToDate(value) {
+   if (!value) return null;
+
+   const [year, month, day] = value.split('-').map(Number);
+
+   return new Date(year, month - 1, day);
+}
 
 export default function Overview() {
    const [date, setDate] = useState('');
@@ -56,17 +75,6 @@ export default function Overview() {
       console.log(report);
    }, [report]);
 
-   // Calculate duration
-   function calculateDuration(start, end) {
-      const diffMs = end.getTime() - start.getTime();
-
-      const hours = Math.floor(diffMs / 1000 / 60 / 60);
-      const minutes = Math.floor((diffMs / 1000 / 60) % 60);
-      const seconds = Math.floor((diffMs / 1000) % 60);
-
-      return `${hours}h ${minutes}m ${seconds}s`;
-   }
-
    // Show loading
    if (!reportLoaded) {
       return (
@@ -79,65 +87,71 @@ export default function Overview() {
    // Page
    return (
       <main className="flex justify-center space-y-8">
-         <div className="relative z-10 w-full max-w-6xl">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
+         <div className="relative z-10 w-full">
+            <div className="p-10 ">
                {/* Header */}
-               <div className="mb-10 text-center">
-                  <div className="mb-4 flex justify-center">
-                     <GrOverview className="h-25 w-25 text-pink-300" aria-hidden="true" />
-                  </div>
+               <div className="mb-10 text-left">
+                  
 
                   <h1 className="text-4xl sm:text-5xl font-bold text-white">Reports Overview</h1>
 
                   <p className="mt-3 text-lg text-slate-300">
-                     View a break down of a days reports.
+                     View a break down of a day&apos;s reports.
                   </p>
                </div>
 
-               {/* Day picker */}
-               <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 p-4 backdrop-blur-sm sm:p-5">
-                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                     <div>
-                        <h3 className="font-medium text-white">Custom Date Range</h3>
-                        <p className="mt-1 text-xs text-slate-400">
-                           Leave empty to use the current week.
-                        </p>
-                     </div>
+           
 
-                     {date && (
-                        <button
-                           onClick={() => {
-                              setDate('');
-                           }}
-                           className="w-full rounded-lg border border-white/10 px-3 py-1.5 text-xs text-slate-300 transition hover:bg-white/5 hover:text-white sm:w-auto sm:py-1"
-                        >
-                           Reset
-                        </button>
-                     )}
-                  </div>
 
-                  <div className="relative min-w-0 max-w-full">
-                     <input
-                        type="date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
-                           date ? 'text-white' : 'text-transparent sm:text-white'
-                        }`}
-                     />
-                     {!date && (
-                        <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
-                           Start date
-                        </span>
-                     )}
-                  </div>
-               </div>
+     
+           
+                                       <p className='text-slate-300'>Select a date and view the status of all reports for that day:</p>
+           
+                                       <div className='flex mt-4 inline-flex gap-4'>
+           
+           
+           
+           
+                                           <div className="grid grid-cols-1">
+           
+                                               <div>
+           
+           
+                                                   <div className="flex items-end gap-1">
+                                                       <div className="w-full">
+           
+           
+                                                           <div className='relative'>
+           
+           
+           
+                                                               <DatePicker
+                                                                   selected={inputValueToDate(date)}
+                                                                   onChange={(selectedDate) => setDate(dateToInputValue(selectedDate))}
+                                                                  
+                                                                   dateFormat="dd/MM/yyyy"
+                                                                   placeholderText={new Date().toLocaleDateString('en-GB')}
+                                                                   className="w-full rounded-full cursor-pointer border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                                                                   calendarClassName="results-datepicker"
+                                                                   popperClassName="z-50"
+           
+                                                               />
+                                                               <FaCalendarAlt className="pointer-events-none absolute right-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                                           </div>
+                                                       </div>
+           
+           
+                                                   </div>
+                                               </div>
+                                           </div>
+                                       </div>
 
-               {/* Body */}
-               <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm sm:p-6">
+
+                                       {/* Body */}
+               <div className="mb-6 overflow-hidden mt-6">
                   {!report.id ? (
                      <p className="flex items-center justify-center text-white">
-                        No overview to available
+                        No overview available
                      </p>
                   ) : (
                      <div>
@@ -287,6 +301,25 @@ export default function Overview() {
                      </div>
                   )}
                </div>
+           
+           
+           
+                            
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+                          
+           
+           
+           
             </div>
          </div>
       </main>

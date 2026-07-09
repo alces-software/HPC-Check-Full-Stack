@@ -6,6 +6,7 @@ const { startPopulateClosedDays, startDailyOverviewBuilder } = require('./servic
 const { Database } = require('./db/db');
 const { seedData } = require('./scripts/testData');
 const populateClosedDays = require('./schedule/populateClosedDays');
+const dailyOverview = require("./services/dailyReport/dailyReport");
 
 (async () => {
    const app = express();
@@ -21,6 +22,8 @@ const populateClosedDays = require('./schedule/populateClosedDays');
       await databaseObject.generateDb();
       await seedData(databaseConnection);
    }
+
+   dailyOverview(databaseConnection);
 
    console.log('Connected to database');
 

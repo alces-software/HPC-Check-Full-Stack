@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'react-datepicker/dist/react-datepicker.css';
 @plugin "@tailwindcss/typography";
 
 :root {
@@ -42,4 +43,44 @@ body {
 
 .animate-fade-up {
    animation: fadeUp 1000ms ease-out both;
+}
+
+.results-datepicker {
+   border: 1px solid rgba(255, 255, 255, 0.1) !important;
+   border-radius: 0.75rem !important;
+   background: rgb(15 23 42) !important;
+   color: blue !important;
+   box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+   overflow: hidden;
+}
+
+.results-datepicker .react-datepicker__header {
+   background: rgb(15 23 42) !important;
+   border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.results-datepicker .react-datepicker__current-month,
+.results-datepicker .react-datepicker__day-name,
+.results-datepicker .react-datepicker__day {
+   color: rgb(105, 159, 229) !important;
+}
+
+.results-datepicker .react-datepicker__day:hover {
+   background: rgba(37, 99, 235, 0.25) !important;
+   border-radius: 9999px;
+}
+
+.results-datepicker .react-datepicker__day--selected,
+.results-datepicker .react-datepicker__day--keyboard-selected {
+   background: rgb(8, 0, 163) !important;
+   color: white !important;
+   border-radius: 9999px;
+}
+
+.results-datepicker .react-datepicker__day--disabled {
+   color: rgb(71 85 105) !important;
+}
+
+.results-datepicker .react-datepicker__triangle {
+   display: none;
 }

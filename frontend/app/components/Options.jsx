@@ -386,14 +386,11 @@ export default function Options() {
 
    return (
       <main className="flex justify-center space-y-8">
-         <div className="relative z-10 w-full max-w-6xl">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
+         <div className="relative z-10 w-full">
+            <div className=" p-10">
                {/* Header */}
-               <div className="mb-10 text-center">
-                  <div className="mb-4 flex justify-center">
-                     <IoIosSettings className="h-25 w-25 text-amber-300" aria-hidden="true" />
-                  </div>
-
+               <div className="mb-10 text-left">
+                  
                   <h1 className="text-4xl sm:text-5xl font-bold text-white">Administration</h1>
 
                   <p className="mt-3 text-lg text-slate-300">

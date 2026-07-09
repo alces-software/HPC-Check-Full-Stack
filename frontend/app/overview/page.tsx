@@ -4,7 +4,7 @@ export const metadata = {
    title: 'Reports Overview'
 };
 
-export default function PersonalSchedulePage() {
+export default function OverviewPage() {
    return (
       <main>
          <Overview />
