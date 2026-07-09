@@ -312,7 +312,6 @@ export default function Form() {
       getHpcQuestion();
    }, []);
 
-
    async function checkHpcAnswer(answerIndex) {
       if (!hpcQuestion || hpcQuestionResult) return;
 
@@ -364,7 +363,6 @@ export default function Form() {
       getCheckFocus();
    }, []);
 
-
    function toggleStep(stepId) {
       setCompletedSteps((prev) => ({
          ...prev,
@@ -413,16 +411,16 @@ export default function Form() {
          bonusChallengeResult:
             bonusChallenge && bonusCompleted
                ? {
-                  bonusChallengeId: bonusChallenge.id,
-                  completed: bonusCompleted
-               }
+                    bonusChallengeId: bonusChallenge.id,
+                    completed: bonusCompleted
+                 }
                : null,
 
          checkFocusResult: checkFocus
             ? {
-               checkFocusId: checkFocus.id,
-               reflection: focusReflection.trim()
-            }
+                 checkFocusId: checkFocus.id,
+                 reflection: focusReflection.trim()
+              }
             : null
       };
 
@@ -618,7 +616,9 @@ export default function Form() {
                                  <ul className="mt-4 space-y-2 text-slate-300">
                                     {(step.methods || []).map((method, i) => {
                                        const isMethodHidden = hiddenMethodIds.includes(method.id);
-                                       const isMethodRevealed = revealedMethodIds.includes(method.id);
+                                       const isMethodRevealed = revealedMethodIds.includes(
+                                          method.id
+                                       );
 
                                        return (
                                           <li key={`${step.id}-${method.id}-${i}`}>
@@ -658,7 +658,10 @@ export default function Form() {
                                                                return;
                                                             }
 
-                                                            updateMethod(method.id, sanitizedContent);
+                                                            updateMethod(
+                                                               method.id,
+                                                               sanitizedContent
+                                                            );
                                                          }}
                                                          className="mt-8 w-full cursor-pointer rounded-xl border border-green-300/25 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-green-300/45 hover:bg-green-500/20 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-300/45 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 md:w-auto"
                                                       >
@@ -672,13 +675,15 @@ export default function Form() {
                                                       {isMethodHidden && !isMethodRevealed ? (
                                                          <div className="flex items-center gap-3">
                                                             <p className="text-yellow-200 mt-0 mb-0">
-                                                               Independent challenge — work this method
-                                                               out yourself.
+                                                               Independent challenge — work this
+                                                               method out yourself.
                                                             </p>
 
                                                             <button
                                                                type="button"
-                                                               onClick={() => revealMethod(method.id)}
+                                                               onClick={() =>
+                                                                  revealMethod(method.id)
+                                                               }
                                                                className="flex h-8 w-8 shrink-0 cursor-pointer transition-all items-center justify-center rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20"
                                                                aria-label="Reveal method guidance"
                                                                title="Reveal guidance"
@@ -856,14 +861,17 @@ export default function Form() {
                               {/* notes */}
                               <textarea
                                  name={
-                                    isCompleted ? `step${step.id}Notes` : `step${step.id}FailureReason`
+                                    isCompleted
+                                       ? `step${step.id}Notes`
+                                       : `step${step.id}FailureReason`
                                  }
                                  rows={4}
                                  placeholder={isCompleted ? 'Notes (optional)' : 'What went wrong?'}
-                                 className={`mt-4 w-full rounded-xl border p-3 text-white ${isCompleted
-                                    ? 'border-white/10 bg-slate-900/50'
-                                    : 'border-red-500/30 bg-red-900/20'
-                                    }`}
+                                 className={`mt-4 w-full rounded-xl border p-3 text-white ${
+                                    isCompleted
+                                       ? 'border-white/10 bg-slate-900/50'
+                                       : 'border-red-500/30 bg-red-900/20'
+                                 }`}
                               />
                            </section>
 
@@ -890,13 +898,15 @@ export default function Form() {
                                              type="button"
                                              onClick={() => checkHpcAnswer(optionIndex)}
                                              disabled={Boolean(hpcQuestionResult)}
-                                             className={`rounded-xl border px-4 py-3 text-left text-sm font-medium transition ${isSelected
-                                                ? 'border-cyan-300 bg-cyan-400/20 text-white'
-                                                : 'border-white/10 bg-slate-900/40 text-slate-200 hover:border-cyan-300/40 hover:bg-cyan-400/10'
-                                                } ${hpcQuestionResult && isCorrectAnswer
+                                             className={`rounded-xl border px-4 py-3 text-left text-sm font-medium transition ${
+                                                isSelected
+                                                   ? 'border-cyan-300 bg-cyan-400/20 text-white'
+                                                   : 'border-white/10 bg-slate-900/40 text-slate-200 hover:border-cyan-300/40 hover:bg-cyan-400/10'
+                                             } ${
+                                                hpcQuestionResult && isCorrectAnswer
                                                    ? 'border-green-300 bg-green-500/20 text-green-100'
                                                    : ''
-                                                }`}
+                                             }`}
                                           >
                                              {option}
                                           </button>
@@ -906,18 +916,22 @@ export default function Form() {
 
                                  {hpcQuestionResult && (
                                     <div
-                                       className={`mt-4 rounded-xl border p-4 ${hpcQuestionResult.correct
-                                          ? 'border-green-400/30 bg-green-500/10'
-                                          : 'border-red-400/30 bg-red-500/10'
-                                          }`}
+                                       className={`mt-4 rounded-xl border p-4 ${
+                                          hpcQuestionResult.correct
+                                             ? 'border-green-400/30 bg-green-500/10'
+                                             : 'border-red-400/30 bg-red-500/10'
+                                       }`}
                                     >
                                        <p
-                                          className={`font-semibold ${hpcQuestionResult.correct
-                                             ? 'text-green-300'
-                                             : 'text-red-300'
-                                             }`}
+                                          className={`font-semibold ${
+                                             hpcQuestionResult.correct
+                                                ? 'text-green-300'
+                                                : 'text-red-300'
+                                          }`}
                                        >
-                                          {hpcQuestionResult.correct ? 'Correct ✅' : 'Not quite ❌'}
+                                          {hpcQuestionResult.correct
+                                             ? 'Correct ✅'
+                                             : 'Not quite ❌'}
                                        </p>
 
                                        <p className="mt-2 text-sm text-slate-200">
@@ -1015,14 +1029,15 @@ export default function Form() {
                </span>
 
                <span
-                  className={`text-xl font-bold tabular-nums ${isFinalTwentyMinutes ? 'text-red-500' : 'text-white'
-                     }`}
+                  className={`text-xl font-bold tabular-nums ${
+                     isFinalTwentyMinutes ? 'text-red-500' : 'text-white'
+                  }`}
                >
                   {!windowReady
                      ? '--:--:--'
                      : timeRemainingMs > 0
-                        ? formatTimeRemaining(timeRemainingMs)
-                        : 'END'}
+                       ? formatTimeRemaining(timeRemainingMs)
+                       : 'END'}
                </span>
             </div>
          </div>

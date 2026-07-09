@@ -11,8 +11,6 @@ module.exports.seedData = async (db) => {
    const methodCol = db.collection('method');
    const bonusChallengeCol = db.collection('bonusChallenge');
 
-
-
    const hpcQuestionCol = db.collection('hpcQuestion');
 
    const checkFocusCol = db.collection('checkFocus');
@@ -235,13 +233,11 @@ module.exports.seedData = async (db) => {
 
    await bonusChallengeCol.insertMany(bonusChallenges);
 
-
-
    // -----------------------------
    // HPC QUICK CHECK QUESTIONS
    // -----------------------------
    await hpcQuestionCol.insertMany(hpcQuestions);
-   
+
    // -----------------------------
    // CHECKING OPERATIONAL FOCUS OF THE CHECK
    // E.G. GRUMPY OLD RESEARCHER

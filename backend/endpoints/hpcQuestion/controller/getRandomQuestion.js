@@ -9,8 +9,8 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         if (Math.random() >=  0.35){
-            return res.status(200).json ({
+         if (Math.random() >= 0.35) {
+            return res.status(200).json({
                success: true,
                body: null
             });
@@ -18,10 +18,7 @@ module.exports = (db) => {
 
          const [question] = await db
             .collection('hpcQuestion')
-            .aggregate([
-               { $match: { active: true } },
-               { $sample: { size: 1 } }
-            ])
+            .aggregate([{ $match: { active: true } }, { $sample: { size: 1 } }])
             .toArray();
 
          if (!question) {
@@ -41,7 +38,9 @@ module.exports = (db) => {
             optionOrder[randomIndex] = temporaryValue;
          }
 
-         const shuffledOptions = optionOrder.map((originalIndex) => question.options[originalIndex]);
+         const shuffledOptions = optionOrder.map(
+            (originalIndex) => question.options[originalIndex]
+         );
 
          return res.status(200).json({
             success: true,
