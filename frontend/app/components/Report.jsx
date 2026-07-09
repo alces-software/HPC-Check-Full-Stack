@@ -105,8 +105,8 @@ export default function Report() {
    if (!report) {
       return (
          <main className="flex justify-center py-10">
-            <div className="w-full max-w-6xl">
-               <div className="rounded-3xl border border-red-500/20 bg-white/10 p-8 shadow-2xl backdrop-blur-xl">
+            <div className="w-full">
+               <div className="p-10 ">
                   <div className="flex min-h-[400px] flex-col items-center justify-center text-center">
                      <h2 className="text-2xl font-semibold text-white">Report Not Found</h2>
 
@@ -129,8 +129,8 @@ export default function Report() {
 
    return (
       <main className="flex justify-center space-y-8">
-         <div className="relative z-10 w-full max-w-6xl">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
+         <div className="relative z-10 w-full">
+            <div className="p-10">
                {/* Header */}
                <div className="mb-10 flex items-start justify-between md:mb-8">
                   <div>
@@ -306,16 +306,12 @@ export default function Report() {
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                      <div>
                         <p className="text-xs text-slate-400">Tester</p>
-                        <p className="text-white">
-                           {report.person} #{report.personId}
-                        </p>
+                        <p className="text-white">{report.person}</p>
                      </div>
 
                      <div>
                         <p className="text-xs text-slate-400">Cluster</p>
-                        <p className="text-white">
-                           {report.cluster} #{report.clusterId}
-                        </p>
+                        <p className="text-white">{report.cluster}</p>
                      </div>
 
                      <div>

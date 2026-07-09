@@ -3,8 +3,37 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
-import { FaChartBar, FaDatabase, FaUser } from 'react-icons/fa';
+import { FaDatabase, FaUser } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
+import DatePicker from 'react-datepicker';
+import { FaCalendarAlt } from 'react-icons/fa';
+
+function dateToInputValue(date) {
+   if (!date) return '';
+
+   const year = date.getFullYear();
+   const month = String(date.getMonth() + 1).padStart(2, '0');
+   const day = String(date.getDate()).padStart(2, '0');
+
+   return `${year}-${month}-${day}`;
+}
+
+function inputValueToDate(value) {
+   if (!value) return null;
+
+   const [year, month, day] = value.split('-').map(Number);
+
+   return new Date(year, month - 1, day);
+}
+
+function addDays(date, days) {
+   if (!date) return null;
+
+   const nextDate = new Date(date);
+   nextDate.setDate(nextDate.getDate() + days);
+
+   return nextDate;
+}
 
 export default function ResultsPage() {
    const router = useRouter();
@@ -45,45 +74,47 @@ export default function ResultsPage() {
       loadClusters();
    }, []);
 
-   // ----------------------------
-   // Reset when switching MODE
-   // ----------------------------
-   useEffect(() => {
+   function resetResults() {
       setPage(1);
       setReports([]);
       setPagination(null);
+   }
 
-      if (mode === 'week') {
+   function handleModeChange(nextMode) {
+      if (nextMode === mode) return;
+
+      setMode(nextMode);
+      resetResults();
+      setStartDate('');
+      setEndDate('');
+
+      if (nextMode === 'week') {
          setSelectedClusterId(null);
-         setStartDate('');
-         setEndDate('');
       }
+   }
 
-      if (mode === 'cluster') {
-         setStartDate('');
-         setEndDate('');
-      }
-   }, [mode]);
+   function handleClusterChange(clusterId) {
+      setSelectedClusterId(clusterId);
+      resetResults();
+      setStartDate('');
+      setEndDate('');
+   }
 
-   // ----------------------------
-   // Reset when switching cluster
-   // ----------------------------
-   useEffect(() => {
-      if (mode === 'cluster') {
-         setPage(1);
-         setReports([]);
-         setPagination(null);
-         setStartDate('');
-         setEndDate('');
-      }
-   }, [mode, selectedClusterId]);
-
-   // ----------------------------
-   // Reset page when date changes
-   // ----------------------------
-   useEffect(() => {
+   function handleClusterStartDateChange(date) {
+      setStartDate(dateToInputValue(date));
       setPage(1);
-   }, [startDate, endDate, mode]);
+   }
+
+   function handleClusterEndDateChange(date) {
+      setEndDate(dateToInputValue(date));
+      setPage(1);
+   }
+
+   function handleWeekStartDateChange(date) {
+      setStartDate(dateToInputValue(date));
+      setEndDate(dateToInputValue(addDays(date, 6)));
+      setPage(1);
+   }
 
    // ----------------------------
    // Fetch reports
@@ -172,24 +203,20 @@ export default function ResultsPage() {
 
    return (
       <main className="flex justify-center space-y-8">
-         <div className="relative z-10 w-full max-w-6xl">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
+         <div className="relative z-10 w-full ">
+            <div className=" p-10">
                {/* HEADER */}
-               <div className="mb-10 text-center">
-                  <div className="mb-4 flex justify-center">
-                     <FaChartBar className="h-25 w-25 text-purple-300" aria-hidden="true" />
-                  </div>
+               <div className="mb-10 text-left">
+                  <h1 className="text-4xl sm:text-5xl font-bold text-white">Report Explorer </h1>
 
-                  <h1 className="text-4xl sm:text-5xl font-bold text-white">Report Explorer</h1>
-
-                  <p className="mt-3 text-lg text-slate-300">Cluster or weekly report view</p>
+                  <p className="mt-3 text-lg text-slate-300">Find reports by cluster or by week.</p>
                </div>
 
                {/* MODE TOGGLE */}
                <div className="mb-8 flex justify-center">
-                  <div className="inline-flex items-center gap-4 rounded-2xl px-4 py-3 backdrop-blur-sm sm:gap-5 sm:px-8 sm:py-4">
+                  <div className="inline-flex items-center gap-5 rounded-2xl px-4 py-3 backdrop-blur-sm  sm:px-8 sm:py-4">
                      <button
-                        onClick={() => setMode('cluster')}
+                        onClick={() => handleModeChange('cluster')}
                         className={[
                            'cursor-pointer border-b-2 pb-2 text-sm font-semibold tracking-wide transition',
                            mode === 'cluster'
@@ -201,7 +228,7 @@ export default function ResultsPage() {
                      </button>
 
                      <button
-                        onClick={() => setMode('week')}
+                        onClick={() => handleModeChange('week')}
                         className={[
                            'cursor-pointer border-b-2 pb-2 text-sm font-semibold tracking-wide transition',
                            mode === 'week'
@@ -214,120 +241,126 @@ export default function ResultsPage() {
                   </div>
                </div>
 
-               <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 p-4 backdrop-blur-sm sm:p-5">
-                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                     <div>
-                        {mode !== 'cluster' ? (
-                           <div>
-                              <h3 className="font-medium text-white">Custom Date Range</h3>
-                              <p className="mt-1 text-xs text-slate-400">
-                                 Leave empty to use the current week.
-                              </p>
-                           </div>
-                        ) : (
-                           <div>
-                              <h3 className="font-medium text-white">
-                                 Cluster Date Range (optional)
-                              </h3>
-                              <p className="mt-1 text-xs text-slate-400">
-                                 Filter cluster reports by date range
-                              </p>
-                           </div>
-                        )}
-                     </div>
+               {mode === 'cluster' ? (
+                  <div className="flex inline-flex gap-4">
+                     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[18rem_1fr]">
+                        {/* Cluster */}
+                        <div>
+                           <label className="mb-2 ml-2 block text-md text-white">
+                              <strong>Cluster:</strong>
+                           </label>
 
-                     {(startDate || endDate) && (
-                        <button
-                           onClick={() => {
-                              setStartDate('');
-                              setEndDate('');
-                           }}
-                           className="w-full rounded-lg border border-white/10 px-3 py-1.5 text-xs text-slate-300 transition hover:bg-white/5 hover:text-white sm:w-auto sm:py-1"
-                        >
-                           Reset
-                        </button>
-                     )}
-                  </div>
+                           <Listbox value={selectedClusterId} onChange={handleClusterChange}>
+                              <div className="relative w-72">
+                                 <ListboxButton className="w-full cursor-pointer rounded-full border border-white/10 bg-slate-900 px-4 py-3 text-left text-white">
+                                    <span>{selectedCluster?.name ?? 'Select a cluster...'}</span>
 
-                  <div className="grid min-w-0 gap-3 sm:gap-4 md:grid-cols-2">
-                     <div className="relative min-w-0 max-w-full">
-                        <input
-                           type="date"
-                           value={startDate}
-                           onChange={(e) => setStartDate(e.target.value)}
-                           className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
-                              startDate ? 'text-white' : 'text-transparent sm:text-white'
-                           }`}
-                        />
-                        {!startDate && (
-                           <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
-                              Start date
-                           </span>
-                        )}
-                     </div>
+                                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                       ▼
+                                    </span>
+                                 </ListboxButton>
 
-                     <div className="relative min-w-0 max-w-full">
-                        <input
-                           type="date"
-                           value={endDate}
-                           min={startDate || undefined}
-                           onChange={(e) => setEndDate(e.target.value)}
-                           className={`block w-full min-w-0 max-w-[15rem] rounded-lg border border-slate-600 bg-slate-800/80 px-2.5 py-2 text-xs [color-scheme:dark] sm:max-w-full sm:rounded-xl sm:px-4 sm:py-3 sm:text-base ${
-                              endDate ? 'text-white' : 'text-transparent sm:text-white'
-                           }`}
-                        />
-                        {!endDate && (
-                           <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 sm:hidden">
-                              End date
-                           </span>
-                        )}
-                     </div>
-                  </div>
-               </div>
-
-               {/* CLUSTER SELECT */}
-               {mode === 'cluster' && (
-                  <div className="mb-6">
-                     <label className="mb-2 block text-sm text-slate-200">Cluster</label>
-
-                     <Listbox value={selectedClusterId} onChange={setSelectedClusterId}>
-                        <div className="relative">
-                           <ListboxButton className="relative w-full cursor-pointer rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 pr-10 text-left text-sm text-white backdrop-blur-md outline-none transition hover:border-white/20 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 sm:text-base">
-                              <span className="block min-w-0 truncate">
-                                 {selectedCluster?.name || 'Select a cluster...'}
-                              </span>
-
-                              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                                 ▼
-                              </span>
-                           </ListboxButton>
-
-                           <ListboxOptions className="relative z-20 mt-2 max-h-40 w-full overflow-y-auto overflow-x-hidden rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl shadow-2xl sm:absolute sm:left-0 sm:right-0 sm:z-50 sm:max-h-60">
-                              {clusters.map((c) => (
-                                 <ListboxOption
-                                    key={c.id}
-                                    value={c.id}
-                                    className="cursor-pointer whitespace-normal break-words px-3 py-2 text-sm text-white transition data-[active]:bg-blue-500/20 data-[selected]:font-semibold sm:px-4 sm:py-3 sm:text-base"
-                                 >
-                                    {c.name}
-                                 </ListboxOption>
-                              ))}
-                           </ListboxOptions>
+                                 <ListboxOptions className="absolute z-20 mt-2 max-h-60 w-full overflow-auto rounded-xl bg-slate-900 p-1 shadow-xl">
+                                    {clusters
+                                       .filter((c) => c.name)
+                                       .map((cluster) => (
+                                          <ListboxOption
+                                             key={cluster.id}
+                                             value={cluster.id}
+                                             className="cursor-pointer rounded-lg px-4 py-2 text-white data-focus:bg-blue-500/20 data-selected:bg-blue-500/30"
+                                          >
+                                             {cluster.name}
+                                          </ListboxOption>
+                                       ))}
+                                 </ListboxOptions>
+                              </div>
+                           </Listbox>
                         </div>
-                     </Listbox>
+
+                        {/* Date range */}
+                        <div>
+                           <label className="mb-2 ml-2 block text-md text-white">
+                              <strong>Date range</strong>
+                              <em> (Optional):</em>
+                           </label>
+
+                           <div className="flex items-end gap-1">
+                              <div className="w-full">
+                                 <div className="relative">
+                                    <DatePicker
+                                       selected={inputValueToDate(startDate)}
+                                       onChange={handleClusterStartDateChange}
+                                       dateFormat="dd/MM/yyyy"
+                                       placeholderText="Start date"
+                                       className="w-full rounded-full cursor-pointer border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                                       calendarClassName="results-datepicker"
+                                       popperClassName="z-50"
+                                    />
+                                    <FaCalendarAlt className="pointer-events-none absolute right-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                 </div>
+                              </div>
+
+                              <div className="w-full">
+                                 <div className="relative">
+                                    <DatePicker
+                                       selected={inputValueToDate(endDate)}
+                                       onChange={handleClusterEndDateChange}
+                                       dateFormat="dd/MM/yyyy"
+                                       placeholderText="End date"
+                                       minDate={inputValueToDate(startDate)}
+                                       className="w-full cursor-pointer rounded-full border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                                       calendarClassName="results-datepicker"
+                                       popperClassName="z-50"
+                                    />
+
+                                    <FaCalendarAlt className="pointer-events-none absolute right-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
                   </div>
+               ) : (
+                  <>
+                     <p className="text-slate-300">
+                        Select a start date and get all results for the next 7 days:
+                     </p>
+
+                     <div className="flex mt-4 inline-flex gap-4">
+                        <div className="grid grid-cols-1">
+                           <div>
+                              <div className="flex items-end gap-1">
+                                 <div className="w-full">
+                                    <div className="relative">
+                                       <DatePicker
+                                          selected={inputValueToDate(startDate)}
+                                          onChange={handleWeekStartDateChange}
+                                          dateFormat="dd/MM/yyyy"
+                                          placeholderText="Start date"
+                                          className="w-full rounded-full cursor-pointer border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                                          calendarClassName="results-datepicker"
+                                          popperClassName="z-50"
+                                       />
+                                       <FaCalendarAlt className="pointer-events-none absolute right-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </>
                )}
 
                {/* LOADING */}
-               {loading && <p className="text-center text-slate-300">Loading reports...</p>}
+               {loading && <p className="mt-8 text-center text-slate-300">Loading reports...</p>}
 
                {/* EMPTY STATE */}
                {!loading && reports.length === 0 && (
-                  <p className="text-center text-slate-400">No reports found</p>
+                  <p className="mt-8 text-center text-slate-400">No reports found</p>
                )}
 
                {/* RESULTS */}
-               <div className="space-y-5 sm:space-y-6">
+               <div className="mt-8 space-y-5 sm:space-y-6">
                   {Object.entries(grouped).map(([date, items]) => (
                      <div
                         key={date}
@@ -350,10 +383,10 @@ export default function ResultsPage() {
                                     key={r.id}
                                     onClick={() => router.push(`/report?id=${r.id}`)}
                                     className={[
-                                       'w-full group text-left',
-                                       'rounded-xl border px-3 py-3 sm:px-4 sm:py-4',
+                                       'group w-full text-left',
+                                       'rounded-3xl border px-3 py-3 sm:px-4 sm:py-4',
                                        'transition-all duration-200',
-                                       'hover:shadow-lg hover:-translate-y-[1px] cursor-pointer',
+                                       'cursor-pointer hover:-translate-y-[1px] hover:shadow-lg',
                                        'active:scale-[0.99]',
                                        passed
                                           ? 'border-green-400/30 bg-green-500/20'
@@ -364,7 +397,7 @@ export default function ResultsPage() {
                                        <div className="flex min-w-0 gap-3">
                                           <div
                                              className={[
-                                                'mt-1 h-3 w-3 rounded-full shrink-0',
+                                                'mt-1 h-3 w-3 shrink-0 rounded-full',
                                                 passed ? 'bg-green-400' : 'bg-red-400'
                                              ].join(' ')}
                                           />
@@ -377,7 +410,7 @@ export default function ResultsPage() {
 
                                                 <span
                                                    className={[
-                                                      'text-[11px] px-2 py-0.5 rounded-full border',
+                                                      'rounded-full border px-2 py-0.5 text-[11px]',
                                                       passed
                                                          ? 'border-green-400/30 bg-green-500/20 text-green-300'
                                                          : 'border-red-400/30 bg-red-500/20 text-red-300'
@@ -389,7 +422,7 @@ export default function ResultsPage() {
 
                                              <div className="mt-3 flex flex-wrap gap-2">
                                                 {mode === 'week' && (
-                                                   <span className="inline-flex max-w-full items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
+                                                   <span className="inline-flex max-w-full items-center gap-2 px-3 py-1 text-sm font-medium text-white">
                                                       <FaDatabase
                                                          className="shrink-0 text-emerald-300"
                                                          aria-hidden="true"
@@ -400,7 +433,7 @@ export default function ResultsPage() {
                                                    </span>
                                                 )}
 
-                                                <span className="inline-flex max-w-full items-center gap-2 rounded-lg border border-slate-600 bg-slate-800/80 px-3 py-1 text-sm font-medium text-white">
+                                                <span className="inline-flex max-w-full items-center gap-2 rounded-lg px-3 py-1 text-sm font-medium text-white">
                                                    <FaUser
                                                       className="shrink-0 text-blue-300"
                                                       aria-hidden="true"
@@ -417,8 +450,8 @@ export default function ResultsPage() {
                                           <span className="opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100">
                                              Open
                                           </span>
-                                          <span className="group-hover:translate-x-0.5 transition">
-                                             <IoIosArrowForward></IoIosArrowForward>
+                                          <span className="transition group-hover:translate-x-0.5">
+                                             <IoIosArrowForward aria-hidden="true" />
                                           </span>
                                        </div>
                                     </div>

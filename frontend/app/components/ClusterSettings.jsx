@@ -359,27 +359,23 @@ export default function ClusterSettingsPage() {
 
    return (
       <main className="flex justify-center space-y-8">
-         <div className="relative z-10 w-full max-w-6xl">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
+         <div className="relative z-10 w-full">
+            <div className="p-10 ">
                {/* Header */}
-               <div className="mb-10 text-center">
-                  <div className="mb-4 flex justify-center">
-                     <FaDatabase className="h-20 w-20 text-emerald-300" aria-hidden="true" />
-                  </div>
-
+               <div className="mb-10 text-left">
                   <h1 className="text-5xl font-bold text-white">{cluster.name}</h1>
 
                   <p className="mt-3 text-lg text-slate-300">Cluster settings and overview</p>
 
                   <div className="mt-6 space-y-3">
                      {!hasChecks ? (
-                        <div className="flex flex-wrap justify-center gap-3">
+                        <div className="flex flex-wrap justify-start gap-3">
                            <span className="rounded-full border border-blue-400/30 bg-blue-500/20 px-4 py-2 text-sm font-semibold text-blue-200">
                               No checks have been performed for this cluster
                            </span>
                         </div>
                      ) : (
-                        <div className="flex flex-wrap justify-center gap-3">
+                        <div className="flex flex-wrap justify-start gap-3">
                            {status ? (
                               <span className="rounded-full border border-green-400/30 bg-green-500/20 px-4 py-2 text-sm font-semibold text-green-300">
                                  Status: Healthy
@@ -398,7 +394,7 @@ export default function ClusterSettingsPage() {
                         </div>
                      )}
 
-                     <div className="flex flex-wrap justify-center gap-3 border-t border-white/10 pt-3">
+                     <div className="flex flex-wrap justify-start gap-3 pt-3">
                         <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-mono text-sm text-slate-300">
                            id: {clusterId}
                         </span>

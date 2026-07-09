@@ -9,7 +9,7 @@ module.exports = (db) => {
     */
    return async (req, res) => {
       try {
-         if (Math.random() >= 0.35) {
+         if (Math.random() >= 0.25) {
             return res.status(200).json({
                success: true,
                body: null

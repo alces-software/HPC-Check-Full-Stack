@@ -7,6 +7,25 @@ import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headless
 import { FaLayerGroup, FaUser, FaUsers } from 'react-icons/fa';
 import { IoIosSettings } from 'react-icons/io';
 
+function timeInputToInt(value) {
+   if (!value) return null;
+
+   const [hours, minutes] = value.split(':').map(Number);
+
+   if (
+      Number.isNaN(hours) ||
+      Number.isNaN(minutes) ||
+      hours < 0 ||
+      hours > 23 ||
+      minutes < 0 ||
+      minutes > 59
+   ) {
+      return null;
+   }
+
+   return hours + minutes / 60;
+}
+
 function timeNumberToInput(value) {
    const numericValue = Number(value);
 
@@ -373,15 +392,9 @@ export default function TeamSettingsPage() {
 
    return (
       <main className="flex min-h-screen items-center justify-center">
-         <div className="absolute h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
-
-         <div className="relative z-10 w-full max-w-5xl">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 shadow-2xl backdrop-blur-xl">
-               <div className="mt-8 text-center">
-                  <div className="mb-4 flex justify-center">
-                     <FaUsers className="h-20 w-20 text-amber-300" aria-hidden="true" />
-                  </div>
-
+         <div className="relative z-10 w-full">
+            <div className="p-10">
+               <div className="text-left">
                   <h1 className="text-5xl font-bold text-white">{team.name}</h1>
 
                   <p className="mt-3 text-lg text-slate-300">
@@ -540,7 +553,7 @@ export default function TeamSettingsPage() {
                                     key={pool.id}
                                     className="flex items-center justify-between rounded-xl border border-slate-600 bg-slate-800/80 px-4 py-3 text-white"
                                  >
-                                    <div className="relative flex-1">
+                                    <div className="relative flex-1 group">
                                        {/* Full card click target */}
                                        <Link
                                           href={`/pools?id=${pool.id}`}
@@ -550,7 +563,7 @@ export default function TeamSettingsPage() {
 
                                        {/* Card content */}
                                        <div className="relative z-10 pointer-events-none">
-                                          <p className="font-medium text-white transition hover:text-amber-300">
+                                          <p className="pointer-events-auto cursor-pointer font-medium text-white transition hover:text-emerald-400">
                                              {pool.name}
                                           </p>
 
@@ -569,7 +582,7 @@ export default function TeamSettingsPage() {
                                                          href={`/clusters?id=${cluster.id}`}
                                                          className="relative z-20 pointer-events-auto w-fit"
                                                       >
-                                                         <span className="block rounded-lg bg-slate-700/80 px-2.5 py-1 text-xs text-slate-200 ring-1 ring-slate-600 transition hover:ring-cyan-400/50">
+                                                         <span className="block rounded-lg bg-slate-700/80 px-2.5 py-1 text-xs text-slate-200 ring-1 ring-slate-600 transition hover:ring-emerald-400/50">
                                                             {cluster.name}
                                                          </span>
                                                       </Link>
@@ -578,7 +591,7 @@ export default function TeamSettingsPage() {
                                              </div>
                                           )}
 
-                                          <p className="mt-3 text-xs text-cyan-300">
+                                          <p className="mt-3 text-xs text-emerald-400">
                                              View pool settings
                                           </p>
                                        </div>
@@ -586,7 +599,7 @@ export default function TeamSettingsPage() {
                                     <button
                                        type="button"
                                        onClick={() => openRemovePoolConfirmation(pool.id)}
-                                       className="ml-3 rounded-full border border-red-400/40 bg-red-500/10 px-2.5 py-1 text-sm text-red-200 transition hover:bg-red-500/20"
+                                       className="ml-3 cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 transition hover:bg-red-500/20 hover:text-red-200"
                                        aria-label={`Remove ${pool.name} from team`}
                                     >
                                        ✕
@@ -651,7 +664,7 @@ export default function TeamSettingsPage() {
                         type="button"
                         onClick={handleSaveSettings}
                         disabled={savingSettings}
-                        className="rounded-xl bg-purple-600 px-5 py-3 font-semibold text-white transition hover:bg-purple-500 disabled:opacity-50"
+                        className="rounded-xl cursor-pointer bg-purple-600 px-5 py-3 font-semibold text-white transition hover:bg-purple-500 disabled:opacity-50"
                      >
                         {savingSettings ? 'Saving...' : 'Save'}
                      </button>
