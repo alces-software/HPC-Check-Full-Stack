@@ -42,6 +42,9 @@ const populateClosedDays = require('./schedule/populateClosedDays');
    //Register focus routes
    app.use('/', require('./endpoints/checkFocus/route')(databaseConnection));
 
+   //Register Quiz routes
+   app.use('/', require('./endpoints/hpcQuestion/route')(databaseConnection));
+
    // Register report routes
    app.use('/', require('./endpoints/report/routes')(databaseConnection));
 

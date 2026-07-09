@@ -1,4 +1,5 @@
 const { ObjectId } = require('mongodb');
+const hpcQuestions = require('./data/hpcQuestion');
 
 module.exports.seedData = async (db) => {
    const personCol = db.collection('person');
@@ -9,6 +10,8 @@ module.exports.seedData = async (db) => {
    const instructionCol = db.collection('instruction');
    const methodCol = db.collection('method');
    const bonusChallengeCol = db.collection('bonusChallenge');
+
+   const hpcQuestionCol = db.collection('hpcQuestion');
 
    const checkFocusCol = db.collection('checkFocus');
 
@@ -229,6 +232,11 @@ module.exports.seedData = async (db) => {
    ];
 
    await bonusChallengeCol.insertMany(bonusChallenges);
+
+   // -----------------------------
+   // HPC QUICK CHECK QUESTIONS
+   // -----------------------------
+   await hpcQuestionCol.insertMany(hpcQuestions);
 
    // -----------------------------
    // CHECKING OPERATIONAL FOCUS OF THE CHECK

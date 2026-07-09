@@ -178,6 +178,47 @@
       "validationAction": "error"
    },
    {
+      "name": "hpcQuestion",
+      "validator": {
+         "$jsonSchema": {
+            "bsonType": "object",
+            "required": [
+               "_id",
+               "question",
+               "options",
+               "correctAnswerIndex",
+               "explanation",
+               "active"
+            ],
+            "properties": {
+               "_id": {
+                  "bsonType": "objectId"
+               },
+               "question": {
+                  "bsonType": "string"
+               },
+               "options": {
+                  "bsonType": "array",
+                  "items": {
+                     "bsonType": "string"
+                  }
+               },
+               "correctAnswerIndex": {
+                  "bsonType": "int"
+               },
+               "explanation": {
+                  "bsonType": "string"
+               },
+               "active": {
+                  "bsonType": "bool"
+               }
+            }
+         }
+      },
+      "validationLevel": "moderate",
+      "validationAction": "error"
+   },
+   {
       "name": "method",
       "validator": {
          "$jsonSchema": {
