@@ -14,10 +14,10 @@ module.exports = (db) => {
          const { date } = req.query || {};
 
          // Check date
-         if (typeof date !== 'number') {
+         if (typeof date !== 'string') {
             return res
                .status(400)
-               .json({ success: false, error: 'The data provided is not a number' });
+               .json({ success: false, error: 'The date provided is not a string' });
          }
 
          // Get people
