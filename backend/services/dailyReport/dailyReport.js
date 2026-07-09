@@ -57,8 +57,8 @@ module.exports = async (db) => {
       .collection('report')
       .find({
          startDate: {
-            $gte: startOfDay,
-            $lte: endOfDay
+            $gte: start,
+            $lte: end
          }
       })
       .toArray()
