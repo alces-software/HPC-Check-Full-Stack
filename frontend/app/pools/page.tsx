@@ -1,14 +1,13 @@
 import PoolClustersPage from '../components/PoolSettingsPage';
 import { Suspense } from 'react';
-import ReportSkeleton from '../components/PoolSkeleton';
-
+import Loading from '../components/Loading';
 export const metadata = {
    title: 'Pool Options'
 };
 
 export default function Page() {
    return (
-      <Suspense fallback={<ReportSkeleton />}>
+      <Suspense fallback={<Loading />}>
          <PoolClustersPage />
       </Suspense>
    );
