@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import { FaCalendarAlt } from 'react-icons/fa';
+import Loading from '../components/Loading';
 
 function dateToInputValue(date) {
    if (!date) return '';
@@ -87,11 +88,7 @@ export default function Overview() {
 
    // Show loading
    if (!reportLoaded) {
-      return (
-         <main className="flex min-h-screen items-center justify-center text-white">
-            Loading overview...
-         </main>
-      );
+      return <Loading />;
    }
 
    // Page
@@ -100,7 +97,7 @@ export default function Overview() {
          <div className="relative z-10 w-full">
             <div className="p-10 ">
                {/* Header */}
-               <div className="mb-10 text-left">
+               <div className="mb-10 text-center md:text-left">
                   <h1 className="text-4xl sm:text-5xl font-bold text-white">Reports Overview</h1>
 
                   <p className="mt-3 text-lg text-slate-300">

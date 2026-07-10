@@ -7,6 +7,7 @@ import { FaDatabase, FaUser } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
 import DatePicker from 'react-datepicker';
 import { FaCalendarAlt } from 'react-icons/fa';
+import Loading from './Loading';
 
 function dateToInputValue(date) {
    if (!date) return '';
@@ -194,11 +195,7 @@ export default function ResultsPage() {
    }, [clusters, selectedClusterId]);
 
    if (!clustersLoaded) {
-      return (
-         <main className="flex min-h-screen items-center justify-center text-white">
-            Loading clusters...
-         </main>
-      );
+      return <Loading />;
    }
 
    return (
@@ -206,7 +203,7 @@ export default function ResultsPage() {
          <div className="relative z-10 w-full ">
             <div className=" p-10">
                {/* HEADER */}
-               <div className="mb-10 text-left">
+               <div className="mb-10 text-center md:text-left">
                   <h1 className="text-4xl sm:text-5xl font-bold text-white">Report Explorer </h1>
 
                   <p className="mt-3 text-lg text-slate-300">Find reports by cluster or by week.</p>

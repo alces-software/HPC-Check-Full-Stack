@@ -124,7 +124,7 @@ export default function Header() {
                   aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
                   aria-expanded={mobileMenuOpen}
                   onClick={() => setMobileMenuOpen((isOpen) => !isOpen)}
-                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl border border-white/10 bg-white/10 text-2xl text-slate-100 transition hover:border-blue-300/35 hover:bg-blue-500/15 lg:hidden"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-2xl text-slate-100 transition hover:border-blue-300/35 hover:bg-blue-500/15 lg:hidden"
                >
                   {mobileMenuOpen ? <IoClose aria-hidden="true" /> : <IoMenu aria-hidden="true" />}
                </button>

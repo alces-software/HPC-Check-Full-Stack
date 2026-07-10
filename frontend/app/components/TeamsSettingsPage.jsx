@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
 import { FaLayerGroup, FaUser, FaUsers } from 'react-icons/fa';
 import { IoIosSettings } from 'react-icons/io';
+import Loading from '../components/Loading';
 
 function timeInputToInt(value) {
    if (!value) return null;
@@ -154,7 +155,7 @@ export default function TeamSettingsPage() {
    if (!team) {
       return (
          <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 p-6">
-            <div className="rounded-3xl border border-white/10 bg-white/10 p-10 text-center shadow-2xl backdrop-blur-xl">
+            <div className="text-center p-10">
                <h1 className="mb-4 text-4xl font-bold text-white">Team not found</h1>
 
                <p className="mb-6 text-slate-300">No team exists with ID: {teamId}</p>
@@ -375,11 +376,7 @@ export default function TeamSettingsPage() {
    };
 
    if (loadingTeams) {
-      return (
-         <main className="flex min-h-screen items-center justify-center">
-            <p className="text-white">Loading team...</p>
-         </main>
-      );
+      return <Loading />;
    }
 
    if (!team) {
@@ -394,8 +391,8 @@ export default function TeamSettingsPage() {
       <main className="flex min-h-screen items-center justify-center">
          <div className="relative z-10 w-full">
             <div className="p-10">
-               <div className="text-left">
-                  <h1 className="text-5xl font-bold text-white">{team.name}</h1>
+               <div className="text-center md:text-left">
+                  <h1 className="text-4xl sm:text-5xl font-bold text-white">{team.name}</h1>
 
                   <p className="mt-3 text-lg text-slate-300">
                      Manage users and pools assigned to this team.
