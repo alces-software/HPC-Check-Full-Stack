@@ -5,6 +5,7 @@ import { IoSwapHorizontal } from 'react-icons/io5';
 import { IoIosArrowForward, IoMdDoneAll } from 'react-icons/io';
 import { BsThreeDots } from 'react-icons/bs';
 import { IoCloseSharp } from 'react-icons/io5';
+import Loading from './Loading';
 
 function formatDateParam(date) {
    const year = date.getFullYear();
@@ -197,11 +198,7 @@ export default function Schedule() {
 
    if (loading || !schedule) {
       return (
-         <main className="flex items-center justify-center py-10">
-            <div className="rounded-2xl bg-white/10 px-8 py-6 text-white backdrop-blur-xl">
-               Loading schedule...
-            </div>
-         </main>
+        <Loading/>
       );
    }
 
@@ -211,7 +208,7 @@ export default function Schedule() {
             {/* Header */}
             <div className="mb-6 grid gap-4 text-center md:grid-cols-[1fr_auto] md:items-start md:text-left">
                <div className="order-1md:col-start-1 md:row-start-1">
-                  <h1 className="text-4xl font-bold text-white">Weekly Schedule</h1>
+                  <h1 className="text-4xl sm:text-5xl font-bold text-white">Weekly Schedule</h1>
                   <p className="mt-2  text-slate-300">Week beginning {formattedWeekBeginning}</p>
                </div>
 

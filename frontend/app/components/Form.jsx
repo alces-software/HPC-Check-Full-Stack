@@ -5,6 +5,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import { FaClipboardList, FaRegCopy, FaCheck, FaLightbulb } from 'react-icons/fa';
+import Loading from "../components/Loading"
 
 function getTodayTimeMs(value) {
    const numericValue = Number(value);
@@ -449,11 +450,7 @@ export default function Form() {
 
    if (!clusterId || !nameID) {
       return (
-         <main className="flex min-h-screen items-center justify-center">
-            <div className="rounded-2xl border border-white/10 bg-white/10 px-8 py-6 text-white backdrop-blur-xl">
-               Loading report...
-            </div>
-         </main>
+        <Loading />
       );
    }
 
@@ -545,7 +542,7 @@ export default function Form() {
          <div className="relative z-10 w-full">
             <form onSubmit={handleSubmit} className="p-10">
                {/* Header */}
-               <div className="mb-10 text-left">
+               <div className="mb-10 text-center md:text-left">
                   <h1 className="text-4xl sm:text-5xl font-bold text-white">
                      Process Documentation
                   </h1>

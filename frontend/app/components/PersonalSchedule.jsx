@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { FaFolderOpen, FaInbox, FaUser } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
+import Loading from "../components/Loading"
 
 const CHECK_START_BUFFER_MS = 20 * 60 * 1000;
 
@@ -192,11 +193,7 @@ export default function PersonalSchedule() {
 
    if (loading) {
       return (
-         <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900">
-            <div className="rounded-2xl border border-white/10 bg-white/10 px-8 py-6 text-white shadow-2xl backdrop-blur-xl">
-               Loading clusters...
-            </div>
-         </main>
+        <Loading/>
       );
    }
 
@@ -212,7 +209,7 @@ export default function PersonalSchedule() {
          <div className="relative z-10 w-full">
             <div className="rounded-3xl p-10">
                {/* Header */}
-               <div className="mb-10 text-left">
+               <div className="mb-10 text-center md:text-left">
                   <h1 className="text-4xl sm:text-5xl font-bold text-white">
                      {name}&apos;s Clusters
                   </h1>

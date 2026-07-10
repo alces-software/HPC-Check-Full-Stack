@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FaDatabase, FaUser } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
+import Loading from "../components/Loading.jsx"
 
 export default function ClusterSettingsPage() {
    const searchParams = useSearchParams();
@@ -351,9 +352,7 @@ export default function ClusterSettingsPage() {
 
    if (loadingClusters) {
       return (
-         <main className="flex min-h-screen items-center justify-center">
-            <p className="text-white">Loading cluster...</p>
-         </main>
+         <Loading/>
       );
    }
 
@@ -362,8 +361,8 @@ export default function ClusterSettingsPage() {
          <div className="relative z-10 w-full">
             <div className="p-10 ">
                {/* Header */}
-               <div className="mb-10 text-left">
-                  <h1 className="text-5xl font-bold text-white">{cluster.name}</h1>
+               <div className="mb-10 text-center md:text-left">
+                  <h1 className="text-4xl sm:text-5xl  font-bold text-white">{cluster.name}</h1>
 
                   <p className="mt-3 text-lg text-slate-300">Cluster settings and overview</p>
 

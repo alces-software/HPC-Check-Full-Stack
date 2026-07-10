@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { FaServer } from 'react-icons/fa';
 import { useSearchParams } from 'next/navigation';
-
-import ReportSkeleton from './PoolSkeleton';
+import Loading from './Loading';
 
 export default function PoolClustersPage() {
    const searchParams = useSearchParams();
@@ -120,7 +119,7 @@ export default function PoolClustersPage() {
    }
 
    if (loading) {
-      return <ReportSkeleton />;
+      return <Loading/>;
    }
 
    if (!pool) {
@@ -139,8 +138,8 @@ export default function PoolClustersPage() {
       <main className="flex min-h-screen items-center justify-center">
          <div className="relative z-10 w-full">
             <div className="p-10">
-               <div className="text-left">
-                  <h1 className="text-5xl font-bold text-white">{pool.name}</h1>
+               <div className="text-center md:text-left">
+                  <h1 className="text-4xl sm:text-5xl  font-bold text-white">{pool.name}</h1>
 
                   <p className="mt-3 text-lg text-slate-300">
                      Manage clusters assigned to this pool.

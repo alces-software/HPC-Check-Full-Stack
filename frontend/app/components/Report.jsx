@@ -226,7 +226,7 @@ export default function Report() {
 
                   {/* Desktop */}
                   <div className="hidden md:block overflow-x-auto">
-                     <table className="w-full text-left">
+                     <table className="w-full text-center md:text-left">
                         <thead className="bg-slate-900/50">
                            <tr>
                               <th className="px-6 py-4 text-sm text-slate-300">Outcome</th>
