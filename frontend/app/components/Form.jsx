@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import { FaClipboardList, FaRegCopy, FaCheck, FaLightbulb } from 'react-icons/fa';
-import Loading from "../components/Loading"
+import Loading from '../components/Loading';
 
 function getTodayTimeMs(value) {
    const numericValue = Number(value);
@@ -449,9 +449,7 @@ export default function Form() {
    }
 
    if (!clusterId || !nameID) {
-      return (
-        <Loading />
-      );
+      return <Loading />;
    }
 
    // DELETE METHOD
@@ -919,9 +917,7 @@ export default function Form() {
                                                 : 'text-red-300'
                                           }`}
                                        >
-                                          {hpcQuestionResult.correct
-                                             ? 'Correct'
-                                             : 'Not quite'}
+                                          {hpcQuestionResult.correct ? 'Correct' : 'Not quite'}
                                        </p>
 
                                        <p className="mt-2 text-sm text-slate-200">

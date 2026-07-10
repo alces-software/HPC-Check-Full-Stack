@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { FaFolderOpen, FaInbox, FaUser } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
-import Loading from "../components/Loading"
+import Loading from '../components/Loading';
 
 const CHECK_START_BUFFER_MS = 20 * 60 * 1000;
 
@@ -192,9 +192,7 @@ export default function PersonalSchedule() {
    }, [router, userId]);
 
    if (loading) {
-      return (
-        <Loading/>
-      );
+      return <Loading />;
    }
 
    const handleClusterClick = (cluster) => {

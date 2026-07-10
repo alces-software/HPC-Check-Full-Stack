@@ -73,8 +73,6 @@ export default function Name() {
             <div className="p-10">
                {/* Header */}
 
-              
-
                {!selectedTeamId ? (
                   <div key="select-team" className="animate-fade-up">
                      <div className="text-center">

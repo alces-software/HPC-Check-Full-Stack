@@ -1,4 +1,4 @@
-import Loading from "../components/Loading"
+import Loading from '../components/Loading';
 
 export const metadata = {
    title: 'Cluster Options'
@@ -7,10 +7,7 @@ export const metadata = {
 export default async function AnimationPage() {
    return (
       <main>
-        <Loading>
-            
-        </Loading>
-         
+         <Loading></Loading>
       </main>
    );
 }

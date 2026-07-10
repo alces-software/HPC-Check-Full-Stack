@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
 import { FaLayerGroup, FaUser, FaUsers } from 'react-icons/fa';
 import { IoIosSettings } from 'react-icons/io';
-import Loading from "../components/Loading"
+import Loading from '../components/Loading';
 
 function timeInputToInt(value) {
    if (!value) return null;
@@ -376,9 +376,7 @@ export default function TeamSettingsPage() {
    };
 
    if (loadingTeams) {
-      return (
-        <Loading />
-      );
+      return <Loading />;
    }
 
    if (!team) {

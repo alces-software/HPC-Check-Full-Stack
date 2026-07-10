@@ -195,9 +195,7 @@ export default function ResultsPage() {
    }, [clusters, selectedClusterId]);
 
    if (!clustersLoaded) {
-      return (
-       <Loading />
-      );
+      return <Loading />;
    }
 
    return (

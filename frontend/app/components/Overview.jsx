@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import { FaCalendarAlt } from 'react-icons/fa';
-import Loading from "../components/Loading"
+import Loading from '../components/Loading';
 
 function dateToInputValue(date) {
    if (!date) return '';
@@ -88,9 +88,7 @@ export default function Overview() {
 
    // Show loading
    if (!reportLoaded) {
-      return (
-         <Loading />
-      );
+      return <Loading />;
    }
 
    // Page

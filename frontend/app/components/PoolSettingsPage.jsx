@@ -119,7 +119,7 @@ export default function PoolClustersPage() {
    }
 
    if (loading) {
-      return <Loading/>;
+      return <Loading />;
    }
 
    if (!pool) {

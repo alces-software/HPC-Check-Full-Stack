@@ -197,9 +197,7 @@ export default function Schedule() {
    }, [swapTarget]);
 
    if (loading || !schedule) {
-      return (
-        <Loading/>
-      );
+      return <Loading />;
    }
 
    return (

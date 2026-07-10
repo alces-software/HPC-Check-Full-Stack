@@ -7,7 +7,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FaDatabase, FaUser } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
-import Loading from "../components/Loading.jsx"
+import Loading from '../components/Loading.jsx';
 
 export default function ClusterSettingsPage() {
    const searchParams = useSearchParams();
@@ -351,9 +351,7 @@ export default function ClusterSettingsPage() {
    }
 
    if (loadingClusters) {
-      return (
-         <Loading/>
-      );
+      return <Loading />;
    }
 
    return (
