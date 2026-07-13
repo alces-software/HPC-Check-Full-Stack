@@ -300,4 +300,34 @@ async function formatScheduleForDay(db, date) {
    return scheduleDict;
 }
 
-module.exports = formatScheduleForDay;
+const tomorrow = () => {
+   const date = new Date();
+   date.setDate(date.getDate() + 1);
+   date.setHours(0, 0, 0, 0);
+   return date;
+};
+
+/**
+ * Remove the data in the schedule following tommorrow after relevant data is changed
+ *
+ * @param {import('mongodb').Db} db - MongoDB database instance.
+ * @returns {Promise<Array>} Array of objects containing person IDs and cluster IDs.
+ */
+async function handleStateChange(db) {
+   const dateFrom = tomorrow();
+
+   const scheduleExists = await db.collection('schedule').findOne({
+      day: { $gte: dateFrom }
+   });
+
+   if (!scheduleExists) return;
+
+   await db.collection('schedule').deleteMany({
+      day: { $gte: dateFrom }
+   });
+}
+
+module.exports = {
+   getScheduleForDay: formatScheduleForDay,
+   handleStateChange: handleStateChange
+};

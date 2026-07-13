@@ -157,7 +157,7 @@
       "validator": {
          "$jsonSchema": {
             "bsonType": "object",
-            "required": ["_id", "name", "teamId"],
+            "required": ["_id", "name"],
             "properties": {
                "_id": {
                   "bsonType": "objectId"

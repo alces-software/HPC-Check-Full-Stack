@@ -1,4 +1,5 @@
 const { ObjectId } = require('mongodb');
+const { handleStateChange } = require('../../../schedule/scheduler');
 
 /**
  * @param {import('mongodb').Db} db
@@ -82,6 +83,8 @@ module.exports = (db) => {
          // Add to database
          const insertedId = (await db.collection('teampool').insertOne({ teamId, poolId }))
             .insertedId;
+
+         await handleStateChange(db);
 
          return res.status(200).json({
             success: true,
