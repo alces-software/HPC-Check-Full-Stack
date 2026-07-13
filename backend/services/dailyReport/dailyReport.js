@@ -19,8 +19,8 @@ module.exports = async (db) => {
    // Check to see if a report exists already and if one does exit out
    const reportExists = await db.collection('overviewReport').findOne({
       date: {
-         $gte: start,
-         $lte: end
+         $gte: now.setHours(0, 0, 0, 0).getTime(),
+         $lte: now.setHours(23, 59, 59, 999).getTime()
       }
    });
 
