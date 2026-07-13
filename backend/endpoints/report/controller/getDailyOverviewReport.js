@@ -16,8 +16,6 @@ module.exports = (db) => {
          // Check date
          let date = null;
          if (rawDate !== undefined && rawDate !== null) {
-            console.log(`hello ${rawDate}`);
-
             if (typeof rawDate !== 'string') {
                return res
                   .status(400)
