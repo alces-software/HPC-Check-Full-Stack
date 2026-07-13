@@ -4,7 +4,7 @@ const { handleStateChange } = require('../../../schedule/scheduler');
 /**
  * @param {import('mongodb').Db} db
  */
-module.exports = db => {
+module.exports = (db) => {
    /**
     * @param {import('express').Request} req
     * @param {import('express').Response} res

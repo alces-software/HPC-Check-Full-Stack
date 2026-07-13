@@ -1,6 +1,6 @@
 const { getScheduleForDay } = require('../../schedule/scheduler');
 
-async function getDaily (db, day = new Date()) {
+async function getDaily(db, day = new Date()) {
    const schedule = {};
 
    const targetDate = new Date(day);
@@ -29,7 +29,7 @@ async function getDaily (db, day = new Date()) {
       })
       .toArray();
 
-   const overrideMap = new Map(overrides.map(o => [o.personId, o.newPersonId]));
+   const overrideMap = new Map(overrides.map((o) => [o.personId, o.newPersonId]));
 
    const dailySchedule = await getScheduleForDay(db, new Date(day));
 
@@ -46,7 +46,7 @@ async function getDaily (db, day = new Date()) {
    return schedule;
 }
 
-async function getWeekly (db, date = new Date()) {
+async function getWeekly(db, date = new Date()) {
    const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
    const weekly = {};
 
