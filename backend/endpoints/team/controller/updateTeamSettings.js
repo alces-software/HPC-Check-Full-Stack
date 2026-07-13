@@ -1,9 +1,10 @@
 const { ObjectId } = require('mongodb');
+const { handleStateChange } = require('../../../schedule/scheduler');
 
 /**
  * @param {import('mongodb').Db} db
  */
-module.exports = (db) => {
+module.exports = db => {
    /**
     * @param {import('express').Request} req
     * @param {import('express').Response} res
@@ -58,6 +59,8 @@ module.exports = (db) => {
 
          // Updates values in the database
          await db.collection('team').updateOne({ _id: new ObjectId(teamId) }, { $set: updates });
+
+         await handleStateChange(db);
 
          return res.status(200).json({ success: true });
       } catch (error) {

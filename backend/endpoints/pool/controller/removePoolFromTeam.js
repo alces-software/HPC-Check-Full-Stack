@@ -1,9 +1,10 @@
 const { ObjectId } = require('mongodb');
+const { handleStateChange } = require('../../../schedule/scheduler');
 
 /**
  * @param {import('mongodb').Db} db
  */
-module.exports = (db) => {
+module.exports = db => {
    /**
     * @param {import('express').Request} req
     * @param {import('express').Response} res
@@ -81,6 +82,8 @@ module.exports = (db) => {
 
          // Delete from database
          await db.collection('teampool').deleteOne({ teamId, poolId });
+
+         await handleStateChange(db);
 
          return res.status(200).json({ success: true });
       } catch (error) {

@@ -6,13 +6,13 @@ require('dotenv').config;
  * @param {import('mongodb').Db} db - MongoDB database instance.
  * @returns {Promise<Array<string>} Team IDs
  */
-async function getTeams(db) {
+async function getTeams (db) {
    const response = await db
       .collection('team')
       .find({})
       .toArray()
-      .then((res) =>
-         res.map((data) => ({
+      .then(res =>
+         res.map(data => ({
             id: data._id.toString(),
             clustersPerDay: data.clusters_per_day
          }))
@@ -20,15 +20,15 @@ async function getTeams(db) {
    return response;
 }
 
-async function getTeamsOrderedByEffectiveCapacity(db) {
+async function getTeamsOrderedByEffectiveCapacity (db) {
    const teams = await getTeams(db);
 
    const teamStats = await Promise.all(
-      teams.map(async (team) => {
+      teams.map(async team => {
          // Pools this team belongs to
          const pools = await db.collection('teampool').find({ teamId: team.id }).toArray();
 
-         const poolIds = pools.map((p) => p.poolId);
+         const poolIds = pools.map(p => p.poolId);
 
          // All clusters available to this team
          const clusters = await db
@@ -70,7 +70,7 @@ async function getTeamsOrderedByEffectiveCapacity(db) {
    return teamStats;
 }
 
-async function isWorkingDay(db, date) {
+async function isWorkingDay (db, date) {
    const day = new Date(date);
    day.setHours(0, 0, 0, 0);
    const isWeekend = day.getDay() === 0 || day.getDay() === 6;
@@ -88,14 +88,14 @@ async function isWorkingDay(db, date) {
  * @param {import('mongodb').Db} db - MongoDB database instance.
  * @param {Date} date - MongoDB database instance.
  */
-async function generateScheduleForDay(db, date) {
+async function generateScheduleForDay (db, date) {
    const teams = await getTeamsOrderedByEffectiveCapacity(db);
 
    for (let i = 0; i < teams.length; i++) {
       const team = teams[i];
       // get pools for team
       const pools = await db.collection('teampool').find({ teamId: team.id }).toArray();
-      const poolIds = pools.map((p) => p.poolId);
+      const poolIds = pools.map(p => p.poolId);
 
       // get the last team.clustersPerDay clusters that are in all the pools ordered by the last time they appeared in the schedule
       const clusters = await db
@@ -108,7 +108,7 @@ async function generateScheduleForDay(db, date) {
          .aggregate([
             {
                $match: {
-                  clusterId: { $in: clusters.map((c) => c._id.toString()) }
+                  clusterId: { $in: clusters.map(c => c._id.toString()) }
                }
             },
             {
@@ -120,7 +120,7 @@ async function generateScheduleForDay(db, date) {
          ])
          .toArray();
 
-      const lastMap = new Map(lastUsage.map((x) => [x._id, x.lastDay]));
+      const lastMap = new Map(lastUsage.map(x => [x._id, x.lastDay]));
 
       clusters.sort((a, b) => {
          const aTime = lastMap.get(a._id.toString())?.getTime() ?? -Infinity;
@@ -149,7 +149,7 @@ async function generateScheduleForDay(db, date) {
  * @param {import('mongodb').Db} db - MongoDB database instance.
  * @param {Date|string|number} date - Date to build the schedule for.
  */
-async function getNextPerson(db, teamId) {
+async function getNextPerson (db, teamId) {
    console.log(`Getting next person for team: ${teamId}`);
    let people = await db
       .collection('person')
@@ -198,7 +198,7 @@ async function getNextPerson(db, teamId) {
  * @param {import('mongodb').Db} db - MongoDB database instance.
  * @param {Date|string|number} date - Date to build the schedule for.
  */
-async function generateUpToDay(db, date) {
+async function generateUpToDay (db, date) {
    const targetDate = new Date(date);
    targetDate.setHours(0, 0, 0, 0);
 
@@ -235,7 +235,7 @@ async function generateUpToDay(db, date) {
 
 const scheduleLocks = new Map();
 
-async function getScheduleForDay(db, date) {
+async function getScheduleForDay (db, date) {
    // Normalise date
    const startOfDay = new Date(date);
    startOfDay.setHours(0, 0, 0, 0);
@@ -279,11 +279,11 @@ async function getScheduleForDay(db, date) {
  * @param {Date|string|number} date - Date to build the schedule for.
  * @returns {Promise<Array>} Array of objects containing person IDs and cluster IDs.
  */
-async function formatScheduleForDay(db, date) {
+async function formatScheduleForDay (db, date) {
    const scheduleForDay = await getScheduleForDay(db, date);
 
    // Format response
-   const response = scheduleForDay.map((entry) => ({
+   const response = scheduleForDay.map(entry => ({
       personId: entry.personId,
       clusterId: entry.clusterId
    }));
@@ -300,4 +300,34 @@ async function formatScheduleForDay(db, date) {
    return scheduleDict;
 }
 
-module.exports = formatScheduleForDay;
+const tomorrow = () => {
+   const date = new Date();
+   date.setDate(date.getDate() + 1);
+   date.setHours(0, 0, 0, 0);
+   return date;
+};
+
+/**
+ * Remove the data in the schedule following tommorrow after relevant data is changed
+ *
+ * @param {import('mongodb').Db} db - MongoDB database instance.
+ * @returns {Promise<Array>} Array of objects containing person IDs and cluster IDs.
+ */
+async function handleStateChange (db) {
+   const dateFrom = tomorrow();
+
+   const scheduleExists = await db.collection('schedule').findOne({
+      day: { $gte: dateFrom }
+   });
+
+   if (!scheduleExists) return;
+
+   await db.collection('schedule').deleteMany({
+      day: { $gte: dateFrom }
+   });
+}
+
+module.exports = {
+   getScheduleForDay: formatScheduleForDay,
+   handleStateChange: handleStateChange
+};

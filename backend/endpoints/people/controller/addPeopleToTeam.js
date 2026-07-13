@@ -1,9 +1,10 @@
 const { ObjectId } = require('mongodb');
+const { handleStateChange } = require('../../../schedule/scheduler');
 
 /**
  * @param {import('mongodb').Db} db
  */
-module.exports = (db) => {
+module.exports = db => {
    /**
     * @param {import('express').Request} req
     * @param {import('express').Response} res
@@ -69,9 +70,9 @@ module.exports = (db) => {
             return res.status(404).json({ success: false, error: "Person doesn't exist" });
          }
 
-         // Check if clusters current team wont be left without clusters
+         // Check if team won't be left with less than one person
          if (person.teamId) {
-            const cluster_count = await db.collection('cluster').countDocuments({
+            const cluster_count = await db.collection('person').countDocuments({
                teamId: person.teamId
             });
 
@@ -97,6 +98,8 @@ module.exports = (db) => {
             { _id: new ObjectId(personId) },
             { $set: { teamId: teamId } }
          );
+
+         await handleStateChange(db);
 
          return res.status(200).json({ success: true });
       } catch (error) {
