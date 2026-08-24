@@ -34,15 +34,6 @@ module.exports = (db) => {
             return res.status(400).json({ success: false, error: 'Invalid team ID provided' });
          }
 
-         // Get pool
-         const pool = await db.collection('team').findOne({
-            _id: new ObjectId(teamId)
-         });
-
-         if (!pool) {
-            return res.status(404).json({ success: false, error: "Team doesn't exist" });
-         }
-
          // Get the teamPool
          const teamPools = await db.collection('teampool').find({ teamId }).toArray();
 
