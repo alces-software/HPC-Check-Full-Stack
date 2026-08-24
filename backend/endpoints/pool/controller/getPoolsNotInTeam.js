@@ -37,10 +37,6 @@ module.exports = (db) => {
          // Get the teamPool
          const teamPools = await db.collection('teampool').find({ teamId }).toArray();
 
-         if (teamPools.length === 0) {
-            return res.status(404).json({ success: false, error: 'Team does not have any pools' });
-         }
-
          // Get all pool IDs
          const poolIds = teamPools.map((tp) => new ObjectId(tp.poolId));
 
