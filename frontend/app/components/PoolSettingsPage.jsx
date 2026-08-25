@@ -135,7 +135,7 @@ export default function PoolClustersPage() {
    );
 
    return (
-      <main className="flex min-h-screen items-center justify-center">
+      <main className="flex space-y-8 justify-center">
          <div className="relative z-10 w-full">
             <div className="p-10">
                <div className="text-center md:text-left">
