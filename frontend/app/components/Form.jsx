@@ -680,11 +680,7 @@ export default function Form() {
                                                             </button>
                                                          </div>
                                                       ) : (
-                                                         <ReactMarkdown
-                                                            components={{
-                                                               pre: CopyablePre
-                                                            }}
-                                                         >
+                                                         <ReactMarkdown>
                                                             {method.content}
                                                          </ReactMarkdown>
                                                       )}
