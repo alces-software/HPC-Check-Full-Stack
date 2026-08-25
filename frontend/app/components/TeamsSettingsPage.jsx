@@ -689,7 +689,7 @@ export default function TeamSettingsPage() {
                      <button
                         type="button"
                         onClick={() => setPendingRemovalPool(null)}
-    className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 text-white transition hover:bg-slate-800 cursor-pointer"
+                        className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 text-white transition hover:bg-slate-800 cursor-pointer"
                      >
                         Cancel
                      </button>
@@ -697,8 +697,8 @@ export default function TeamSettingsPage() {
                      <button
                         type="button"
                         onClick={confirmRemovePool}
-                         className="rounded-xl bg-red-800 text-white px-4 py-2 font-semibold text-slate-950 transition hover:bg-red-900 cursor-pointer"
-                         >
+                        className="rounded-xl bg-red-800 text-white px-4 py-2 font-semibold text-slate-950 transition hover:bg-red-900 cursor-pointer"
+                     >
                         Remove Pool
                      </button>
                   </div>

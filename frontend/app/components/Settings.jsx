@@ -400,18 +400,20 @@ export default function Options() {
                {portalEl &&
                   confirmPrompt &&
                   createPortal(
-            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
-  <div className="w-full max-w-md rounded-3xl border border-red-400/20 bg-slate-900/95 p-6 shadow-2xl">
-    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-2xl text-red-300">
-                     !
-                  </div>
-                                    <h3 className="text-xl font-semibold text-white">Confirmation required</h3>
+                     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm">
+                        <div className="w-full max-w-md rounded-3xl border border-red-400/20 bg-slate-900/95 p-6 shadow-2xl">
+                           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-2xl text-red-300">
+                              !
+                           </div>
+                           <h3 className="text-xl font-semibold text-white">
+                              Confirmation required
+                           </h3>
 
-                           <p className="mt-2 text-slate-300 text-md font-medium">{confirmPrompt.message}</p>
+                           <p className="mt-2 text-slate-300 text-md font-medium">
+                              {confirmPrompt.message}
+                           </p>
 
                            <div className="mt-6 flex flex-wrap justify-end gap-3">
-                           
-
                               <button
                                  type="button"
                                  onClick={cancelConfirmation}
@@ -419,7 +421,7 @@ export default function Options() {
                               >
                                  Cancel
                               </button>
-                                 <button
+                              <button
                                  type="button"
                                  onClick={confirmPendingAction}
                                  className="rounded-xl bg-red-800 text-white px-4 py-2 font-semibold text-slate-950 transition hover:bg-red-900 cursor-pointer"
