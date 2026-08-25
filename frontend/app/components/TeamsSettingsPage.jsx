@@ -679,7 +679,7 @@ export default function TeamSettingsPage() {
 
                   <h3 className="text-xl font-semibold text-white">Remove pool from team?</h3>
 
-                  <p className="mt-2 text-sm text-slate-300">
+                  <p className="mt-2 text-md text-slate-300 font-medium">
                      This will remove{' '}
                      <span className="font-semibold text-white">{pendingRemovalPool.name}</span>{' '}
                      from this team.
@@ -689,7 +689,7 @@ export default function TeamSettingsPage() {
                      <button
                         type="button"
                         onClick={() => setPendingRemovalPool(null)}
-                        className="rounded-xl border border-slate-600 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-800"
+                        className="rounded-xl border border-white/10 bg-slate-900/80 px-4 py-2 text-white transition hover:bg-slate-800 cursor-pointer"
                      >
                         Cancel
                      </button>
@@ -697,7 +697,7 @@ export default function TeamSettingsPage() {
                      <button
                         type="button"
                         onClick={confirmRemovePool}
-                        className="rounded-xl bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500"
+                        className="rounded-xl bg-red-800 text-white px-4 py-2 font-semibold text-slate-950 transition hover:bg-red-900 cursor-pointer"
                      >
                         Remove Pool
                      </button>

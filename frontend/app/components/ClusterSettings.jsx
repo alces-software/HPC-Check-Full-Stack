@@ -434,7 +434,7 @@ export default function ClusterSettingsPage() {
                </div>
 
                {activeTab === 'instructions' && (
-                  <div className="rounded-2xl border border-white/10 p-4 backdrop-blur-sm md:p-6">
+                  <div className="rounded-2xl border border-white/10 bg-slate-400/5 p-4 backdrop-blur-sm md:p-6">
                      <div className="mb-6 flex items-start justify-between gap-4">
                         <div>
                            <h2 className="text-3xl font-bold text-white">Instructions</h2>
@@ -948,9 +948,9 @@ export default function ClusterSettingsPage() {
                )}
 
                {activeTab === 'results' && (
-                  <div className="rounded-2xl border border-white/10 p-6 backdrop-blur-sm">
+                  <div className="rounded-2xl border border-white/10 bg-slate-400/5 p-6 backdrop-blur-sm">
                      <div className="mb-6">
-                        <h2 className="text-3xl font-bold text-white">Recent Results</h2>
+                        <h2 className="text-3xl font-bold text-white ">Recent Results</h2>
 
                         <p className="mt-3 text-slate-300">
                            Reports from the last 7 days for this cluster.
