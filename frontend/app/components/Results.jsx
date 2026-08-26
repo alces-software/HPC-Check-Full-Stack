@@ -353,9 +353,7 @@ export default function ResultsPage() {
 
                {/* EMPTY STATE */}
                {!loading && reports.length === 0 && (
-                 
                   <p className="mt-8 w-full text-center text-slate-400">No reports found</p>
-                  
                )}
 
                {/* RESULTS */}

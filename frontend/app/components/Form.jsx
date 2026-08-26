@@ -680,9 +680,7 @@ export default function Form() {
                                                             </button>
                                                          </div>
                                                       ) : (
-                                                         <ReactMarkdown
-                                                         
-                                                         >
+                                                         <ReactMarkdown>
                                                             {method.content}
                                                          </ReactMarkdown>
                                                       )}
