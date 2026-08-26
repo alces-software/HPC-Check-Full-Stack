@@ -392,7 +392,8 @@ export default function TeamSettingsPage() {
          <div className="relative z-10 w-full">
             <div className="p-10">
                <div className="text-center md:text-left">
-                  <h1 className="text-4xl sm:text-5xl font-bold text-white">{team.name}</h1>
+                      <p className="uppercase tracking-[0.25rem] text-lg text-blue-400">Team</p>
+                  <h1 className="mt-3 text-4xl sm:text-5xl font-bold text-white">{team.name}</h1>
 
                   <p className="mt-3 text-lg text-slate-300">
                      Manage users and pools assigned to this team.

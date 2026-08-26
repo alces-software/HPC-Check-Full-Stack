@@ -103,7 +103,7 @@ export default function Header() {
    return (
       <header className="sticky top-0 z-50">
          <div className="w-full ">
-            <div className="flex w-full items-center justify-between bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 px-4 py-4 shadow-xl backdrop-blur-xl">
+            <div className="flex w-full items-center justify-between bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 px-8 lg:px-14 py-4 shadow-xl backdrop-blur-xl">
                <Link
                   href="/"
                   className="transition-opacity hover:opacity-90"

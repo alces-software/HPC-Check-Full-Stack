@@ -353,7 +353,9 @@ export default function ResultsPage() {
 
                {/* EMPTY STATE */}
                {!loading && reports.length === 0 && (
-                  <p className="mt-8 text-center text-slate-400">No reports found</p>
+                 
+                  <p className="mt-8 w-full text-center text-slate-400">No reports found</p>
+                  
                )}
 
                {/* RESULTS */}
@@ -461,7 +463,7 @@ export default function ResultsPage() {
                </div>
 
                {/* PAGINATION */}
-               {pagination && (
+               {pagination && pagination.totalPages > 0 && (
                   <div className="mt-10 flex flex-col items-stretch gap-3 text-white sm:flex-row sm:items-center sm:justify-between">
                      <button
                         disabled={!pagination.hasPrevPage}
