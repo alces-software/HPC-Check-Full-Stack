@@ -400,13 +400,10 @@ export default function ClusterSettingsPage() {
                         </span>
 
                         {cluster.pool.name && (
-
                            <span className="rounded-full border border-sky/10 bg-sky/5 px-4 py-2 font-mono text-sm text-sky-300">
                               pool: {cluster.pool.name}
                            </span>
-
                         )}
-
                      </div>
                   </div>
                </div>
@@ -563,7 +560,9 @@ export default function ClusterSettingsPage() {
                                     <div className="min-w-0 flex-1">
                                        {editingInstructionId === step.id ? (
                                           <div className="space-y-3">
-                                             <label className='font-semibold text-slate-300  ml-1'>Title</label>
+                                             <label className="font-semibold text-slate-300  ml-1">
+                                                Title
+                                             </label>
                                              <input
                                                 value={editedInstructionTitle}
                                                 onChange={(e) =>
@@ -571,7 +570,9 @@ export default function ClusterSettingsPage() {
                                                 }
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
-                                             <label className='font-semibold text-slate-300 ml-1'>Instruction</label>
+                                             <label className="font-semibold text-slate-300 ml-1">
+                                                Instruction
+                                             </label>
                                              <textarea
                                                 rows={4}
                                                 value={editedInstructionDescription}
@@ -580,7 +581,9 @@ export default function ClusterSettingsPage() {
                                                 }
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
-                                             <label className='font-semibold text-slate-300  ml-1'>Expected time</label>
+                                             <label className="font-semibold text-slate-300  ml-1">
+                                                Expected time
+                                             </label>
                                              <input
                                                 value={editedInstructionExpectedTime}
                                                 onChange={(e) =>
@@ -589,7 +592,9 @@ export default function ClusterSettingsPage() {
                                                 placeholder="Expected time (e.g. 5 mins)"
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
-                                             <label className='font-semibold text-slate-300  ml-1'>Good outcome</label>
+                                             <label className="font-semibold text-slate-300  ml-1">
+                                                Good outcome
+                                             </label>
                                              <input
                                                 value={editedInstructionGood}
                                                 onChange={(e) =>
@@ -598,7 +603,9 @@ export default function ClusterSettingsPage() {
                                                 placeholder="Everything worked"
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
-                                             <label className='font-semibold text-slate-300  ml-1'>Bad outcome</label>
+                                             <label className="font-semibold text-slate-300  ml-1">
+                                                Bad outcome
+                                             </label>
                                              <input
                                                 value={editedInstructionBad}
                                                 onChange={(e) =>
@@ -607,9 +614,10 @@ export default function ClusterSettingsPage() {
                                                 placeholder="Everything is on fire"
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
-                                             <label className='font-semibold text-slate-300  ml-1'>Position</label>
+                                             <label className="font-semibold text-slate-300  ml-1">
+                                                Position
+                                             </label>
                                              <div className="relative">
-
                                                 <select
                                                    value={editedInstructionPosition}
                                                    onChange={(e) =>
@@ -710,7 +718,9 @@ export default function ClusterSettingsPage() {
                                                       );
                                                       setEditedInstructionGood(step.good || '');
                                                       setEditedInstructionBad(step.bad || '');
-                                                      setEditedInstructionPosition(step.position || 1);
+                                                      setEditedInstructionPosition(
+                                                         step.position || 1
+                                                      );
                                                    }}
                                                    className="w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white cursor-pointer md:w-auto"
                                                 >
@@ -736,8 +746,6 @@ export default function ClusterSettingsPage() {
                                           </>
                                        )}
                                     </div>
-
-
                                  </div>
 
                                  <details className="mb-4 rounded-xl border border-white/10 bg-slate-900/40 p-3 md:p-4">
