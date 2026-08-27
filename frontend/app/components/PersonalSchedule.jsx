@@ -219,7 +219,7 @@ export default function PersonalSchedule() {
                         Checks are not open yet. Please come back during the allocated time window.
                      </strong>
                   ) : !canComplete ? (
-                     <strong className="mt-2 block text-lg text-red-500">
+                     <strong className="mt-2 block text-lg font-mono text-red-500">
                         You are outside of the allocated time window for checks. Speak to your
                         manager or system administrator.
                      </strong>

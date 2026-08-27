@@ -30,7 +30,7 @@ body {
 @keyframes fadeUp {
    0% {
       opacity: 0;
-      transform: translateY(16px) scale(0.98);
+      transform: translateY(22px) scale(0.96);
       filter: blur(6px);
    }
 
@@ -42,8 +42,11 @@ body {
 }
 
 .animate-fade-up {
-   animation: fadeUp 1000ms ease-out both;
+   animation: fadeUp 1945ms ease-out both;
 }
+
+
+
 
 .results-datepicker {
    border: 1px solid rgba(255, 255, 255, 0.1) !important;

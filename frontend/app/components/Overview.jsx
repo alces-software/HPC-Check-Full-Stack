@@ -138,7 +138,7 @@ export default function Overview() {
                {/* Body */}
                <div className="mb-6 overflow-hidden mt-6">
                   {!report.id ? (
-                     <p className="flex items-center justify-center text-white">
+                     <p className="flex items-center justify-center text-slate-400">
                         No overview available
                      </p>
                   ) : (
