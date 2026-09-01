@@ -1,4 +1,4 @@
-const { ObjectId } = require('mongodb');
+const { ObjectId, Long } = require('mongodb');
 
 /**
  * @param {import('mongodb').Db} db
@@ -66,8 +66,8 @@ module.exports = (db) => {
 
          const overviewReport = await db.collection('overviewReport').findOne({
             date: {
-               $gte: startOfDay.getTime(),
-               $lte: endOfDay.getTime()
+               $gte: Long.fromNumber(startOfDay.getTime()),
+               $lt: Long.fromNumber(endOfDay.getTime())
             }
          });
 
