@@ -399,7 +399,9 @@ export default function TeamSettingsPage() {
                      Manage users and pools assigned to this team.
                   </p>
 
-                  <p className="mt-2 text-sm text-amber-300">id: {team.id}</p>
+                  <p className="rounded-full w-fit mt-3 border border-amber/10 bg-amber/5 px-4 py-2 font-mono text-sm text-amber-300/80">
+                     id: {team.id}
+                  </p>
                </div>
 
                {statusMessage && (

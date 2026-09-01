@@ -269,7 +269,7 @@ export default function ClusterSettingsPage() {
                expectedTime,
                bad,
                good,
-               position
+               position: Number(position)
             })
          });
 
@@ -370,7 +370,7 @@ export default function ClusterSettingsPage() {
                   <div className="mt-6 space-y-3">
                      {!hasChecks ? (
                         <div className="flex flex-wrap justify-start gap-3">
-                           <span className="rounded-full border border-blue-400/30 bg-blue-500/20 px-4 py-2 text-sm font-semibold text-blue-200">
+                           <span className="rounded-full border border-blue-400/30 tracking-wider bg-blue-500/20 px-4 py-2 text-sm font-medium text-blue-300">
                               No checks have been performed for this cluster
                            </span>
                         </div>
@@ -395,13 +395,15 @@ export default function ClusterSettingsPage() {
                      )}
 
                      <div className="flex flex-wrap justify-start gap-3 pt-3">
-                        <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-mono text-sm text-slate-300">
+                        <span className="rounded-full border border-amber/10 bg-amber/5 px-4 py-2 font-mono text-sm text-amber-300/80">
                            id: {clusterId}
                         </span>
 
-                        <span className="rounded-full border border-white/10 bg-white/5 px-4 py-2 font-mono text-sm text-slate-300">
-                           pool: {cluster.pool.name}
-                        </span>
+                        {cluster.pool.name && (
+                           <span className="rounded-full border border-sky/10 bg-sky/5 px-4 py-2 font-mono text-sm text-sky-300">
+                              pool: {cluster.pool.name}
+                           </span>
+                        )}
                      </div>
                   </div>
                </div>
@@ -558,6 +560,9 @@ export default function ClusterSettingsPage() {
                                     <div className="min-w-0 flex-1">
                                        {editingInstructionId === step.id ? (
                                           <div className="space-y-3">
+                                             <label className="font-semibold text-slate-300  ml-1">
+                                                Title
+                                             </label>
                                              <input
                                                 value={editedInstructionTitle}
                                                 onChange={(e) =>
@@ -565,7 +570,9 @@ export default function ClusterSettingsPage() {
                                                 }
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
-
+                                             <label className="font-semibold text-slate-300 ml-1">
+                                                Instruction
+                                             </label>
                                              <textarea
                                                 rows={4}
                                                 value={editedInstructionDescription}
@@ -574,7 +581,9 @@ export default function ClusterSettingsPage() {
                                                 }
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
-
+                                             <label className="font-semibold text-slate-300  ml-1">
+                                                Expected time
+                                             </label>
                                              <input
                                                 value={editedInstructionExpectedTime}
                                                 onChange={(e) =>
@@ -583,7 +592,9 @@ export default function ClusterSettingsPage() {
                                                 placeholder="Expected time (e.g. 5 mins)"
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
-
+                                             <label className="font-semibold text-slate-300  ml-1">
+                                                Good outcome
+                                             </label>
                                              <input
                                                 value={editedInstructionGood}
                                                 onChange={(e) =>
@@ -592,6 +603,9 @@ export default function ClusterSettingsPage() {
                                                 placeholder="Everything worked"
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
+                                             <label className="font-semibold text-slate-300  ml-1">
+                                                Bad outcome
+                                             </label>
                                              <input
                                                 value={editedInstructionBad}
                                                 onChange={(e) =>
@@ -600,14 +614,16 @@ export default function ClusterSettingsPage() {
                                                 placeholder="Everything is on fire"
                                                 className="w-full rounded-xl border border-slate-700 bg-slate-900 p-4 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                              />
-
+                                             <label className="font-semibold text-slate-300  ml-1">
+                                                Position
+                                             </label>
                                              <div className="relative">
                                                 <select
                                                    value={editedInstructionPosition}
                                                    onChange={(e) =>
                                                       setEditedInstructionPosition(e.target.value)
                                                    }
-                                                   className="w-full appearance-none rounded-xl border border-slate-700 bg-slate-900 p-4 pr-12 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+                                                   className="w-full cursor-pointer appearance-none rounded-xl border border-slate-700 bg-slate-900 p-4 pr-12 text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
                                                 >
                                                    {Array.from({ length: steps.length }, (_, i) => (
                                                       <option key={i + 1} value={i + 1}>
@@ -656,8 +672,10 @@ export default function ClusterSettingsPage() {
                                                          editedInstructionTitle.trim(),
                                                          editedInstructionDescription.trim(),
                                                          editedInstructionExpectedTime.trim(),
-                                                         editedInstructionGood.trim(),
                                                          editedInstructionBad.trim(),
+
+                                                         editedInstructionGood.trim(),
+
                                                          editedInstructionPosition
                                                       )
                                                    }
@@ -685,46 +703,48 @@ export default function ClusterSettingsPage() {
                                              </div>
 
                                              <p className="text-slate-300">{step.description}</p>
+
+                                             <div className="flex w-full mt-3 justify-end flex-col gap-3 md:w-auto md:flex-row md:items-start">
+                                                <button
+                                                   type="button"
+                                                   onClick={() => {
+                                                      setEditingInstructionId(step.id);
+                                                      setEditedInstructionTitle(step.title || '');
+                                                      setEditedInstructionDescription(
+                                                         step.description || ''
+                                                      );
+                                                      setEditedInstructionExpectedTime(
+                                                         step.expectedTime || ''
+                                                      );
+                                                      setEditedInstructionGood(step.good || '');
+                                                      setEditedInstructionBad(step.bad || '');
+                                                      setEditedInstructionPosition(
+                                                         step.position || 1
+                                                      );
+                                                   }}
+                                                   className="w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white cursor-pointer md:w-auto"
+                                                >
+                                                   Edit Instruction
+                                                </button>
+
+                                                <button
+                                                   type="button"
+                                                   onClick={() => {
+                                                      const confirmed = window.confirm(
+                                                         'Delete this instruction? This will remove all methods too.'
+                                                      );
+
+                                                      if (confirmed) {
+                                                         deleteInstruction(step.id);
+                                                      }
+                                                   }}
+                                                   className="w-full cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white cursor-pointer md:w-auto"
+                                                >
+                                                   Delete Instruction
+                                                </button>
+                                             </div>
                                           </>
                                        )}
-                                    </div>
-
-                                    <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-start">
-                                       <button
-                                          type="button"
-                                          onClick={() => {
-                                             setEditingInstructionId(step.id);
-                                             setEditedInstructionTitle(step.title || '');
-                                             setEditedInstructionDescription(
-                                                step.description || ''
-                                             );
-                                             setEditedInstructionExpectedTime(
-                                                step.expectedTime || ''
-                                             );
-                                             setEditedInstructionGood(step.good || '');
-                                             setEditedInstructionBad(step.bad || '');
-                                             setEditedInstructionPosition(step.position || 1);
-                                          }}
-                                          className="w-full cursor-pointer rounded-xl border border-blue-300/25 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/20 hover:text-white cursor-pointer md:w-auto"
-                                       >
-                                          Edit Instruction
-                                       </button>
-
-                                       <button
-                                          type="button"
-                                          onClick={() => {
-                                             const confirmed = window.confirm(
-                                                'Delete this instruction? This will remove all methods too.'
-                                             );
-
-                                             if (confirmed) {
-                                                deleteInstruction(step.id);
-                                             }
-                                          }}
-                                          className="w-full cursor-pointer rounded-xl border border-red-300/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-100 shadow-md shadow-black/20 transition duration-200 hover:-translate-y-0.5 hover:border-red-300/45 hover:bg-red-500/20 hover:text-white cursor-pointer md:w-auto"
-                                       >
-                                          Delete Instruction
-                                       </button>
                                     </div>
                                  </div>
 
@@ -788,12 +808,12 @@ export default function ClusterSettingsPage() {
                                                    </div>
                                                 </div>
                                              ) : (
-                                                <div className="flex gap-3">
-                                                   <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-xs font-semibold text-blue-300">
+                                                <div className="flex gap-3 items-center">
+                                                   <span className=" flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-500/20 text-md p-2 font-semibold text-blue-300">
                                                       {methodIndex + 1}
                                                    </span>
 
-                                                   <div className="prose prose-invert max-w-none text-sm leading-relaxed overflow-x-auto">
+                                                   <div className="prose prose-invert max-w-none text-md leading-relaxed overflow-x-auto">
                                                       <ReactMarkdown>
                                                          {method.content}
                                                       </ReactMarkdown>
