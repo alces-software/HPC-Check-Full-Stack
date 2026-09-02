@@ -248,7 +248,7 @@ export default function Overview() {
                         </h2>
 
                         {report.missing.length === 0 ? (
-                           <p className="flex items-center justify-center text-white">
+                           <p className="flex items-center justify-center text-slate-400">
                               All reports completed
                            </p>
                         ) : (

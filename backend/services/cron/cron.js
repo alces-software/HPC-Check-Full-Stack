@@ -14,4 +14,4 @@ module.exports.startPopulateClosedDays = (db) =>
  * @returns {import('node-cron').ScheduledTask}
  */
 module.exports.startDailyOverviewBuilder = (db) =>
-   cron.schedule('0 11 * * *', () => require('../dailyReport/dailyReport')(db));
+   cron.schedule('0 11 * * 1-5', () => require('../dailyReport/dailyReport')(db));
