@@ -1,3 +1,5 @@
+import { Long } from 'mongodb'
+
 /**
  * @param {import('mongodb').Db} db
  */
@@ -56,8 +58,8 @@ module.exports = (db) => {
 
          const query = {
             startDate: {
-               $gte: start.getTime(),
-               $lte: end.getTime()
+               $gte: Long.fromNumber(start.getTime()),
+               $lte: Long.fromNumber(end.getTime())
             }
          };
 
