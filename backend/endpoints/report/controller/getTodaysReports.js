@@ -1,3 +1,5 @@
+import { Long } from 'mongodb';
+
 /**
  * @param {import('mongodb').Db} db
  */
@@ -44,8 +46,8 @@ module.exports = (db) => {
             .collection('report')
             .find({
                startDate: {
-                  $gte: startOfDay.getTime(),
-                  $lte: endOfDay.getTime()
+                  $gte: Long.fromNumber(startOfDay.getTime()),
+                  $lte: Long.fromNumber(endOfDay.getTime())
                }
             })
             .toArray()
