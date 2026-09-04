@@ -1,4 +1,4 @@
-import { Long } from 'mongodb'
+import { Long } from 'mongodb';
 
 /**
  * @param {import('mongodb').Db} db
