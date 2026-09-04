@@ -1,4 +1,4 @@
-import { Long } from 'mongodb';
+const { Long } = require('mongodb');
 
 /**
  * @param {import('mongodb').Db} db
