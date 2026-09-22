@@ -1,5 +1,5 @@
-const fs = require('fs/promises');
-const path = require('path');
+const fs = require('node:fs/promises');
+const path = require('node:path');
 
 /**
  * Adds a basic template to the HPC cluster so it has generic instructions and methods

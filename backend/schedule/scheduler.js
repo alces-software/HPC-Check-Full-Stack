@@ -7,7 +7,7 @@ require('dotenv').config;
  * @returns {Promise<Array<string>} Team IDs
  */
 async function getTeams(db) {
-   const response = await db
+   return db
       .collection('team')
       .find({})
       .toArray()
@@ -17,7 +17,6 @@ async function getTeams(db) {
             clustersPerDay: data.clusters_per_day
          }))
       );
-   return response;
 }
 
 async function getTeamsOrderedByEffectiveCapacity(db) {
@@ -77,7 +76,7 @@ async function isWorkingDay(db, date) {
    if (isWeekend) {
       return false;
    }
-   const response = await db.collection('closedDay').findOne({ day: day });
+   const response = await db.collection('closedDay').findOne({ day });
 
    return !response;
 }
@@ -91,8 +90,8 @@ async function isWorkingDay(db, date) {
 async function generateScheduleForDay(db, date) {
    const teams = await getTeamsOrderedByEffectiveCapacity(db);
 
-   for (let i = 0; i < teams.length; i++) {
-      const team = teams[i];
+   for (const element of teams) {
+      const team = element;
       // get pools for team
       const pools = await db.collection('teampool').find({ teamId: team.id }).toArray();
       const poolIds = pools.map((p) => p.poolId);
@@ -162,7 +161,7 @@ async function getNextPerson(db, teamId) {
    if (people.length === 0) {
       console.log('People assigned, unscheduling people...');
       await db.collection('person').updateMany(
-         { teamId: teamId },
+         { teamId },
          {
             $set: {
                scheduled: false
@@ -172,7 +171,7 @@ async function getNextPerson(db, teamId) {
       people = await db
          .collection('person')
          .find({
-            teamId: teamId,
+            teamId,
             $or: [{ scheduled: false }, { scheduled: { $exists: false } }]
          })
          .toArray();
@@ -228,8 +227,8 @@ async function generateUpToDay(db, date) {
       cursor.setDate(cursor.getDate() + 1);
    }
 
-   for (let i = 0; i < dates.length; i++) {
-      await generateScheduleForDay(db, dates[i]);
+   for (const element of dates) {
+      await generateScheduleForDay(db, element);
    }
 }
 
@@ -290,9 +289,9 @@ async function formatScheduleForDay(db, date) {
 
    const scheduleDict = {};
 
-   for (let i = 0; i < response.length; i++) {
-      const person = response[i].personId;
-      const cluster = response[i].clusterId;
+   for (const element of response) {
+      const person = element.personId;
+      const cluster = element.clusterId;
 
       (scheduleDict[person] ??= []).push(cluster);
    }
@@ -320,7 +319,9 @@ async function handleStateChange(db) {
       day: { $gte: dateFrom }
    });
 
-   if (!scheduleExists) return;
+   if (!scheduleExists) {
+      return;
+   }
 
    await db.collection('schedule').deleteMany({
       day: { $gte: dateFrom }
@@ -329,5 +330,5 @@ async function handleStateChange(db) {
 
 module.exports = {
    getScheduleForDay: formatScheduleForDay,
-   handleStateChange: handleStateChange
+   handleStateChange
 };

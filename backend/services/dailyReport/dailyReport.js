@@ -51,7 +51,7 @@ module.exports = async (db) => {
       .then((res) =>
          res.map(({ _id, clusterId }) => ({
             id: _id.toString(),
-            clusterId: clusterId
+            clusterId
          }))
       );
 
@@ -80,7 +80,7 @@ module.exports = async (db) => {
    }
 
    await db.collection('overviewReport').insertOne({
-      date: Long.fromNumber(new Date().getTime()),
+      date: Long.fromNumber(Date.now()),
       reports: reports.map((report) => report.id),
       missing: missingReports
    });
