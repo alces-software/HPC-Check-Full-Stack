@@ -15,6 +15,9 @@
             },
             {
                "content": "Confirm home directories and shared filesystems are accessible."
+            },
+            {
+               "content": "Check node accessibility\n```sh\nfor node in node{\n01..06\n}; do\necho -n \"$node: \"\nstart=$(date +%s%N)\nssh -o BatchMode=yes -o ConnectTimeout=5 \"$node\"\"exit\"\nend=$(date +%s%N)\necho \"$(( (end-start)/1000000 )) ms\"\ndone```"
             }
          ]
       },

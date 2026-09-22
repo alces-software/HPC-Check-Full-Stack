@@ -15,7 +15,9 @@ module.exports.dayFromIndex = (i) => (Number.isInteger(i) && DAYS[i]) || null;
  */
 module.exports.indexFromDay = (s) => {
    const n = normalizeDay(s);
-   if (!n) return null;
+   if (!n) {
+      return null;
+   }
    const i = DAYS.indexOf(n);
    return i === -1 ? null : i;
 };
