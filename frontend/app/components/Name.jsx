@@ -47,7 +47,6 @@ export default function Name() {
 
       const teamId = e.currentTarget.value;
       const matches = people.filter((p) => p.teamId === teamId);
-
       setSelectedTeamId(teamId);
       setPeopleInTeam(matches);
 
@@ -74,7 +73,7 @@ export default function Name() {
                {/* Header */}
 
                {!selectedTeamId ? (
-                  <div key="select-team" className="animate-fade-up">
+                  <div key="select-team" className="">
                      <div className="text-center">
                         <h1 className="text-4xl sm:text-5xl font-bold text-white">
                            Select your team.
@@ -84,14 +83,15 @@ export default function Name() {
                      </div>
 
                      <div className="flex flex-wrap justify-center mt-14 gap-6">
-                        {teams.map((t) => {
-                           const colour = colours[Math.floor(Math.random() * colours.length)];
+                        {teams.map((t, index) => {
+                           const colour = colours[index > colours.length - 1 ? index - colours.length : index];
 
                            return (
                               <button
                                  key={t.id}
                                  type="button"
-                                 className="group cursor-pointer flex flex-col items-center gap-3"
+                                 className="group cursor-pointer flex flex-col items-center gap-3 animate-fade-up transition hover:scale-110"
+                                 style={{ animationDelay: `${index * 75}ms` }}
                                  onClick={handleTeamSelect}
                                  value={t.id}
                               >
@@ -110,7 +110,7 @@ export default function Name() {
                      </div>
                   </div>
                ) : (
-                  <div key="select-name" className="relative min-h-[420px] animate-fade-up pb-16">
+                  <div key="select-name" className="relative min-h-[420px]  pb-16">
                      <div className="text-center">
                         <h1 className="text-4xl sm:text-5xl font-bold text-white">
                            Select your name.
@@ -120,16 +120,18 @@ export default function Name() {
                      </div>
 
                      <div className="flex flex-wrap justify-center mt-14 gap-6">
-                        {peopleInTeam.map((p) => {
-                           const colour = colours[Math.floor(Math.random() * colours.length)];
+                        {peopleInTeam.map((p, index) => {
+                           const colour = colours[index > colours.length - 1 ? index - colours.length : index];
 
                            return (
                               <button
                                  key={p.id}
                                  type="button"
-                                 className="group cursor-pointer flex flex-col items-center gap-3"
+                                 className={`group flex flex-col items-center gap-3 animate-fade-up transition hover:scale-110 ${p.isDemo ? 'cursor-default' : 'cursor-pointer'}`}
+                                 style={{ animationDelay: `${index * 75}ms` }}
                                  onClick={handleSubmit}
                                  value={p.id}
+                                 disabled={p.isDemo}
                               >
                                  <span
                                     className={`flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br ${colour} text-3xl font-bold text-white shadow-xl`}
