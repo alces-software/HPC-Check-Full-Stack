@@ -84,7 +84,8 @@ export default function Name() {
 
                      <div className="flex flex-wrap justify-center mt-14 gap-6">
                         {teams.map((t, index) => {
-                           const colour = colours[index > colours.length - 1 ? index - colours.length : index];
+                           const colour =
+                              colours[index > colours.length - 1 ? index - colours.length : index];
 
                            return (
                               <button
@@ -121,7 +122,8 @@ export default function Name() {
 
                      <div className="flex flex-wrap justify-center mt-14 gap-6">
                         {peopleInTeam.map((p, index) => {
-                           const colour = colours[index > colours.length - 1 ? index - colours.length : index];
+                           const colour =
+                              colours[index > colours.length - 1 ? index - colours.length : index];
 
                            return (
                               <button
